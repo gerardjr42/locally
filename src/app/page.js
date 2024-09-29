@@ -1,15 +1,16 @@
-'use client';
-
+"use client";
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 
 export default function Home() {
   const router = useRouter();
 
+  const handleRegister = () => {
+    router.push('/register');
+  };
   const handleLogin = () => {
     router.push('/login');
   };
-
   return (
     <div className="Home">
       <div className="container">
@@ -23,8 +24,8 @@ export default function Home() {
           />
         </div>
         <div>
-          <button onClick={handleLogin}>Log in</button>
-          <button>Create account</button>
+          <button onClick={handleLogin}> Log in</button>
+          <button onClick={handleRegister}>Create account</button>
         </div>
       </div>
     </div>

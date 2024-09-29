@@ -18,8 +18,8 @@ export default function DetailsPage() {
         <div className="icon">
           <img src="https://cdn3.iconfinder.com/data/icons/general-bio-data-people-1/64/identity_card_man-512.png" alt="Icon" />
         </div>
-        <h2 className="Details-title">Your Details</h2>
-        <p>Please enter your details below</p>
+        <h2 className="Details-title">YOUR BASIC INFO</h2>
+
         <br />
         <form className="form" onSubmit={(e) => {
           e.preventDefault();
@@ -35,8 +35,7 @@ export default function DetailsPage() {
           <input type="text" placeholder="Birthday (mm/dd/yyyy)" name="Birthday" id="Birthday" />
           <label htmlFor="zipCode"></label>
           <input type="text" placeholder="Zip Code" name="zipCode" id="zipCode" />
-          <button className="submit-button" type="submit">
-            Continue
+          <button className="submit-button" type="submit">Continue
           </button>
         </form>
       </div>
