@@ -1,25 +1,24 @@
 .container {
-    width: 100%;
     display: flex;
-    margin: 0 auto;
+    flex-direction: column;
     align-items: center;
     justify-content: center;
-    min-height: 100vh;
-    padding: 20px;
   }
   
   .form-container {
-    width: 90%;
-    max-width: 400px;
-    padding: 40px;
-    background-color: #f5f5f5;
+    width: 100%;
+    max-width: 360px;
+    padding: 20px;
+    background-color: white;
     border-radius: 10px;
   }
   
   .icon {
-    width: 200px;
+    width: 300px;
     height: auto;
-    margin-bottom: 20px;
+    border: 1px solid #ccc;
+    margin: auto;
+    margin-bottom: 30px;
   }
   
   .form {
@@ -33,11 +32,12 @@
   }
 
   .photoUpload {
+    display: inline-block;
     text-align: center;
-    padding: 10px;
-    width: calc(100% - 20px);
+    padding: 25px;
+    width: calc(100% - 0px);
     border: 1px solid rgb(85, 204, 182);
-    border-radius: 15px;
+    border-radius: 55px;
     margin-bottom: 100px;
 
   }
@@ -45,19 +45,12 @@
   button {
     text-align: center;
     padding: 15px;
-    width: calc(100% - 20px);
+    width: calc(100% - 0px);
     border: none;
-    border-radius: 25px;
+    border-radius: 35px;
     margin-bottom: 10px;
-    margin-top: 20px;
   }
 
-  .loading-bar {
-    width: 100%;
-    background-color: rgb(215, 215, 215);
-    height: 5px;
-    margin-bottom: 10px;
-}
   
   .continue-button {
     background-color: rgb(85, 204, 182);
@@ -65,4 +58,19 @@
 
   .skip-button {
     border: 1px solid black;
+  }
+
+
+  .title {
+    margin-top: 10px;
+    font-size: 16px;
+    font-weight: 700;
+    margin-bottom: 20px; 
+    
+  }
+  
+  .progress.w-56{
+    margin-left: 25px;
+
+
   }

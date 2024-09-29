@@ -24,7 +24,7 @@ export default function UserBioCreation() {
   return (
     <div className="UserBioCreation">
       <div className="center">
-        <progress className="progress w-56" value="40" max="100"></progress>
+        <progress className="progress w-56" value="60" max="100"></progress>
       </div>
       <h1>Tell us about yourself</h1>
       <br />

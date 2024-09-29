@@ -7,8 +7,8 @@ export default function Registration() {
   return (
     <div className="container">
       <div className="form-container">
-        <div className="loading-bar"></div>
-        <h1>EMAIL & PASSWORD</h1>
+      <progress className="progress w-56" value="0" max="100"></progress>
+        <h1 className="title">EMAIL & PASSWORD</h1>
         <br />
         <form className="form" onSubmit={(e) => {
           e.preventDefault();
