@@ -7,6 +7,10 @@ export default function Home() {
   const handleRegister = () => {
     router.push('/register');
   };
+
+  const handleLogin = () => {
+    router.push('/login');
+  };
   return (
     <div className="Home">
       <div className="container">
@@ -20,7 +24,7 @@ export default function Home() {
           />
         </div>
         <div>
-          <button onClick={() => router.push('/account')}> Log in</button>
+          <button onClick={handleLogin}> Log in</button>
           <button onClick={handleRegister}>Create account</button>
         </div>
       </div>
