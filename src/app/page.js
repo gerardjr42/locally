@@ -1,6 +1,9 @@
+"use client";
 import Logo from 'next/image';
+import { useRouter } from 'next/navigation';
 
 export default function Home() {
+  const router = useRouter();
   return (
     <div className="Home">
       <div className="container">
@@ -14,8 +17,8 @@ export default function Home() {
           />
         </div>
         <div>
-          <button> Log in</button>
-          <button>Create account</button>
+          <button onClick={() => router.push('/account')}> Log in</button>
+          <button onClick={() => router.push('/register')}>Create account</button>
         </div>
       </div>
     </div>
