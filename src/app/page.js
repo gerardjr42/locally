@@ -1,13 +1,13 @@
 "use client";
-import Logo from 'next/image';
 import { useRouter } from 'next/navigation';
+import Image from 'next/image';
 
 export default function Home() {
   const router = useRouter();
+
   const handleRegister = () => {
     router.push('/register');
   };
-
   const handleLogin = () => {
     router.push('/login');
   };
@@ -15,7 +15,7 @@ export default function Home() {
     <div className="Home">
       <div className="container">
         <div>
-          <Logo
+          <Image
             className="Logo"
             src="/images/logo.png"
             alt="Description of your image"
