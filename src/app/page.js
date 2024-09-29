@@ -4,6 +4,9 @@ import { useRouter } from 'next/navigation';
 
 export default function Home() {
   const router = useRouter();
+  const handleRegister = () => {
+    router.push('/register');
+  };
   return (
     <div className="Home">
       <div className="container">
@@ -18,7 +21,7 @@ export default function Home() {
         </div>
         <div>
           <button onClick={() => router.push('/account')}> Log in</button>
-          <button onClick={() => router.push('/register')}>Create account</button>
+          <button onClick={handleRegister}>Create account</button>
         </div>
       </div>
     </div>
