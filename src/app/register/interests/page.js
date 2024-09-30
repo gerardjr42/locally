@@ -1,3 +1,9 @@
+import { InterestSelection } from "@/components/interest-selection";
+
 export default function UserInterestCreation() {
-  return <div>InterestsPage</div>;
+  return (
+    <div>
+      <InterestSelection />
+    </div>
+  );
 }

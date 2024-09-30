@@ -127,7 +127,7 @@ export default function DetailsPage() {
             required
           />
           <button
-            className="submit-button"
+            className="submit-button btn"
             type="submit"
             onClick={() => router.push("/register/aboutme")}
           >
