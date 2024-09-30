@@ -1,76 +1,76 @@
 .container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-  }
-  
-  .form-container {
-    width: 100%;
-    max-width: 360px;
-    padding: 20px;
-    background-color: white;
-    border-radius: 10px;
-  }
-  
-  .icon {
-    width: 300px;
-    height: auto;
-    border: 1px solid #ccc;
-    margin: auto;
-    margin-bottom: 30px;
-  }
-  
-  .form {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-  }
-  
-  input[type='file'] {
-    display: none;
-  }
+  width: 100%;
+  display: flex;
+  margin: 0 auto;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  padding: 20px;
+}
 
-  .photoUpload {
-    display: inline-block;
-    text-align: center;
-    padding: 25px;
-    width: calc(100% - 0px);
-    border: 1px solid rgb(85, 204, 182);
-    border-radius: 55px;
-    margin-bottom: 100px;
+.form-container {
+  width: 90%;
+  max-width: 400px;
+  padding: 40px;
+  background-color: #f5f5f5;
+  border-radius: 10px;
+}
 
-  }
-  
-  button {
-    text-align: center;
-    padding: 15px;
-    width: calc(100% - 0px);
-    border: none;
-    border-radius: 35px;
-    margin-bottom: 10px;
-  }
+.avatar-image {
+  width: 150px;
+  height: 150px;
+  object-fit: cover;
+  border-radius: 50%;
+  margin: 20px auto;
+  display: block;
+}
 
-  
-  .continue-button {
-    background-color: rgb(85, 204, 182);
-  }
+.icon {
+  width: 200px;
+  height: auto;
+  margin-bottom: 20px;
+}
 
-  .skip-button {
-    border: 1px solid black;
-  }
+.form {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
 
+input[type="file"] {
+  display: none;
+}
 
-  .title {
-    margin-top: 10px;
-    font-size: 16px;
-    font-weight: 700;
-    margin-bottom: 20px; 
-    
-  }
-  
-  .progress.w-56{
-    margin-left: 25px;
+.photoUpload {
+  text-align: center;
+  padding: 10px;
+  width: calc(100% - 20px);
+  border: 1px solid rgb(85, 204, 182);
+  border-radius: 15px;
+  margin-bottom: 100px;
+}
 
+button {
+  text-align: center;
+  padding: 15px;
+  width: calc(100% - 20px);
+  border: none;
+  border-radius: 25px;
+  margin-bottom: 10px;
+  margin-top: 20px;
+}
 
-  }
+.loading-bar {
+  width: 100%;
+  background-color: rgb(215, 215, 215);
+  height: 5px;
+  margin-bottom: 10px;
+}
+
+.continue-button {
+  background-color: rgb(85, 204, 182);
+}
+
+.skip-button {
+  border: 1px solid black;
+}
