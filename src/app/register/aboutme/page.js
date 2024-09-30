@@ -137,13 +137,12 @@ export default function UserBioCreation() {
         </div>
 
         <div>
-          <button
-            type="button"
-            onClick={() => router.push("/register/interests")}
-          >
+          <button type="button" onClick={() => router.push("/register/photo")}>
             Skip for now
           </button>
-          <button type="submit">Continue</button>
+          <button type="submit" onClick={() => router.push("/register/photo")}>
+            Continue
+          </button>
         </div>
       </form>
     </div>
