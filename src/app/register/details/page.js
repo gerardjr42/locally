@@ -7,10 +7,12 @@ export default function DetailsPage() {
   const router = useRouter();
 
   return (
-    <div className="container">
+    <div className="details-container">
       <div className="form-container">
-        <progress className="progress w-56" value="20" max="100"></progress>
-        <h2 className="Details-title">YOUR BASIC INFO</h2>
+        <div className="center">
+        <progress className="progress w-56" value="60" max="100"></progress>
+        </div>
+        <h1>YOUR BASIC INFO</h1>
         <form 
           className="form" 
           onSubmit={(e) => {
