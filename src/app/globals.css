@@ -37,18 +37,6 @@ body {
 }
 
 /* Disabled button as some buttons are different that others, this applied to all buttons. */
-/* button {
-  display: block;
-  text-align: center;
-  width: 60%;
-  background-color: #2aa598;
-  color: #fff;
-  margin: 10px auto;
-  border-radius: 30px;
-  padding: 15px 10px;
-  box-shadow: rgba(50, 50, 93, 0.25) 0px 2px 5px -1px,
-    rgba(0, 0, 0, 0.3) 0px 1px 3px -1px;
-} */
 
 .btn {
   display: block;
@@ -65,7 +53,6 @@ body {
 
 button:hover {
   background-color: #fff;
-  color: #b3b3b3;
   border: #4dcfc0 1px solid;
 }
 
