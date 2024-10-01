@@ -11,7 +11,6 @@ export default function DetailsPage() {
   const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",
-    email: "",
     birthday: "",
     zipCode: "",
   });
@@ -96,15 +95,6 @@ export default function DetailsPage() {
             name="lastName"
             id="lastName"
             value={formData.lastName}
-            onChange={handleChange}
-            required
-          />
-          <input
-            placeholder="Email"
-            type="email"
-            name="email"
-            id="email"
-            value={formData.email}
             onChange={handleChange}
             required
           />
