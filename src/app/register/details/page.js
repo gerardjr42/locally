@@ -102,7 +102,7 @@ export default function DetailsPage() {
       if (error) throw error;
 
       console.log("User details saved successfully:", data);
-      router.push("/register/interests");
+      router.push("/register/aboutme");
     } catch (error) {
       console.error("Error saving user details:", error.message);
     }

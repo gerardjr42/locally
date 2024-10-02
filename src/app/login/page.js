@@ -1,12 +1,17 @@
 "use client";
+
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { supabase } from "@/lib/supabase";
 import Image from "next/image";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import toast, { Toaster } from "react-hot-toast";
 
 export default function LoginPage() {
+  const router = useRouter();
+
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [particles, setParticles] = useState([]);
@@ -39,10 +44,21 @@ export default function LoginPage() {
     return () => clearInterval(intervalId);
   }, []);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("Logging in with:", email, password);
-    toast.success("Login successful!");
+    try {
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email: email,
+        password: password,
+      });
+
+      if (error) throw error;
+
+      toast.success("Login successful!");
+      router.push("/experiences");
+    } catch (error) {
+      toast.error(error.message);
+    }
   };
 
   const handleGoogleLogin = () => {
