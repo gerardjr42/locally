@@ -1,9 +1,14 @@
 "use client";
 
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Progress } from "@/components/ui/progress";
 import { supabase } from "@/lib/supabase";
+import { ArrowLeft } from "lucide-react";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import "./formDetails.scss";
 
 export default function DetailsPage() {
   const router = useRouter();
@@ -11,6 +16,10 @@ export default function DetailsPage() {
   const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",
+    birthday: "",
+    zipCode: "",
+  });
+  const [errors, setErrors] = useState({
     birthday: "",
     zipCode: "",
   });
@@ -26,13 +35,54 @@ export default function DetailsPage() {
   }, []);
 
   const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+    setFormData({ ...formData, [name]: value });
+
+    if (name === "birthday") {
+      validateAge(value);
+    } else if (name === "zipCode") {
+      validateZipCode(value);
+    }
+  };
+
+  const validateAge = (birthday) => {
+    const today = new Date();
+    const birthDate = new Date(birthday);
+    let age = today.getFullYear() - birthDate.getFullYear();
+    const monthDiff = today.getMonth() - birthDate.getMonth();
+
+    if (
+      monthDiff < 0 ||
+      (monthDiff === 0 && today.getDate() < birthDate.getDate())
+    ) {
+      age--;
+    }
+
+    if (age < 18) {
+      setErrors((prev) => ({
+        ...prev,
+        birthday: "You must be at least 18 years old.",
+      }));
+    } else {
+      setErrors((prev) => ({ ...prev, birthday: "" }));
+    }
+  };
+
+  const validateZipCode = (zipCode) => {
+    if (zipCode.length !== 5 || !/^\d+$/.test(zipCode)) {
+      setErrors((prev) => ({
+        ...prev,
+        zipCode: "Zip code must be exactly 5 digits.",
+      }));
+    } else {
+      setErrors((prev) => ({ ...prev, zipCode: "" }));
+    }
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!user) {
-      console.error("No user found");
+    if (!user || errors.birthday || errors.zipCode) {
+      console.error("Validation failed");
       return;
     }
 
@@ -58,71 +108,105 @@ export default function DetailsPage() {
     }
   };
 
+  const isFormValid = () => {
+    return (
+      formData.firstName &&
+      formData.lastName &&
+      formData.birthday &&
+      formData.zipCode &&
+      !errors.birthday &&
+      !errors.zipCode
+    );
+  };
+
   return (
-    <div className="container">
-      <div className="form-container">
-        <button
-          className="back-button"
+    <div className="min-h-screen bg-gray-100 flex flex-col items-center justify-center p-4">
+      <div className="w-full max-w-md bg-white rounded-lg shadow-md p-8">
+        <Button
+          variant="ghost"
+          className="mb-4"
           onClick={() => router.push("/register")}
         >
-          Back
-        </button>
-        <br />
-        <div className="loading-bar"></div>
-        <br />
-        <div className="icon">
-          <img
-            src="https://cdn3.iconfinder.com/data/icons/general-bio-data-people-1/64/identity_card_man-512.png"
-            alt="Icon"
-          />
-        </div>
-        <h2 className="Details-title">YOUR BASIC INFO</h2>
+          <ArrowLeft className="mr-2 h-4 w-4" /> Back
+        </Button>
 
-        <br />
-        <form className="form" onSubmit={handleSubmit}>
-          <input
-            type="text"
-            placeholder="First name"
-            name="firstName"
-            id="firstName"
-            value={formData.firstName}
-            onChange={handleChange}
-            required
+        <div className="mb-6">
+          <Progress value={33} className="h-2" />
+          <div className="flex justify-between mt-2 text-sm font-medium text-[#0D9488]">
+            <span>Profile Creation</span>
+            <span>33%</span>
+          </div>
+        </div>
+
+        <div className="text-center mb-6">
+          <Image
+            src="/images/logo.png"
+            alt="Locally Logo"
+            width={100}
+            height={100}
+            className="mx-auto mb-4"
           />
-          <input
-            type="text"
-            placeholder="Last name"
-            name="lastName"
-            id="lastName"
-            value={formData.lastName}
-            onChange={handleChange}
-            required
-          />
-          <input
-            type="date"
-            placeholder="Birthday"
-            name="birthday"
-            id="birthday"
-            value={formData.birthday}
-            onChange={handleChange}
-            required
-          />
-          <input
-            type="text"
-            placeholder="Zip Code"
-            name="zipCode"
-            id="zipCode"
-            value={formData.zipCode}
-            onChange={handleChange}
-            required
-          />
-          <button
-            className="submit-button btn"
+          <h2 className="text-2xl font-bold text-gray-800">YOUR BASIC INFO</h2>
+        </div>
+
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div>
+            <Label htmlFor="firstName">First name</Label>
+            <Input
+              type="text"
+              id="firstName"
+              name="firstName"
+              value={formData.firstName}
+              onChange={handleChange}
+              required
+            />
+          </div>
+          <div>
+            <Label htmlFor="lastName">Last name</Label>
+            <Input
+              type="text"
+              id="lastName"
+              name="lastName"
+              value={formData.lastName}
+              onChange={handleChange}
+              required
+            />
+          </div>
+          <div>
+            <Label htmlFor="birthday">Birthday</Label>
+            <Input
+              type="date"
+              id="birthday"
+              name="birthday"
+              value={formData.birthday}
+              onChange={handleChange}
+              required
+            />
+            {errors.birthday && (
+              <p className="text-red-500 text-sm mt-1">{errors.birthday}</p>
+            )}
+          </div>
+          <div>
+            <Label htmlFor="zipCode">Zip Code</Label>
+            <Input
+              type="text"
+              id="zipCode"
+              name="zipCode"
+              value={formData.zipCode}
+              onChange={handleChange}
+              required
+            />
+            {errors.zipCode && (
+              <p className="text-red-500 text-sm mt-1">{errors.zipCode}</p>
+            )}
+          </div>
+          <Button
             type="submit"
-            onClick={() => router.push("/register/aboutme")}
+            className="w-full bg-[#0D9488] hover:bg-[#0B7A6E] text-white"
+            disabled={!isFormValid()}
           >
             Continue
-          </button>
+          </Button>
         </form>
       </div>
     </div>
