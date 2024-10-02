@@ -1,14 +1,14 @@
-"use client";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import Image from "next/image";
-import Link from "next/link";
-import { useEffect, useState } from "react";
-import toast, { Toaster } from "react-hot-toast";
+'use client';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import Image from 'next/image';
+import Link from 'next/link';
+import { useEffect, useState } from 'react';
+import toast, { Toaster } from 'react-hot-toast';
 
 export default function LoginPage() {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   const [particles, setParticles] = useState([]);
 
   useEffect(() => {
@@ -41,16 +41,16 @@ export default function LoginPage() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log("Logging in with:", email, password);
-    toast.success("Login successful!");
+    console.log('Logging in with:', email, password);
+    toast.success('Login successful!');
   };
 
   const handleGoogleLogin = () => {
-    toast.loading("Logging in with Google...");
+    toast.loading('Logging in with Google...');
   };
 
   const handleFacebookLogin = () => {
-    toast.loading("Logging in with Facebook...");
+    toast.loading('Logging in with Facebook...');
   };
 
   return (
@@ -78,7 +78,7 @@ export default function LoginPage() {
             height={100}
             className="mx-auto mb-4"
           />
-          <h2 className="text-3xl font-bold text-teal-600">Login or Sign Up</h2>
+          <h2 className="text-3xl font-bold text-teal-600">Log In</h2>
         </div>
 
         <div className="mt-8 space-y-4">
@@ -161,7 +161,7 @@ export default function LoginPage() {
         </form>
 
         <p className="mt-4 text-center text-sm text-gray-600">
-          Don&apos;t have an account?{" "}
+          Don&apos;t have an account?{' '}
           <Link
             href="/register"
             className="font-medium text-teal-600 hover:text-teal-500"
@@ -171,11 +171,11 @@ export default function LoginPage() {
         </p>
 
         <p className="mt-4 text-center text-sm text-gray-600">
-          By continuing, you agree to Locally&apos;s{" "}
+          By continuing, you agree to Locally&apos;s{' '}
           <a href="#" className="font-medium text-teal-600 hover:text-teal-500">
             Terms of Service
-          </a>{" "}
-          and{" "}
+          </a>{' '}
+          and{' '}
           <a href="#" className="font-medium text-teal-600 hover:text-teal-500">
             Privacy Policy
           </a>
