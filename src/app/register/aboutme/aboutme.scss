@@ -1,0 +1,16 @@
+.AboutMe {
+    h2 {
+        font-weight: 700;
+        font-size: 1.25rem;
+    }
+
+    .btn-container {
+        margin: 0 auto;
+        flex-direction: column;
+    }
+
+    .btn {
+        border-radius: 30px;
+        flex-grow: 0;
+    }
+}
