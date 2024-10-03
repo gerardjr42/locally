@@ -131,10 +131,8 @@ export default function DetailsPage() {
         </Button>
 
         <div className="mb-6">
-          <Progress value={33} className="h-2" />
+          <Progress value={20} className="h-2" />
           <div className="flex justify-between mt-2 text-sm font-medium text-[#0D9488]">
-            <span>Profile Creation</span>
-            <span>33%</span>
           </div>
         </div>
 

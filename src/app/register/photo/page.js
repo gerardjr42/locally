@@ -3,6 +3,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { supabase } from "@/lib/supabase";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+import { Progress } from '@/components/ui/progress';
 import "./registrationPhoto.scss";
 
 export default function UserUploadPhoto() {
@@ -106,7 +107,10 @@ export default function UserUploadPhoto() {
   return (
     <div className="container">
       <div className="form-container">
-        <div className="loading-bar"></div>
+        <div className="mb-6">
+          <Progress value={40} className="h-2" />
+          <div className="flex justify-between mt-2 text-sm font-medium text-[#0D9488]"></div>
+        </div>
         <h1>UPLOAD YOUR PHOTO</h1>
         <Avatar className="w-32 h-32 mx-auto mb-4">
           <AvatarImage src={avatarUrl} alt="User avatar" />
@@ -120,6 +124,7 @@ export default function UserUploadPhoto() {
         </Avatar>
         <form className="form" onSubmit={handleUpload}>
           <label className="photoUpload" htmlFor="photoUpload">
+            <i class="fa-solid fa-camera"></i> 
             Upload Photo
           </label>
           <input
@@ -131,7 +136,7 @@ export default function UserUploadPhoto() {
           <button
             className="skip-button button"
             type="button"
-            onClick={() => router.push("/register/interests")}
+            onClick={() => router.push('/register/interests')}
           >
             Skip For now
           </button>
@@ -140,7 +145,7 @@ export default function UserUploadPhoto() {
             type="submit"
             disabled={uploading}
           >
-            {uploading ? "Uploading..." : "Continue"}
+            {uploading ? 'Uploading...' : 'Continue'}
           </button>
         </form>
       </div>
