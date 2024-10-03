@@ -6,7 +6,6 @@ import { Label } from "@/components/ui/label";
 import { Progress } from "@/components/ui/progress";
 import { supabase } from "@/lib/supabase";
 import { ArrowLeft } from "lucide-react";
-import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
@@ -120,33 +119,26 @@ export default function DetailsPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-100 flex flex-col items-center justify-center p-4">
-      <div className="w-full max-w-md bg-white rounded-lg shadow-md p-8">
+    <div className="min-h-full  flex flex-col items-center justify-center p-4">
+      <div className="w-full max-w-md bg-white rounded-lg p-8">
         <Button
           variant="ghost"
           className="mb-4"
           onClick={() => router.push("/register")}
         >
-          <ArrowLeft className="mr-2 h-4 w-4" /> Back
+          <ArrowLeft className="mr-2 h-10 w-4" />
         </Button>
 
         <div className="mb-6">
-          <Progress value={33} className="h-2" />
+          <Progress value={20} className="h-2" />
           <div className="flex justify-between mt-2 text-sm font-medium text-[#0D9488]">
             <span>Profile Creation</span>
-            <span>33%</span>
+            <span>20%</span>
           </div>
         </div>
 
-        <div className="text-center mb-6">
-          <Image
-            src="/images/logo.png"
-            alt="Locally Logo"
-            width={100}
-            height={100}
-            className="mx-auto mb-4"
-          />
-          <h2 className="text-2xl font-bold text-gray-800">YOUR BASIC INFO</h2>
+        <div className="text-start mb-6">
+          <h2 className="text-2xl font-bold text-gray-800">Your basic info</h2>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-4">

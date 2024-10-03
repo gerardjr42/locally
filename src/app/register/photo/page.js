@@ -1,9 +1,12 @@
 "use client";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Button } from "@/components/ui/button";
+import { Progress } from "@/components/ui/progress";
 import { supabase } from "@/lib/supabase";
+import { ArrowLeft, Upload } from "lucide-react";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import "./registrationPhoto.scss";
+import { Toaster } from "react-hot-toast";
 
 export default function UserUploadPhoto() {
   const router = useRouter();
@@ -11,6 +14,7 @@ export default function UserUploadPhoto() {
   const [file, setFile] = useState(null);
   const [uploading, setUploading] = useState(false);
   const [avatarUrl, setAvatarUrl] = useState(null);
+  const [particles, setParticles] = useState([]);
 
   useEffect(() => {
     const getUser = async () => {
@@ -20,6 +24,32 @@ export default function UserUploadPhoto() {
       setUser(user);
     };
     getUser();
+
+    const newParticles = Array.from({ length: 50 }, () => ({
+      x: Math.random() * window.innerWidth,
+      y: Math.random() * window.innerHeight,
+      size: Math.random() * 5 + 1,
+      speedX: Math.random() * 2 - 1,
+      speedY: Math.random() * 2 - 1,
+    }));
+    setParticles(newParticles);
+
+    const animateParticles = () => {
+      setParticles((prevParticles) =>
+        prevParticles.map((particle) => ({
+          ...particle,
+          x:
+            (particle.x + particle.speedX + window.innerWidth) %
+            window.innerWidth,
+          y:
+            (particle.y + particle.speedY + window.innerHeight) %
+            window.innerHeight,
+        }))
+      );
+    };
+
+    const intervalId = setInterval(animateParticles, 50);
+    return () => clearInterval(intervalId);
   }, []);
 
   useEffect(() => {
@@ -69,21 +99,18 @@ export default function UserUploadPhoto() {
     const fileName = `${user.id}.${fileExt}`;
 
     try {
-      // Upload file to 'user-avatars' bucket
       const { data, error: uploadError } = await supabase.storage
         .from("user-avatars")
         .upload(fileName, file, { upsert: true });
 
       if (uploadError) throw uploadError;
 
-      // Get the public URL of the uploaded file
       const { data: publicUrlData } = supabase.storage
         .from("user-avatars")
         .getPublicUrl(fileName);
 
       const publicUrl = publicUrlData.publicUrl;
 
-      // Update the Users table with the new photo URL
       const { error: updateError } = await supabase
         .from("Users")
         .update({ photo_url: publicUrl })
@@ -95,7 +122,7 @@ export default function UserUploadPhoto() {
         "Profile photo uploaded and user record updated successfully"
       );
       setAvatarUrl(publicUrl);
-      router.push("/register/interests");
+      router.push("/register/verification");
     } catch (error) {
       console.error("Error in handleUpload:", error.message);
     } finally {
@@ -104,46 +131,76 @@ export default function UserUploadPhoto() {
   };
 
   return (
-    <div className="container">
-      <div className="form-container">
-        <div className="loading-bar"></div>
-        <h1>UPLOAD YOUR PHOTO</h1>
-        <Avatar className="w-32 h-32 mx-auto mb-4">
-          <AvatarImage src={avatarUrl} alt="User avatar" />
-          <AvatarFallback>
-            <img
-              className="icon"
-              src="https://cdn3.iconfinder.com/data/icons/general-bio-data-people-1/64/identity_card_man-512.png"
-              alt="Default avatar"
-            />
-          </AvatarFallback>
-        </Avatar>
-        <form className="form" onSubmit={handleUpload}>
-          <label className="photoUpload" htmlFor="photoUpload">
-            Upload Photo
-          </label>
+    <div className="min-h-full flex flex-col items-center justify-center p-4">
+      <div className="w-full max-w-md bg-white rounded-lg p-8">
+        <Button
+          variant="ghost"
+          className="mb-4"
+          onClick={() => router.push("/register/interests")}
+        >
+          <ArrowLeft className="mr-2 h-10 w-4" />
+        </Button>
+
+        <div className="mb-6">
+          <Progress value={80} className="h-2" />
+          <div className="flex justify-between mt-2 text-sm font-medium text-[#0D9488]">
+            <span>Profile Creation</span>
+            <span>80%</span>
+          </div>
+        </div>
+
+        <div className="text-start mb-6">
+          <h2 className="text-2xl font-bold text-gray-800">Add a photo</h2>
+          <p className="text-sm text-gray-600 mt-2">
+            Add a photo to help others recognize you
+          </p>
+        </div>
+
+        <div className="space-y-4">
+          <div className="flex justify-center">
+            {avatarUrl ? (
+              <div className="relative w-48 h-48">
+                <Image
+                  src={avatarUrl}
+                  alt="Profile"
+                  layout="fill"
+                  objectFit="cover"
+                  className="rounded-full"
+                />
+              </div>
+            ) : (
+              <div className="w-48 h-48 bg-gray-200 rounded-full flex items-center justify-center">
+                <Upload className="w-12 h-12 text-gray-400" />
+              </div>
+            )}
+          </div>
+
           <input
             type="file"
-            id="photoUpload"
-            onChange={handleFileChange}
             accept="image/*"
+            onChange={handleFileChange}
+            className="hidden"
+            id="photo-upload"
           />
-          <button
-            className="skip-button button"
-            type="button"
-            onClick={() => router.push("/register/interests")}
+          <label
+            htmlFor="photo-upload"
+            className="block w-full text-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-[#0D9488] hover:bg-[#0B7A6E] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#0D9488] cursor-pointer"
           >
-            Skip For now
-          </button>
-          <button
-            className="continue-button"
-            type="submit"
-            disabled={uploading}
+            {avatarUrl ? "Change Photo" : "Upload Photo"}
+          </label>
+        </div>
+
+        <div className="mt-8 flex justify-center">
+          <Button
+            onClick={handleUpload}
+            className="bg-[#0D9488] hover:bg-[#0B7A6E] text-white w-full max-w-xs"
+            disabled={uploading || !file}
           >
-            {uploading ? "Uploading..." : "Continue"}
-          </button>
-        </form>
+            Continue
+          </Button>
+        </div>
       </div>
+      <Toaster position="top-center" />
     </div>
   );
 }

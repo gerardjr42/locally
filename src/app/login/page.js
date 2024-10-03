@@ -70,7 +70,7 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="relative min-h-screen bg-white text-gray-900 flex flex-col items-center justify-center p-4 overflow-hidden">
+    <div className="min-h-screen bg-white text-gray-900 flex flex-col items-center justify-center p-4 overflow-hidden">
       <div className="absolute inset-0">
         {particles.map((particle, index) => (
           <div
@@ -85,7 +85,7 @@ export default function LoginPage() {
           />
         ))}
       </div>
-      <div className="z-10 w-full max-w-md space-y-8 bg-white p-8 rounded-lg shadow-lg">
+      <div className="z-10 w-full space-y-8">
         <div className="text-center">
           <Image
             src="/images/logo.png"
@@ -94,7 +94,7 @@ export default function LoginPage() {
             height={100}
             className="mx-auto mb-4"
           />
-          <h2 className="text-3xl font-bold text-teal-600">Login or Sign Up</h2>
+          <h2 className="text-3xl font-bold text-teal-600">Login</h2>
         </div>
 
         <div className="mt-8 space-y-4">

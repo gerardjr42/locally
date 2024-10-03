@@ -12,7 +12,7 @@ import {
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { supabase } from "@/lib/supabase";
-import Image from "next/image";
+import { ArrowLeft } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
 import toast, { Toaster } from "react-hot-toast";
@@ -124,7 +124,7 @@ export default function UserBioCreation() {
       if (error) throw error;
 
       toast.success("Bio and icebreaker responses saved successfully!");
-      router.push("/register/photo");
+      router.push("/register/interests");
     } catch (error) {
       toast.error(
         `Error saving bio and icebreaker responses: ${error.message}`
@@ -133,45 +133,28 @@ export default function UserBioCreation() {
   };
 
   return (
-    <div className="relative min-h-screen bg-white text-gray-900 flex flex-col items-center justify-center p-4 overflow-hidden">
-      <div className="absolute inset-0">
-        {particles.map((particle, index) => (
-          <div
-            key={index}
-            className="absolute rounded-full bg-teal-500 opacity-20"
-            style={{
-              left: `${particle.x}px`,
-              top: `${particle.y}px`,
-              width: `${particle.size}px`,
-              height: `${particle.size}px`,
-            }}
-          />
-        ))}
-      </div>
-      <div className="z-10 w-full max-w-2xl space-y-8 bg-white p-8 rounded-lg shadow-lg">
-        <div className="text-center">
-          <Image
-            src="/images/logo.png"
-            alt="Locally Logo"
-            width={100}
-            height={100}
-            className="mx-auto mb-4"
-          />
-          <h2 className="text-3xl font-bold text-teal-600">
-            Tell us about yourself
-          </h2>
+    <div className="min-h-full flex flex-col items-center justify-center p-4">
+      <div className="w-full max-w-md bg-white rounded-lg p-8">
+        <Button
+          variant="ghost"
+          className="mb-4"
+          onClick={() => router.push("/register/details")}
+        >
+          <ArrowLeft className="mr-2 h-10 w-4" />
+        </Button>
+
+        <div className="mb-6">
+          <Progress value={40} className="h-2" />
+          <div className="flex justify-between mt-2 text-sm font-medium text-[#0D9488]">
+            <span>Profile Creation</span>
+            <span>40%</span>
+          </div>
         </div>
 
-        <div className="relative pt-1">
-          <Progress value={progress} className="w-full h-2" />
-          <div className="flex justify-between mt-2">
-            <div className="text-xs font-semibold inline-block text-teal-600">
-              Profile Creation
-            </div>
-            <div className="text-xs font-semibold inline-block text-teal-600">
-              {progress}%
-            </div>
-          </div>
+        <div className="text-start mb-6">
+          <h2 className="text-2xl font-bold text-gray-800">
+            Tell us about yourself
+          </h2>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-6">
@@ -212,7 +195,11 @@ export default function UserBioCreation() {
                       {[...availableQuestions, response.question]
                         .filter(Boolean)
                         .map((question, qIndex) => (
-                          <SelectItem key={qIndex} value={question}>
+                          <SelectItem
+                            key={qIndex}
+                            value={question}
+                            className="w-2/3"
+                          >
                             {question}
                           </SelectItem>
                         ))}
@@ -232,14 +219,7 @@ export default function UserBioCreation() {
             ))}
           </div>
 
-          <div className="flex justify-between">
-            <Button
-              type="button"
-              variant="outline"
-              onClick={() => router.push("/register/photo")}
-            >
-              Skip for now
-            </Button>
+          <div className="flex justify-center">
             <Button
               type="submit"
               className="bg-[#0D9488] hover:bg-[#0A7C72] text-white"
