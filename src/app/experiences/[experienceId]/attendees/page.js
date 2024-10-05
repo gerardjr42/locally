@@ -1,6 +1,7 @@
 "use client";
 
 import { ArrowLeft, Menu } from "lucide-react";
+import Image from "next/image";
 import { useParams, useRouter } from "next/navigation";
 import { useState } from "react";
 
@@ -33,7 +34,12 @@ export default function AttendeesList() {
           />
         </button>
         <h1 className="text-2xl font-semibold">
-          <span className="font-normal">L</span>ocally
+          <Image
+            alt="Locally logo"
+            src="/images/LocallyBrandingAssets-04.png"
+            width={100}
+            height={100}
+          />
         </h1>
         <button className="p-2" onClick={() => setMenuOpen(!menuOpen)}>
           <Menu className="w-6 h-6 text-gray-600" />
