@@ -28,6 +28,7 @@ export default function RootLayout({ children }) {
           src="https://kit.fontawesome.com/c2a7616b54.js"
           crossOrigin="anonymous"
         ></script>
+        <script src="https://s3.amazonaws.com/idme/developer/idme-buttons/assets/js/idme-wallet-button.js"></script>
       </body>
     </html>
   );

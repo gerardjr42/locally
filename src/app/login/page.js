@@ -62,11 +62,11 @@ export default function LoginPage() {
   };
 
   const handleGoogleLogin = () => {
-    toast.loading("Logging in with Google...");
+    toast.loading('Logging in with Google...');
   };
 
   const handleFacebookLogin = () => {
-    toast.loading("Logging in with Facebook...");
+    toast.loading('Logging in with Facebook...');
   };
 
   return (
@@ -177,7 +177,7 @@ export default function LoginPage() {
         </form>
 
         <p className="mt-4 text-center text-sm text-gray-600">
-          Don&apos;t have an account?{" "}
+          Don&apos;t have an account?{' '}
           <Link
             href="/register"
             className="font-medium text-teal-600 hover:text-teal-500"
@@ -187,11 +187,11 @@ export default function LoginPage() {
         </p>
 
         <p className="mt-4 text-center text-sm text-gray-600">
-          By continuing, you agree to Locally&apos;s{" "}
+          By continuing, you agree to Locally&apos;s{' '}
           <a href="#" className="font-medium text-teal-600 hover:text-teal-500">
             Terms of Service
-          </a>{" "}
-          and{" "}
+          </a>{' '}
+          and{' '}
           <a href="#" className="font-medium text-teal-600 hover:text-teal-500">
             Privacy Policy
           </a>

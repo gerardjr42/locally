@@ -158,6 +158,7 @@ export default function UserBioCreation() {
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-6">
+          <h2>Tell us about yourself</h2>
           <div>
             <Label htmlFor="bio">Your bio</Label>
             <Textarea
@@ -222,7 +223,7 @@ export default function UserBioCreation() {
           <div className="flex justify-center">
             <Button
               type="submit"
-              className="bg-[#0D9488] hover:bg-[#0A7C72] text-white"
+              className=" btn bg-[#0D9488] hover:bg-[#0A7C72] text-white"
             >
               Continue
             </Button>
