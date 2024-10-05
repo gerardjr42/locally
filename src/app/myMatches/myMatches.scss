@@ -1,0 +1,114 @@
+.UserMatches {
+    margin: 2rem;
+}
+
+.Header {
+    position: relative;
+    text-align: center;
+    margin-bottom: 20px;
+    padding: 30px; 
+    h2 {
+        font-size: 1.1rem;
+        padding: 10px;
+    }
+    
+    p {
+        margin: 5px 0;
+        font-size: 1rem;
+    }
+    border: 1px solid black;
+
+}
+
+.back-button,
+    .menu-button,
+    .sort-filter-button {
+      background-color: transparent;
+      border: none;
+      cursor: pointer;
+      font-size: 16px;
+      position: absolute;
+      top: 10px;
+    }
+
+    .back-button {
+        left: 10px;
+    }
+
+    .menu-button {
+        right: 10px;
+    }
+
+    .sort-filter-button {
+        bottom: -20px;
+        left: 50%;
+        transform: translateX(-50%);
+        font-size: 14px;
+        color: #555;
+      }
+    
+
+.UserEvents {
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    gap: 20px;
+    width: 100%;
+    .collapse {
+        width: 100%;
+        border-radius: 5px;
+        transition: all 0.3s ease;
+    }
+}
+
+
+.UserMatchList{
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    background-color: white;
+    color: black;
+}
+
+.Matched-event-header{
+    width: 100%;
+    background-color: rgb(227, 169, 80);
+    color: white;
+    padding: 10px;
+}
+
+.saved-event-header{
+border: 1px solid #ccc;
+width: 100%;
+padding: 10px;
+}
+
+.Match-pending{
+    width: 100%;
+    display: flex;
+    justify-content: left;
+    align-items: center;
+    padding: 20px;
+    background-color: rgb(236, 224, 206);
+    gap: 20px;
+}
+
+.confirmed-event-header {
+    width: 100%;
+    background-color: rgb(115, 204, 192);
+    padding: 10px;
+}
+.match-icon{
+    width: 50px;
+    height: 50px;
+}
+
+.confirmed-match{
+    width: 100%;
+    display: flex;
+    justify-content: left;
+    align-items: center;
+    padding: 20px;
+    background-color: rgb(198,228,226);
+    gap: 20px;
+}
