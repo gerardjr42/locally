@@ -1,6 +1,5 @@
 "use client";
 import { useRouter } from "next/navigation";
-import "./accountDetails.scss";
 
 export default function AccountDetails() {
   const router = useRouter();
