@@ -1,14 +1,19 @@
-'use client';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import Image from 'next/image';
-import Link from 'next/link';
-import { useEffect, useState } from 'react';
-import toast, { Toaster } from 'react-hot-toast';
+"use client";
+
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { supabase } from "@/lib/supabase";
+import Image from "next/image";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
+import toast, { Toaster } from "react-hot-toast";
 
 export default function LoginPage() {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const router = useRouter();
+
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [particles, setParticles] = useState([]);
 
   useEffect(() => {
@@ -39,10 +44,21 @@ export default function LoginPage() {
     return () => clearInterval(intervalId);
   }, []);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log('Logging in with:', email, password);
-    toast.success('Login successful!');
+    try {
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email: email,
+        password: password,
+      });
+
+      if (error) throw error;
+
+      toast.success("Login successful!");
+      router.push("/experiences");
+    } catch (error) {
+      toast.error(error.message);
+    }
   };
 
   const handleGoogleLogin = () => {
@@ -54,7 +70,7 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="relative min-h-screen bg-white text-gray-900 flex flex-col items-center justify-center p-4 overflow-hidden">
+    <div className="min-h-screen bg-white text-gray-900 flex flex-col items-center justify-center p-4 overflow-hidden">
       <div className="absolute inset-0">
         {particles.map((particle, index) => (
           <div
@@ -69,7 +85,7 @@ export default function LoginPage() {
           />
         ))}
       </div>
-      <div className="z-10 w-full max-w-md space-y-8 bg-white p-8 rounded-lg shadow-lg">
+      <div className="z-10 w-full space-y-8">
         <div className="text-center">
           <Image
             src="/images/logo.png"
@@ -78,7 +94,7 @@ export default function LoginPage() {
             height={100}
             className="mx-auto mb-4"
           />
-          <h2 className="text-3xl font-bold text-teal-600">Log In</h2>
+          <h2 className="text-3xl font-bold text-teal-600">Login</h2>
         </div>
 
         <div className="mt-8 space-y-4">

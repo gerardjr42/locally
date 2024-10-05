@@ -102,7 +102,7 @@ export default function Registration() {
           />
         ))}
       </div>
-      <div className="z-10 w-full max-w-md space-y-8 bg-white p-8 rounded-lg shadow-lg">
+      <div className="z-10 w-full max-w-md space-y-8 bg-white p-8 rounded-lg">
         <div className="text-center">
           <Image
             src="/images/logo.png"
