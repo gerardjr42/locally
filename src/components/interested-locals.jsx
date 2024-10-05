@@ -1,23 +1,23 @@
-"use client";
+"use client"
 
-import { ArrowLeft, Menu } from "lucide-react";
-import { useState } from "react";
+import { useState } from 'react'
+import { ArrowLeft, Menu } from 'lucide-react'
 
 const locals = [
-  { name: "Hudson", age: 32, topMatch: true },
-  { name: "Brook", age: 29, topMatch: true },
-  { name: "Rochelle", age: 24, topMatch: false },
-  { name: "George", age: 28, topMatch: false },
-  { name: "Lynn", age: 32, topMatch: false },
-  { name: "Chelsea", age: 21, topMatch: false },
-  { name: "Lexi", age: 25, topMatch: false },
-];
+  { name: 'Hudson', age: 32, topMatch: true },
+  { name: 'Brook', age: 29, topMatch: true },
+  { name: 'Rochelle', age: 24, topMatch: false },
+  { name: 'George', age: 28, topMatch: false },
+  { name: 'Lynn', age: 32, topMatch: false },
+  { name: 'Chelsea', age: 21, topMatch: false },
+  { name: 'Lexi', age: 25, topMatch: false },
+]
 
-export default function AttendeesList() {
-  const [menuOpen, setMenuOpen] = useState(false);
+export function InterestedLocalsComponent() {
+  const [menuOpen, setMenuOpen] = useState(false)
 
   return (
-    <div className="bg-gray-100 min-h-screen">
+    (<div className="bg-gray-100 min-h-screen">
       <header className="bg-white p-4 flex justify-between items-center shadow-sm">
         <button className="p-2">
           <ArrowLeft className="w-6 h-6 text-gray-600" />
@@ -39,14 +39,11 @@ export default function AttendeesList() {
           {locals.map((local, index) => (
             <div
               key={index}
-              className="bg-white p-4 rounded-lg shadow flex justify-between items-center"
-            >
+              className="bg-white p-4 rounded-lg shadow flex justify-between items-center">
               <div className="flex items-center">
                 <div className="w-12 h-12 bg-gray-200 rounded-full mr-4"></div>
                 <div>
-                  <h3 className="font-semibold">
-                    {local.name}, {local.age}
-                  </h3>
+                  <h3 className="font-semibold">{local.name}, {local.age}</h3>
                 </div>
               </div>
               {local.topMatch && (
@@ -61,35 +58,18 @@ export default function AttendeesList() {
       {menuOpen && (
         <div
           className="fixed inset-0 bg-black bg-opacity-50 z-50"
-          onClick={() => setMenuOpen(false)}
-        >
+          onClick={() => setMenuOpen(false)}>
           <div className="bg-white w-64 h-full absolute right-0 p-4">
             <h2 className="text-xl font-bold mb-4">Menu</h2>
             <ul className="space-y-2">
-              <li>
-                <a href="#" className="block p-2 hover:bg-gray-100 rounded">
-                  Home
-                </a>
-              </li>
-              <li>
-                <a href="#" className="block p-2 hover:bg-gray-100 rounded">
-                  Profile
-                </a>
-              </li>
-              <li>
-                <a href="#" className="block p-2 hover:bg-gray-100 rounded">
-                  Settings
-                </a>
-              </li>
-              <li>
-                <a href="#" className="block p-2 hover:bg-gray-100 rounded">
-                  Logout
-                </a>
-              </li>
+              <li><a href="#" className="block p-2 hover:bg-gray-100 rounded">Home</a></li>
+              <li><a href="#" className="block p-2 hover:bg-gray-100 rounded">Profile</a></li>
+              <li><a href="#" className="block p-2 hover:bg-gray-100 rounded">Settings</a></li>
+              <li><a href="#" className="block p-2 hover:bg-gray-100 rounded">Logout</a></li>
             </ul>
           </div>
         </div>
       )}
-    </div>
+    </div>)
   );
 }
