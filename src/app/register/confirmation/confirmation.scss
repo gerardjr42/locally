@@ -1,0 +1,27 @@
+.ConfirmationPage {
+    text-align: center;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    margin-top: 2rem;
+    padding: 30px;
+    justify-content: space-around;
+
+    h1 {
+        font-weight: 700;
+        font-size: 3.5rem;
+    }
+
+    h2 {
+        font-size: 1.5rem;
+    }
+
+    button {
+        border-radius: 30px;
+        background-color: #4cd0c0;
+        width: max-content;
+        padding: 15px 35px;
+        color: #fff;
+        margin: 20px auto;
+    }
+}
