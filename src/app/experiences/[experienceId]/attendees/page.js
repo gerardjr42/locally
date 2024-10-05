@@ -1,6 +1,7 @@
 "use client";
 
 import { ArrowLeft, Menu } from "lucide-react";
+import { useParams, useRouter } from "next/navigation";
 import { useState } from "react";
 
 const locals = [
@@ -15,12 +16,21 @@ const locals = [
 
 export default function AttendeesList() {
   const [menuOpen, setMenuOpen] = useState(false);
+  const router = useRouter();
+  const params = useParams();
+
+  const handleBackClick = () => {
+    router.push(`/experiences/${params.experienceId}`);
+  };
 
   return (
     <div className="bg-gray-100 min-h-screen">
       <header className="bg-white p-4 flex justify-between items-center shadow-sm">
         <button className="p-2">
-          <ArrowLeft className="w-6 h-6 text-gray-600" />
+          <ArrowLeft
+            className="w-6 h-6 text-gray-600"
+            onClick={handleBackClick}
+          />
         </button>
         <h1 className="text-2xl font-semibold">
           <span className="font-normal">L</span>ocally
