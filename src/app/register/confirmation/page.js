@@ -13,8 +13,8 @@ export default function ConfirmationPage() {
 
   return (
     <div className="ConfirmationPage">
-      <h1>Welcome!</h1>
       <div>
+        <h1>Welcome!</h1>
         <h2>You are now a member of the Locally community!</h2>
         <button onClick={handleLoginRedirect}>Log In</button>
       </div>
