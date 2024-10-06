@@ -1,3 +1,5 @@
+import { NavigationBar } from "@/components/navigation-bar";
+
 const experiences = [
   {
     eventID: "EVT001",
@@ -6,7 +8,7 @@ const experiences = [
     eventDate: "2024-10-15",
     eventPrice: "$50",
     eventImageURL:
-      "https://images.pexels.com/photos/9419374/pexels-photo-9419374.jpeg?auto=compress&cs=tinysrgb&w=1200",
+      "https://images.pexels.com/photos/613813/pexels-photo-613813.jpeg?auto=compress&cs=tinysrgb&w=1200",
     eventCategories: ["Music", "Entertainment", "Outdoor"],
     totalInterestedAttendeees: 88,
   },
@@ -40,7 +42,11 @@ const experiences = [
     eventPrice: "$15",
     eventImageURL:
       "https://images.pexels.com/photos/159711/books-bookstore-book-reading-159711.jpeg?auto=compress&cs=tinysrgb&w=1200",
-    eventCategories: ["Art & Culture", "Entertainment", "Education"],
+    eventCategories: [
+      "Art & Culture",
+      "Entertainment",
+      "Education & Workshops",
+    ],
     totalInterestedAttendeees: 49,
   },
   {
@@ -385,6 +391,7 @@ const categoryIcons = {
 export default function AllExperiences() {
   return (
     <div className="flex flex-col items-center justify-center">
+      <NavigationBar />
       <div className="m-4">
         <label className="input input-bordered flex items-center gap-2">
           <input type="text" className="grow" placeholder="Search" />
@@ -402,7 +409,6 @@ export default function AllExperiences() {
           </svg>
         </label>
       </div>
-
       <div
         name="filterExperiencesOptions"
         className="container flex flex-row justify-left overflow-scroll justify-evenly my-2 py-2"
@@ -443,30 +449,12 @@ export default function AllExperiences() {
           </div>
         ))}
       </div>
-
-      <div className="container flex flex-row justify-between m-1 px-4 pb-2">
-        <h2 className="text-xl font-bold align-middle">Experiences For You</h2>
-        <div className="flex items-center border-2 border-black rounded-full px-3 py-1">
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke-width="1.5"
-            stroke="currentColor"
-            class="size-6"
-          >
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              d="M6 13.5V3.75m0 9.75a1.5 1.5 0 0 1 0 3m0-3a1.5 1.5 0 0 0 0 3m0 3.75V16.5m12-3V3.75m0 9.75a1.5 1.5 0 0 1 0 3m0-3a1.5 1.5 0 0 0 0 3m0 3.75V16.5m-6-9V3.75m0 3.75a1.5 1.5 0 0 1 0 3m0-3a1.5 1.5 0 0 0 0 3m0 9.75V10.5"
-            />
-          </svg>
-        </div>
-      </div>
-
       <div className="container flex flex-row flex-wrap justify-evenly px-2">
         {experiences.map((experience) => (
-          <div className="card card-compact bg-base-100 w-100 shadow-xl mx-2 my-3">
+          <div
+            className="card card-compact bg-base-100 w-100 shadow-xl mx-2 my-3"
+            key={eventID}
+          >
             <figure className="relative">
               <img src={experience.eventImageURL} alt={experience.eventName} />
               <div className="absolute bottom-0 left-1 flex flex-col justify-start p-2">
@@ -498,11 +486,19 @@ export default function AllExperiences() {
             </figure>
             <div className="card-body gap-0">
               <div className="container flex flex-row justify-between">
-                <p className="text-left text-gray-500">{experience.eventDate}</p>
-                <p className="text-right text-gray-500">{experience.eventPrice}</p>
+                <p className="text-left text-gray-500">
+                  {experience.eventDate}
+                </p>
+                <p className="text-right text-gray-500">
+                  {experience.eventPrice}
+                </p>
               </div>
-              <p className="text-lg font-bold text-gray-600">{experience.eventName}</p>
-              <p className="text-left text-gray-500">{experience.eventLocation}</p>
+              <p className="text-lg font-bold text-gray-600">
+                {experience.eventName}
+              </p>
+              <p className="text-left text-gray-500">
+                {experience.eventLocation}
+              </p>
               <div className="container flex flex-col">
                 <div className="container flex flex-row justify-end">
                   <div className="avatar-group -space-x-6 rtl:space-x-reverse">
@@ -520,7 +516,6 @@ export default function AllExperiences() {
                 </div>
                 <p className="text-right text-gray-500">Ready To Connect</p>
               </div>
-              
             </div>
           </div>
         ))}
