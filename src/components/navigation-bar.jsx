@@ -1,6 +1,6 @@
 import { ArrowLeft } from "lucide-react";
 
-export function NavigationBar({ handleBackClick }) {
+export default function NavigationBar({ handleBackClick }) {
   return (
     <div className="drawer">
       <input
