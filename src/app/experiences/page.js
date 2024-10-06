@@ -1,3 +1,5 @@
+import { NavigationBar } from "@/components/navigation-bar";
+
 const experiences = [
   {
     eventID: "EVT001",
@@ -402,68 +404,10 @@ export default function AllExperiences() {
           </svg>
         </label>
       </div>
-
-      <div
-        name="filterExperiencesOptions"
-        className="container flex flex-row justify-left overflow-scroll justify-evenly my-2 py-2"
-      >
-        <div className="flex flex-col items-center cursor-pointer px-1">
-          <label className="flex flex-col items-center cursor-pointer">
-            <input type="checkbox" className="hidden" />
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke-width="1.5"
-              stroke="currentColor"
-              class="size-6"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                d="M12 6v12m-3-2.818.879.659c1.171.879 3.07.879 4.242 0 1.172-.879 1.172-2.303 0-3.182C13.536 12.219 12.768 12 12 12c-.725 0-1.45-.22-2.003-.659-1.106-.879-1.106-2.303 0-3.182s2.9-.879 4.006 0l.415.33M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"
-              />
-            </svg>
-            <p className="mt-1 text-xs text-center w-20">Free</p>
-          </label>
-        </div>
-
-        {experiencesCategories.map((category) => (
-          <div
-            key={category}
-            className="flex flex-col items-center cursor-pointer px-1"
-          >
-            <label className="flex flex-col items-center cursor-pointer">
-              <input type="radio" className="hidden" name="category" />
-              {categoryIcons[category]}
-              <p className="mt-1 text-xs text-center w-20 line-clamp-2">
-                {category}
-              </p>
-            </label>
-          </div>
-        ))}
+      <NavigationBar />
+      <div className="container">
+        {/* category icon container - select to show category-specific events */}  
       </div>
-
-      <div className="container flex flex-row justify-between m-1 px-4 pb-2">
-        <h2 className="text-xl font-bold align-middle">Experiences For You</h2>
-        <div className="flex items-center border-2 border-black rounded-full px-3 py-1">
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke-width="1.5"
-            stroke="currentColor"
-            class="size-6"
-          >
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              d="M6 13.5V3.75m0 9.75a1.5 1.5 0 0 1 0 3m0-3a1.5 1.5 0 0 0 0 3m0 3.75V16.5m12-3V3.75m0 9.75a1.5 1.5 0 0 1 0 3m0-3a1.5 1.5 0 0 0 0 3m0 3.75V16.5m-6-9V3.75m0 3.75a1.5 1.5 0 0 1 0 3m0-3a1.5 1.5 0 0 0 0 3m0 9.75V10.5"
-            />
-          </svg>
-        </div>
-      </div>
-
       <div className="container flex flex-row flex-wrap justify-evenly px-2">
         {experiences.map((experience) => (
           <div className="card card-compact bg-base-100 w-100 shadow-xl mx-2 my-3">
