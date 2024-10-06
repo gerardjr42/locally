@@ -1,7 +1,7 @@
 "use client";
 import { useParams, useRouter } from "next/navigation";
 
-import Nav from "@/components/navigation-bar";
+import {NavigationBar} from "@/components/navigation-bar";
 
 export default function UserArchive() {
     const router = useRouter();
@@ -24,7 +24,7 @@ export default function UserArchive() {
   return (
   <div className="bg-gray-100 min-h-screen">
      <header className="bg-white p-4 flex justify-between items-center shadow-sm">
-      <Nav handleBackClick={handleBackClick}/>
+      <NavigationBar handleBackClick={handleBackClick}/>
       </header>
       <main className="p-4">
 
