@@ -1,13 +1,9 @@
 "use client";
-
-
-
 import { useParams, useRouter } from "next/navigation";
-import { useState } from "react";
+
 import Nav from "@/components/navigation-bar";
 
 export default function UserArchive() {
-    const [menuOpen, setMenuOpen] = useState(false);
     const router = useRouter();
   
     const handleBackClick = () => {
