@@ -1,4 +1,6 @@
-export function NavigationBar() {
+import { ArrowLeft } from "lucide-react";
+
+export function NavigationBar({ handleBackClick }) {
   return (
     <div className="drawer">
       <input
@@ -8,22 +10,13 @@ export function NavigationBar() {
       />
       <div className="drawer-content flex flex-row justify-between p-3">
         <div>
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            fill="none"
-            viewBox="0 0 24 24"
-            strokeWidth={1.5}
-            stroke="currentColor"
-            className="size-6"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              d="M10.5 19.5 3 12m0 0 7.5-7.5M3 12h18"
+          <button className="p-2">
+            <ArrowLeft
+              className="w-6 h-6 text-gray-600"
+              onClick={handleBackClick}
             />
-          </svg>
+          </button>
         </div>
-
         <div>
           <img
             src="/images/teallocally.png"
@@ -58,9 +51,13 @@ export function NavigationBar() {
           className="drawer-overlay"
         ></label>
         <ul className="menu bg-base-200 text-base-content min-h-full w-90 p-4">
-            <div className="flex flex-row justify-end">
-                <img src="/images/teallocally.png" alt="Locally Logo" className="h-12 w-auto" />
-            </div>
+          <div className="flex flex-row justify-end">
+            <img
+              src="/images/teallocally.png"
+              alt="Locally Logo"
+              className="h-12 w-auto"
+            />
+          </div>
           <div className="container flex flex-row justify-between items-center w-90 px-2 py-3">
             <div className="avatar">
               <div className="ring-primary ring-offset-base-100 w-20 rounded-full ring ring-offset-2 align-middle">

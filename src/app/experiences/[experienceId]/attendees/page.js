@@ -1,9 +1,7 @@
 "use client";
 
-import { ArrowLeft, Menu } from "lucide-react";
-import Image from "next/image";
+import { NavigationBar } from "@/components/navigation-bar";
 import { useParams, useRouter } from "next/navigation";
-import { useState } from "react";
 
 const locals = [
   { name: "Hudson", age: 32, topMatch: true },
@@ -16,7 +14,6 @@ const locals = [
 ];
 
 export default function AttendeesList() {
-  const [menuOpen, setMenuOpen] = useState(false);
   const router = useRouter();
   const params = useParams();
 
@@ -27,7 +24,7 @@ export default function AttendeesList() {
   return (
     <div className="bg-gray-100 min-h-screen">
       <header className="bg-white p-4 flex justify-between items-center shadow-sm">
-        <button className="p-2">
+        {/* <button className="p-2">
           <ArrowLeft
             className="w-6 h-6 text-gray-600"
             onClick={handleBackClick}
@@ -40,10 +37,8 @@ export default function AttendeesList() {
             width={100}
             height={100}
           />
-        </h1>
-        <button className="p-2" onClick={() => setMenuOpen(!menuOpen)}>
-          <Menu className="w-6 h-6 text-gray-600" />
-        </button>
+        </h1> */}
+        <NavigationBar handleBackClick={handleBackClick} />
       </header>
       <main className="p-4">
         <div className="mb-4">
@@ -74,38 +69,6 @@ export default function AttendeesList() {
           ))}
         </div>
       </main>
-      {menuOpen && (
-        <div
-          className="fixed inset-0 bg-black bg-opacity-50 z-50"
-          onClick={() => setMenuOpen(false)}
-        >
-          <div className="bg-white w-64 h-full absolute right-0 p-4">
-            <h2 className="text-xl font-bold mb-4">Menu</h2>
-            <ul className="space-y-2">
-              <li>
-                <a href="#" className="block p-2 hover:bg-gray-100 rounded">
-                  Home
-                </a>
-              </li>
-              <li>
-                <a href="#" className="block p-2 hover:bg-gray-100 rounded">
-                  Profile
-                </a>
-              </li>
-              <li>
-                <a href="#" className="block p-2 hover:bg-gray-100 rounded">
-                  Settings
-                </a>
-              </li>
-              <li>
-                <a href="#" className="block p-2 hover:bg-gray-100 rounded">
-                  Logout
-                </a>
-              </li>
-            </ul>
-          </div>
-        </div>
-      )}
     </div>
   );
 }
