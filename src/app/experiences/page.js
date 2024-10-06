@@ -6,7 +6,7 @@ const experiences = [
     eventDate: "2024-10-15",
     eventPrice: "$50",
     eventImageURL:
-      "https://images.pexels.com/photos/613813/pexels-photo-613813.jpeg?auto=compress&cs=tinysrgb&w=1200",
+      "https://images.pexels.com/photos/9419374/pexels-photo-9419374.jpeg?auto=compress&cs=tinysrgb&w=1200",
     eventCategories: ["Music", "Entertainment", "Outdoor"],
     totalInterestedAttendeees: 88,
   },
@@ -445,7 +445,7 @@ export default function AllExperiences() {
       </div>
 
       <div className="container flex flex-row justify-between m-1 px-4 pb-2">
-        <h2 className="text-xl font-bold align-middle">Local Experiences</h2>
+        <h2 className="text-xl font-bold align-middle">Experiences For You</h2>
         <div className="flex items-center border-2 border-black rounded-full px-3 py-1">
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -466,14 +466,14 @@ export default function AllExperiences() {
 
       <div className="container flex flex-row flex-wrap justify-evenly px-2">
         {experiences.map((experience) => (
-          <div className="card card-compact bg-base-100 w-100 shadow-xl m-2">
+          <div className="card card-compact bg-base-100 w-100 shadow-xl mx-2 my-3">
             <figure className="relative">
               <img src={experience.eventImageURL} alt={experience.eventName} />
               <div className="absolute bottom-0 left-1 flex flex-col justify-start p-2">
                 {experience.eventCategories?.map((category) => (
                   <span
                     key={category}
-                    className="badge m-1 bg-white text-black"
+                    className="badge m-1 bg-white text-gray-600"
                   >
                     {category}
                   </span>
@@ -496,18 +496,31 @@ export default function AllExperiences() {
                 </svg>
               </div>
             </figure>
-            <div className="card-body">
+            <div className="card-body gap-0">
               <div className="container flex flex-row justify-between">
-                <p className="text-left">{experience.eventDate}</p>
-                <p className="text-right">{experience.eventPrice}</p>
+                <p className="text-left text-gray-500">{experience.eventDate}</p>
+                <p className="text-right text-gray-500">{experience.eventPrice}</p>
               </div>
-              <h4 className="text-xl font-bold">{experience.eventName}</h4>
-              <p className="text-left">{experience.eventLocation}</p>
-              <div className="container flex flex-row justify-between">
-                <p className="text-right">
-                  {experience.totalInterestedAttendeees} Interested Locals
-                </p>
+              <p className="text-lg font-bold text-gray-600">{experience.eventName}</p>
+              <p className="text-left text-gray-500">{experience.eventLocation}</p>
+              <div className="container flex flex-col">
+                <div className="container flex flex-row justify-end">
+                  <div className="avatar-group -space-x-6 rtl:space-x-reverse">
+                    <div className="avatar">
+                      <div className="w-12">
+                        <img src="https://randomuser.me/api/portraits/men/75.jpg" />
+                      </div>
+                    </div>
+                    <div className="avatar placeholder">
+                      <div className="bg-neutral text-neutral-content w-12">
+                        <span>+{experience.totalInterestedAttendeees - 1}</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <p className="text-right text-gray-500">Ready To Connect</p>
               </div>
+              
             </div>
           </div>
         ))}
