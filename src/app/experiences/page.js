@@ -40,11 +40,7 @@ const experiences = [
     eventPrice: "$15",
     eventImageURL:
       "https://images.pexels.com/photos/159711/books-bookstore-book-reading-159711.jpeg?auto=compress&cs=tinysrgb&w=1200",
-    eventCategories: [
-      "Art & Culture",
-      "Entertainment",
-      "Education & Workshops",
-    ],
+    eventCategories: ["Art & Culture", "Entertainment", "Education"],
     totalInterestedAttendeees: 49,
   },
   {
@@ -466,26 +462,52 @@ export default function AllExperiences() {
             />
           </svg>
         </div>
-        
       </div>
 
-      <div className="container">
+      <div className="container flex flex-row flex-wrap justify-evenly px-2">
         {experiences.map((experience) => (
-          <div className="card card-compact bg-base-100 w-100 shadow-xl mx-10">
-            <figure>
+          <div className="card card-compact bg-base-100 w-100 shadow-xl m-2">
+            <figure className="relative">
               <img src={experience.eventImageURL} alt={experience.eventName} />
-            </figure>
-            <div className="card-body">
-              <h2 className="card-title">{experience.eventName}</h2>
-              <div className="flex flex-row flex-wrap">
+              <div className="absolute bottom-0 left-1 flex flex-col justify-start p-2">
                 {experience.eventCategories?.map((category) => (
-                  <span className="badge badge-outline m-0.5">{category}</span>
+                  <span
+                    key={category}
+                    className="badge m-1 bg-white text-black"
+                  >
+                    {category}
+                  </span>
                 ))}
               </div>
-              <p>{experience.eventDate}</p>
-              <p>{experience.eventLocation}</p>
-              <p>{experience.eventPrice}</p>
-              <p>{experience.totalInterestedAttendeees} Interested Locals</p>
+              <div className="absolute top-2 right-5 flex justify-end p-2">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke-width="1.5"
+                  stroke="white"
+                  class="size-8"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    d="M17.593 3.322c1.1.128 1.907 1.077 1.907 2.185V21L12 17.25 4.5 21V5.507c0-1.108.806-2.057 1.907-2.185a48.507 48.507 0 0 1 11.186 0Z"
+                  />
+                </svg>
+              </div>
+            </figure>
+            <div className="card-body">
+              <div className="container flex flex-row justify-between">
+                <p className="text-left">{experience.eventDate}</p>
+                <p className="text-right">{experience.eventPrice}</p>
+              </div>
+              <h4 className="text-xl font-bold">{experience.eventName}</h4>
+              <p className="text-left">{experience.eventLocation}</p>
+              <div className="container flex flex-row justify-between">
+                <p className="text-right">
+                  {experience.totalInterestedAttendeees} Interested Locals
+                </p>
+              </div>
             </div>
           </div>
         ))}
