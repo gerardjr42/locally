@@ -427,7 +427,7 @@ export default function AllExperiences() {
             <p className="mt-1 text-xs text-center w-20">Free</p>
           </label>
         </div>
-
+        
         {experiencesCategories.map((category) => (
           <div
             key={category}
