@@ -453,7 +453,7 @@ export default function AllExperiences() {
         {experiences.map((experience) => (
           <div
             className="card card-compact bg-base-100 w-100 shadow-xl mx-2 my-3"
-            key={eventID}
+            key={experience.eventID}
           >
             <figure className="relative">
               <img src={experience.eventImageURL} alt={experience.eventName} />
