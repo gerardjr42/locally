@@ -433,7 +433,140 @@ export default function AllExperiences() {
             <p className="mt-1 text-xs text-center w-20">Free</p>
           </label>
         </div>
-        
+
+        {experiencesCategories.map((category) => (
+          <div
+            key={category}
+            className="flex flex-col items-center cursor-pointer px-1"
+          >
+            <label className="flex flex-col items-center cursor-pointer">
+              <input type="radio" className="hidden" name="category" />
+              {categoryIcons[category]}
+              <p className="mt-1 text-xs text-center w-20 line-clamp-2">
+                {category}
+              </p>
+            </label>
+          </div>
+        ))}
+      </div>
+      <div className="container flex flex-row flex-wrap justify-evenly px-2">
+        {experiences.map((experience) => (
+          <div
+            className="card card-compact bg-base-100 w-100 shadow-xl mx-2 my-3"
+            key={experience.eventID}
+          >
+            <figure className="relative">
+              <img src={experience.eventImageURL} alt={experience.eventName} />
+              <div className="absolute bottom-0 left-1 flex flex-col justify-start p-2">
+                {experience.eventCategories?.map((category) => (
+                  <span
+                    key={category}
+                    className="badge m-1 bg-white text-gray-600"
+                  >
+                    {category}
+                  </span>
+                ))}
+              </div>
+              <div className="absolute top-2 right-5 flex justify-end p-2">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke-width="1.5"
+                  stroke="white"
+                  class="size-8"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    d="M17.593 3.322c1.1.128 1.907 1.077 1.907 2.185V21L12 17.25 4.5 21V5.507c0-1.108.806-2.057 1.907-2.185a48.507 48.507 0 0 1 11.186 0Z"
+                  />
+                </svg>
+              </div>
+            </figure>
+            <div className="card-body gap-0">
+              <div className="container flex flex-row justify-between">
+                <p className="text-left text-gray-500">
+                  {experience.eventDate}
+                </p>
+                <p className="text-right text-gray-500">
+                  {experience.eventPrice}
+                </p>
+              </div>
+              <p className="text-lg font-bold text-gray-600">
+                {experience.eventName}
+              </p>
+              <p className="text-left text-gray-500">
+                {experience.eventLocation}
+              </p>
+              <div className="container flex flex-col">
+                <div className="container flex flex-row justify-end">
+                  <div className="avatar-group -space-x-6 rtl:space-x-reverse">
+                    <div className="avatar">
+                      <div className="w-12">
+                        <img src="https://randomuser.me/api/portraits/men/75.jpg" />
+                      </div>
+                    </div>
+                    <div className="avatar placeholder">
+                      <div className="bg-neutral text-neutral-content w-12">
+                        <span>+{experience.totalInterestedAttendeees - 1}</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <p className="text-right text-gray-500">Ready To Connect</p>
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+  return (
+    <div className="flex flex-col items-center justify-center">
+      <NavigationBar />
+      <div className="m-4">
+        <label className="input input-bordered flex items-center gap-2">
+          <input type="text" className="grow" placeholder="Search" />
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 16 16"
+            fill="currentColor"
+            className="h-4 w-4 opacity-70"
+          >
+            <path
+              fillRule="evenodd"
+              d="M9.965 11.026a5 5 0 1 1 1.06-1.06l2.755 2.754a.75.75 0 1 1-1.06 1.06l-2.755-2.754ZM10.5 7a3.5 3.5 0 1 1-7 0 3.5 3.5 0 0 1 7 0Z"
+              clipRule="evenodd"
+            />
+          </svg>
+        </label>
+      </div>
+      <div
+        name="filterExperiencesOptions"
+        className="container flex flex-row justify-left overflow-scroll justify-evenly my-2 py-2"
+      >
+        <div className="flex flex-col items-center cursor-pointer px-1">
+          <label className="flex flex-col items-center cursor-pointer">
+            <input type="checkbox" className="hidden" />
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke-width="1.5"
+              stroke="currentColor"
+              class="size-6"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                d="M12 6v12m-3-2.818.879.659c1.171.879 3.07.879 4.242 0 1.172-.879 1.172-2.303 0-3.182C13.536 12.219 12.768 12 12 12c-.725 0-1.45-.22-2.003-.659-1.106-.879-1.106-2.303 0-3.182s2.9-.879 4.006 0l.415.33M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"
+              />
+            </svg>
+            <p className="mt-1 text-xs text-center w-20">Free</p>
+          </label>
+        </div>
+
         {experiencesCategories.map((category) => (
           <div
             key={category}
