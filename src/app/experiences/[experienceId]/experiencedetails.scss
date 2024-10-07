@@ -5,16 +5,44 @@
         width: 100%;
     }
 
-    .heading {
-        margin: 1rem;
+    .banner-image-container {
+        position: relative;
+        background-color: #fff;
+
+        img {
+            width: 100%;
+            height: auto;
+            display: block;
+            border-bottom: 1px solid #fff;
+        }
+
+        &::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 100px;
+            background: linear-gradient(to bottom, rgba(255, 255, 255, 0) 5%, rgba(255, 255, 255, 1) 100%);
+            pointer-events: none;
+        }
     }
 
-    .locals {
+    .details-header {
+        padding: 1rem;
+
+        p {
+            font-size: 0.75rem;
+        }
+    }
+
+    .locals,
+    .experience-description-details {
         padding: 0.5rem 1rem;
     }
 
     h1 {
-        font-size: 1.5rem;
+        font-size: 1.25rem;
         font-weight: 700;
     }
 
@@ -26,7 +54,6 @@
         margin: 20px auto;
         padding: 15px 30px;
         width: 80%;
-
     }
 
     span {
@@ -37,6 +64,7 @@
 
     .users-container {
         display: flex;
+        overflow-x: scroll;
     }
 
     .user-card {
@@ -46,13 +74,24 @@
         position: relative;
         font-weight: 700;
 
-        img {
+        .image-container {
             width: 8rem;
             height: 8rem;
-            display: block;
+            overflow: hidden;
             border-radius: 10px;
         }
 
+        img {
+            width: 100%;
+            height: 100%;
+            display: block;
+            object-fit: cover;
+        }
+
+        .flex {
+            justify-content: flex-start;
+gap: 10px;
+        }
     }
 
     .top-match {
@@ -68,5 +107,33 @@
         position: absolute;
         top: 15px;
         right: 10px;
+    }
+
+    .experience-description-details {
+        .experience-description-address {
+            justify-content: flex-start;
+            gap: 1rem;
+            padding: 1rem 0rem;
+            color: #898989;
+
+        }
+
+        .experience-description-details-breakdown {
+            h3 {
+                color: #898989;
+            }
+
+            p {
+                font-weight: 700;
+            }
+        }
+
+        .experience-description-content {
+            color: #898989;
+        }
+
+        .icon {
+            color: #000;
+        }
     }
 }
