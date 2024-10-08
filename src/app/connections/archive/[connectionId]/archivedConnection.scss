@@ -1,0 +1,85 @@
+$user-archived-matches-color: rgb(155, 155, 155);
+$banner-bg-color: #fff;
+$border-color: 1px solid #fff;
+$light-gray: lightgray;
+
+.user-archived-matches {
+    width: 100%;
+    padding: 10px;
+    border-bottom: $border-color;
+    display: flex;
+    flex-direction: column;
+    
+    p {
+        color: $user-archived-matches-color;
+    }
+}
+
+.banner-image-container {
+    position: relative;
+    background-color: $banner-bg-color;
+
+    img {
+        width: 100%;
+        height: 120px;
+        border: 1px solid black;
+        object-fit: contain;
+    }
+}
+
+.event-details {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+
+    .event-photo {
+        object-fit: fill;
+        border: 1px solid black;
+    }
+
+    .event-info p {
+        font-size: 12px;
+        padding: 10px;
+    }
+}
+
+.rating-section {
+    text-align: center;
+    
+    h3 {
+        font-size: 16px;
+    }
+    
+    p {
+        font-size: 12px;
+    }
+}
+
+.report-button {
+    border-radius: 30px;
+    background-color: $light-gray;
+    color: #fff;
+    margin: 20px auto;
+    padding: 15px 30px;
+    width: 80%;
+}
+
+.chat-button {
+    padding: 10px;
+    width: 100%;
+    text-align: left;
+}
+
+.star {
+    font-size: 1.5rem;
+    cursor: pointer;
+    color: $light-gray;
+}
+
+.report-button-container{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    flex-direction: column;
+}
