@@ -4,11 +4,12 @@ import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Progress } from "@/components/ui/progress";
 import { motion } from "framer-motion";
+import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
 export default function UserVerification() {
   const [isVerified, setIsVerified] = useState(false);
-
+  const router = useRouter();
   // Simple bindIDme function
   const bindIDme = (element) => {
     if (element) {
@@ -103,7 +104,9 @@ export default function UserVerification() {
         </section>
 
         <div className="flex justify-between">
-          <Button variant="outline">Skip For Now</Button>
+          <Button variant="outline" onClick={() => router.push("/experiences")}>
+            Skip For Now
+          </Button>
           <Button disabled={!isVerified}>Continue</Button>
         </div>
       </div>

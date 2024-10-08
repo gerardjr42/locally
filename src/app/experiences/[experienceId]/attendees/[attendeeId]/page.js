@@ -1,5 +1,6 @@
 "use client";
 
+import { NavigationBar } from "@/components/navigation-bar";
 import { Button } from "@/components/ui/button";
 import {
   Collapsible,
@@ -8,13 +9,11 @@ import {
 } from "@/components/ui/collapsible";
 import { AnimatePresence, motion } from "framer-motion";
 import {
-  ArrowLeft,
   BadgeCheck,
   Camera,
   Check,
   Dog,
   Film,
-  Menu,
   Palette,
   Theater,
   X,
@@ -44,7 +43,6 @@ const slideUp = {
 export default function UserProfile() {
   const router = useRouter();
   const params = useParams();
-  const [menuOpen, setMenuOpen] = useState(false);
   const [feedback, setFeedback] = useState({ message: "", type: "" });
   const [isExpanded, setIsExpanded] = useState(false);
 
@@ -69,34 +67,7 @@ export default function UserProfile() {
       className="bg-white min-h-screen font-sans text-gray-900"
     >
       <header className="bg-white p-4 flex justify-between items-center shadow-sm fixed top-0 left-0 right-0 z-10">
-        <motion.button
-          className="p-2"
-          aria-label="Go back"
-          whileHover={{ scale: 1.1 }}
-          whileTap={{ scale: 0.9 }}
-        >
-          <ArrowLeft
-            className="w-6 h-6 text-gray-600"
-            onClick={handleBackClick}
-          />
-        </motion.button>
-        <motion.h1 className="text-2xl font-semibold" variants={fadeIn}>
-          <Image
-            alt="user-profile image"
-            src="/images/LocallyBrandingAssets-04.png"
-            width={100}
-            height={100}
-          />
-        </motion.h1>
-        <motion.button
-          className="p-2"
-          onClick={() => setMenuOpen(!menuOpen)}
-          aria-label="Open menu"
-          whileHover={{ scale: 1.1 }}
-          whileTap={{ scale: 0.9 }}
-        >
-          <Menu className="w-6 h-6 text-gray-600" />
-        </motion.button>
+        <NavigationBar handleBackClick={handleBackClick} />
       </header>
       <main className="pt-16 pb-24">
         <motion.div className="bg-gray-100 p-4" variants={slideUp}>
@@ -242,49 +213,6 @@ export default function UserProfile() {
           )}
         </AnimatePresence>
       </footer>
-      <AnimatePresence>
-        {menuOpen && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-black bg-opacity-50 z-50"
-            onClick={() => setMenuOpen(false)}
-          >
-            <motion.div
-              initial={{ x: "100%" }}
-              animate={{ x: 0 }}
-              exit={{ x: "100%" }}
-              transition={{ type: "tween" }}
-              className="bg-white w-64 h-full absolute right-0 p-4"
-            >
-              <h2 className="text-xl font-bold mb-4">Menu</h2>
-              <ul className="space-y-2">
-                <li>
-                  <a href="#" className="block p-2 hover:bg-gray-100 rounded">
-                    Home
-                  </a>
-                </li>
-                <li>
-                  <a href="#" className="block p-2 hover:bg-gray-100 rounded">
-                    Profile
-                  </a>
-                </li>
-                <li>
-                  <a href="#" className="block p-2 hover:bg-gray-100 rounded">
-                    Settings
-                  </a>
-                </li>
-                <li>
-                  <a href="#" className="block p-2 hover:bg-gray-100 rounded">
-                    Logout
-                  </a>
-                </li>
-              </ul>
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
     </motion.div>
   );
 }
