@@ -1,6 +1,27 @@
+"use client";
+import { useRouter } from "next/navigation";
+
 import { ArrowLeft } from "lucide-react";
 
 export function NavigationBar({ handleBackClick }) {
+  const router = useRouter();
+
+  const handleDetailsClick = () => {
+    router.push("/account/details");
+  };
+  const handlePhotoClick = () => {
+    router.push("/account/photo");
+  };
+  const handleVerificationClick = () => {
+    router.push("/account/verification");
+  };
+  const handleInterestClick = () => {
+    router.push("/account/interests");
+  };
+  const handlePreferencesClick = () => {
+    router.push("/account/preferences");
+  };
+
   return (
     <div className="drawer">
       <input
@@ -161,19 +182,19 @@ export function NavigationBar({ handleBackClick }) {
 
           <p className="uppercase text-m mt-4 mb-2">Account</p>
           <li className="py-0.5 m-0.5">
-            <a>Details</a>
+            <a onClick={handleDetailsClick}>Details</a>
           </li>
           <li className="py-0.5 m-0.5">
-            <a>Profile Photo</a>
+            <a onClick={handlePhotoClick}>Profile Photo</a>
           </li>
           <li className="py-0.5 m-0.5">
-            <a>Interests</a>
+            <a onClick={handleInterestClick}>Interests</a>
           </li>
           <li className="py-0.5 m-0.5">
-            <a>Connection Preferences</a>
+            <a onClick={handlePreferencesClick}>Connection Preferences</a>
           </li>
           <li className="py-0.5 m-0.5">
-            <a>Identity Verification</a>
+            <a onClick={handleVerificationClick}>Identity Verification</a>
           </li>
         </ul>
       </div>
