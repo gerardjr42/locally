@@ -1,4 +1,39 @@
-export function NavigationBar() {
+"use client";
+import { useRouter } from "next/navigation";
+
+import { ArrowLeft } from "lucide-react";
+
+export function NavigationBar({ handleBackClick }) {
+  const router = useRouter();
+
+  const handleDetailsClick = () => {
+    router.push("/account/details");
+  };
+  const handlePhotoClick = () => {
+    router.push("/account/photo");
+  };
+  const handleVerificationClick = () => {
+    router.push("/account/verification");
+  };
+  const handleInterestClick = () => {
+    router.push("/account/interests");
+  };
+  const handlePreferencesClick = () => {
+    router.push("/account/preferences");
+  };
+  const handleChatClick = () => {
+    router.push("/connections/chats");
+  };
+
+  const handleConnectionClick = () => {
+    router.push("/connections");
+  };
+
+  const handleExperienceClick = () => {
+    router.push("/connections");
+    // will direct to connections/savedexperiences when the route is created
+  };
+
   return (
     <div className="drawer">
       <input
@@ -8,22 +43,13 @@ export function NavigationBar() {
       />
       <div className="drawer-content flex flex-row justify-between p-3">
         <div>
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            fill="none"
-            viewBox="0 0 24 24"
-            strokeWidth={1.5}
-            stroke="currentColor"
-            className="size-6"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              d="M10.5 19.5 3 12m0 0 7.5-7.5M3 12h18"
+          <button className="p-2">
+            <ArrowLeft
+              className="w-6 h-6 text-gray-600"
+              onClick={handleBackClick}
             />
-          </svg>
+          </button>
         </div>
-
         <div>
           <img
             src="/images/teallocally.png"
@@ -58,9 +84,13 @@ export function NavigationBar() {
           className="drawer-overlay"
         ></label>
         <ul className="menu bg-base-200 text-base-content min-h-full w-90 p-4">
-            <div className="flex flex-row justify-end">
-                <img src="/images/teallocally.png" alt="Locally Logo" className="h-12 w-auto" />
-            </div>
+          <div className="flex flex-row justify-end">
+            <img
+              src="/images/teallocally.png"
+              alt="Locally Logo"
+              className="h-12 w-auto"
+            />
+          </div>
           <div className="container flex flex-row justify-between items-center w-90 px-2 py-3">
             <div className="avatar">
               <div className="ring-primary ring-offset-base-100 w-20 rounded-full ring ring-offset-2 align-middle">
@@ -109,7 +139,9 @@ export function NavigationBar() {
               </svg>
               <div className="flex flex-col justify-start py-0.5 m-0.5">
                 <p>Chats</p>
-                <p className="text-gray-500">You have 2 Unread Messages</p>
+                <p onClick={handleChatClick} className="text-gray-500">
+                  You have 2 Unread Messages
+                </p>
               </div>
             </a>
           </li>
@@ -130,8 +162,8 @@ export function NavigationBar() {
                 />
               </svg>
               <div className="flex flex-col justify-start py-0.5 m-0.5">
-                <p>Conncetions</p>
-                <p className="text-gray-500">
+                <p>Connections</p>
+                <p onClick={handleConnectionClick} className="text-gray-500">
                   You have a new pending connection!
                 </p>
               </div>
@@ -155,7 +187,7 @@ export function NavigationBar() {
               </svg>
               <div className="flex flex-col justify-start py-0.5 m-0.5">
                 <p>Experiences</p>
-                <p className="text-gray-500">
+                <p onClick={handleExperienceClick} className="text-gray-500">
                   You have 2 Experiences to review!
                 </p>
               </div>
@@ -164,19 +196,19 @@ export function NavigationBar() {
 
           <p className="uppercase text-m mt-4 mb-2">Account</p>
           <li className="py-0.5 m-0.5">
-            <a>Details</a>
+            <a onClick={handleDetailsClick}>Details</a>
           </li>
           <li className="py-0.5 m-0.5">
-            <a>Profile Photo</a>
+            <a onClick={handlePhotoClick}>Profile Photo</a>
           </li>
           <li className="py-0.5 m-0.5">
-            <a>Interests</a>
+            <a onClick={handleInterestClick}>Interests</a>
           </li>
           <li className="py-0.5 m-0.5">
-            <a>Connection Preferences</a>
+            <a onClick={handlePreferencesClick}>Connection Preferences</a>
           </li>
           <li className="py-0.5 m-0.5">
-            <a>Identity Verification</a>
+            <a onClick={handleVerificationClick}>Identity Verification</a>
           </li>
         </ul>
       </div>

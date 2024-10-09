@@ -1,0 +1,64 @@
+.AccountDetails {
+    .container {
+        padding: 0rem 1rem;
+        display: flex;
+        flex-direction: column;
+    }
+
+    h1 {
+        font-size: 1.25rem;
+    }
+
+    h1,
+    legend {
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+    }
+
+    fieldset {
+        margin-bottom: 1.5rem;
+        width: 100%;
+    }
+
+    legend {
+        width: 100%;
+    }
+
+    .form-group {
+        display: flex;
+        margin-bottom: 0.5rem;
+        border: 1px solid #ccc;
+        border-radius: 10px;
+        padding: 0.5rem;
+        width: 100%;
+
+        input {
+            border-radius: 5px;
+        }
+    }
+
+
+    .form-group label {
+        width: 100px;
+        margin-right: 0.5rem;
+    }
+
+    .locked {
+        background-color: #eae8e8;
+
+        input {
+            background-color: #eae8e8;
+        }
+    }
+
+    .danger {
+        display: flex;
+        gap: 10px;
+        align-items: center;
+        margin: 1rem 0rem;
+    }
+
+    .danger:hover {
+        font-weight: bold;
+    }
+}

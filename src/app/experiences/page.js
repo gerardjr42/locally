@@ -425,8 +425,7 @@ export default function AllExperiences() {
             <p className="mt-1 text-xs text-center w-20">Free</p>
           </label>
         </div>
-
-        {experiences.map((category) => (
+        {experiencesCategories.map((category) => (
           <div
             key={category}
             className="flex flex-col items-center cursor-pointer px-1"
