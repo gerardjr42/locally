@@ -43,7 +43,7 @@ export default function UserVerification() {
   ];
 
   const handleButtonClick = () => {
-    router.push('/');
+    router.push('/register/confirmation');
   };
 
   return (
