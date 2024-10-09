@@ -3,10 +3,22 @@
 import { useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import "./archivedConnection.scss";
+import Rating from "@mui/material/Rating";
 import { NavigationBar } from "@/components/navigation-bar";
 
 export default function UserArchivedConnection() {
+  const [value, setValue] = useState(0);
+  const [connectionRating, setConnectionRating] = useState(0);
+  const [experienceRating, setExperienceRating] = useState(0);
   const [isOpen, setIsOpen] = useState(false);
+
+  const handleExperienceRatingChange = (event, newValue) => {
+    setExperienceRating(newValue);
+  };
+
+  const handleConnectionRatingChange = (event, newValue) => {
+    setConnectionRating(newValue);
+  };
 
   const toggleCollapse = () => {
     setIsOpen(!isOpen);
@@ -19,7 +31,7 @@ export default function UserArchivedConnection() {
   };
 
   return (
-    <div className="bg-gray-100 min-h-screen">
+    <div className="bg-white-100 min-h-screen">
       <header className="bg-white p-4 flex justify-between items-center shadow-sm">
         <NavigationBar handleBackClick={handleBackClick} />
       </header>
@@ -33,7 +45,7 @@ export default function UserArchivedConnection() {
         </div>
         <div className="collapse collapse-arrow bg-base-200">
           <div className={`collapse ${isOpen ? "collapse-open" : "collapse-close"}`}>
-            <div className="collapse-title text-xl font-medium" onClick={toggleCollapse}>
+            <div className="collapse-title text-l font-medium" onClick={toggleCollapse}>
               <h2>You Connected With Ellis</h2>
               <p>for Samba Sunday</p>
             </div>
@@ -45,59 +57,43 @@ export default function UserArchivedConnection() {
                 />
               </div>
               <div className="event-info">
-                <p>Sunday, Sep 22, 2024</p>
-                <p>222 Main St, Long Island City, NY</p>
-                <p>7 - 9 PM</p>
+                <div>
+                  <p>Sunday</p>
+                  <p>Sep 22, 2022</p>
+                </div>
+                <div>
+                  <p>222 Main St</p>
+                  <p>Long Island City, NY</p>
+                </div>
+                <div>
+                  <p>7 - 9 PM</p>
+                </div>
               </div>
-            </div>
-          </div>
-          <div className="rating-section">
-            <h3>How was your connection with Ellis?</h3>
-            <p>Your review is only shared with the Locally team.</p>
-            <div className="rating-container">
-              <span onClick="setRating(1)" className="star">
-                ★
-              </span>
-              <span onClick="setRating(2)" className="star">
-                ★
-              </span>
-              <span onClick="setRating(3)" className="star">
-                ★
-              </span>
-              <span onClick="setRating(4)" className="star">
-                ★
-              </span>
-              <span onClick="setRating(5)" className="star">
-                ★
-              </span>
             </div>
           </div>
         </div>
         <div className="rating-section">
+          <h3>How was your connection with Ellis?</h3>
+          <p>Your review is only shared with the Locally team.</p>
+          <Rating
+            name="connection-rating"
+            value={connectionRating}
+            onChange={handleConnectionRatingChange}
+          />
+        </div>
+        <div className="rating-section">
           <h3>How was your experience?</h3>
           <p>Rate the experience of the event or the activity</p>
-          <div className="rating-container">
-            <span onClick="setRating(1)" className="star">
-              ★
-            </span>
-            <span onClick="setRating(2)" className="star">
-              ★
-            </span>
-            <span onClick="setRating(3)" className="star">
-              ★
-            </span>
-            <span onClick="setRating(4)" className="star">
-              ★
-            </span>
-            <span onClick="setRating(5)" className="star">
-              ★
-            </span>
-          </div>
+          <Rating
+            name="experience-rating"
+            value={experienceRating}
+            onChange={handleExperienceRatingChange}
+          />
         </div>
       </div>
       <div className="Chat-button-container">
         <button className="chat-button">
-          Chat With Ellis
+          <h4>Chat with Ellis</h4>
           <p>chat expires: Thu, Sep 26</p>
         </button>
         <div className="report-button-container">
