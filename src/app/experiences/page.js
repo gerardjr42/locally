@@ -3,6 +3,7 @@
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 import { Search } from "lucide-react";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
 import { toast } from "react-hot-toast";
 
@@ -12,6 +13,7 @@ import { Input } from "@/components/ui/input";
 
 export default function AllExperiences() {
   const supabase = createClientComponentClient();
+  const router = useRouter();
 
   const [experiences, setExperiences] = useState([]);
   const [categories, setCategories] = useState([]);
@@ -122,7 +124,8 @@ export default function AllExperiences() {
         {filteredExperiences.map((experience) => (
           <div
             key={experience.event_id}
-            className="bg-white rounded-lg shadow-md mb-4 overflow-hidden"
+            className="bg-white rounded-lg shadow-md mb-4 overflow-hidden cursor-pointer"
+            onClick={() => router.push(`/experiences/${experience.event_id}`)}
           >
             <div className="relative">
               <Image
