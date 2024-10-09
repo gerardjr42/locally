@@ -1,5 +1,5 @@
-import { NavigationBar } from '@/components/navigation-bar';
-import './experiencedetails.scss';
+import { NavigationBar } from "@/components/navigation-bar";
+import "./experiencedetails.scss";
 
 export default function ExperienceDetails() {
   return (
@@ -16,7 +16,7 @@ export default function ExperienceDetails() {
           <h1>Movies in the Park</h1>
           <p>Thursday, November 14, 2024</p>
         </div>
-        <button>I'm interested!</button>
+        <button>I&apos;m interested!</button>
         <div>
           <div className="flex locals">
             <h2>46 Interested locals</h2>
@@ -122,7 +122,7 @@ export default function ExperienceDetails() {
                   dolores neque corrupti quaerat error id. Deleniti, adipisci
                   itaque. Nisi architecto culpa at officia praesentium? Itaque
                   ullam consequatur distinctio sequi dolores. Deserunt
-                  recusandae laudantium sint placeat, similique laborum. <br />{' '}
+                  recusandae laudantium sint placeat, similique laborum. <br />{" "}
                   <br />
                   Odio ipsam, quisquam dolore error facere maxime dolores eos,
                   reprehenderit hic perferendis animi inventore molestiae
