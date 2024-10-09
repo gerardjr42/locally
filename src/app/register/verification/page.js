@@ -8,15 +8,12 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
 export default function UserVerification() {
-  const [isVerified, setIsVerified] = useState(false);
   const router = useRouter();
-  // Simple bindIDme function
+  const [isVerified, setIsVerified] = useState(false);
   const bindIDme = (element) => {
     if (element) {
       element.addEventListener("click", () => {
-        // Here you would typically initiate the ID.me verification process
         console.log("ID.me verification initiated");
-        // For demonstration purposes, we'll just set isVerified to true
         setIsVerified(true);
       });
     }
@@ -43,6 +40,10 @@ export default function UserVerification() {
       connectText: "Connect Your Facebook Account",
     },
   ];
+
+  const handleButtonClick = () => {
+    router.push("/register/confirmation");
+  };
 
   return (
     <motion.div
@@ -113,7 +114,3 @@ export default function UserVerification() {
     </motion.div>
   );
 }
-
-// export default function UserVerification() {
-//   return <div>UserVerification Page</div>;
-// }
