@@ -30,7 +30,8 @@ export function NavigationBar({ handleBackClick }) {
   };
 
   const handleExperienceClick = () => {
-    router.push("/experiences");
+    router.push("/connections");
+    // will direct to connections/savedexperiences when the route is created
   };
 
   return (
