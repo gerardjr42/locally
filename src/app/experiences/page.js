@@ -172,21 +172,6 @@ const experiences = [
   },
 ];
 
-const experiencesCategories = [
-  "Entertainment",
-  "Food & Drink",
-  "Sports & Fitness",
-  "Outdoor",
-  "Health & Wellness",
-  "Faith & Spirituality",
-  "Professional",
-  "Music",
-  "Nightlife",
-  "Travel & Adventure",
-  "Education",
-  "Art & Culture",
-];
-
 const categoryIcons = {
   Entertainment: (
     <svg
@@ -389,6 +374,7 @@ const categoryIcons = {
 };
 
 export default function AllExperiences() {
+
   return (
     <div className="flex flex-col items-center justify-center">
       <NavigationBar />
@@ -413,16 +399,22 @@ export default function AllExperiences() {
         name="filterExperiencesOptions"
         className="container flex flex-row justify-left overflow-scroll justify-evenly my-2 py-2"
       >
-        <div className="flex flex-col items-center cursor-pointer px-1">
+        <div
+          className="flex flex-col items-center cursor-pointer px-1"
+        >
           <label className="flex flex-col items-center cursor-pointer">
-            <input type="checkbox" className="hidden" />
+            <input
+              type="checkbox"
+              name="category"
+              className="hidden"
+            />
             <svg
               xmlns="http://www.w3.org/2000/svg"
               fill="none"
               viewBox="0 0 24 24"
               stroke-width="1.5"
               stroke="currentColor"
-              class="size-6"
+              className="size-6"
             >
               <path
                 stroke-linecap="round"
@@ -433,15 +425,18 @@ export default function AllExperiences() {
             <p className="mt-1 text-xs text-center w-20">Free</p>
           </label>
         </div>
-        
-        {experiencesCategories.map((category) => (
+
+        {experiences.map((category) => (
           <div
             key={category}
             className="flex flex-col items-center cursor-pointer px-1"
           >
             <label className="flex flex-col items-center cursor-pointer">
-              <input type="radio" className="hidden" name="category" />
-              {categoryIcons[category]}
+              <input
+                type="checkbox"
+                className="hidden"
+                name="category"
+              />
               <p className="mt-1 text-xs text-center w-20 line-clamp-2">
                 {category}
               </p>
@@ -450,7 +445,7 @@ export default function AllExperiences() {
         ))}
       </div>
       <div className="container flex flex-row flex-wrap justify-evenly px-2">
-        {experiences.map((experience) => (
+        {experiences.map( experience => (
           <div
             className="card card-compact bg-base-100 w-100 shadow-xl mx-2 my-3"
             key={experience.eventID}
@@ -474,7 +469,7 @@ export default function AllExperiences() {
                   viewBox="0 0 24 24"
                   stroke-width="1.5"
                   stroke="white"
-                  class="size-8"
+                  className="size-8"
                 >
                   <path
                     stroke-linecap="round"
