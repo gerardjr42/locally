@@ -1,28 +1,27 @@
-"use client";
+'use client';
 
-import { Button } from "@/components/ui/button";
-import { Checkbox } from "@/components/ui/checkbox";
-import { Progress } from "@/components/ui/progress";
-import { motion } from "framer-motion";
-import { useEffect, useState } from "react";
+import { Button } from '@/components/ui/button';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Progress } from '@/components/ui/progress';
+import { motion } from 'framer-motion';
+import { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
 
 export default function UserVerification() {
+  const router = useRouter();
   const [isVerified, setIsVerified] = useState(false);
 
-  // Simple bindIDme function
   const bindIDme = (element) => {
     if (element) {
-      element.addEventListener("click", () => {
-        // Here you would typically initiate the ID.me verification process
-        console.log("ID.me verification initiated");
-        // For demonstration purposes, we'll just set isVerified to true
+      element.addEventListener('click', () => {
+        console.log('ID.me verification initiated');
         setIsVerified(true);
       });
     }
   };
 
   useEffect(() => {
-    const idmeButton = document.getElementById("idme-wallet-button");
+    const idmeButton = document.getElementById('idme-wallet-button');
     if (idmeButton) {
       bindIDme(idmeButton);
     }
@@ -30,18 +29,22 @@ export default function UserVerification() {
 
   const accountOptions = [
     {
-      id: "instagram",
-      name: "Instagram",
-      icon: "https://cdn-icons-png.freepik.com/256/15707/15707869.png?semt=ais_hybrid",
-      connectText: "Connect Your Instagram Account",
+      id: 'instagram',
+      name: 'Instagram',
+      icon: 'https://cdn-icons-png.freepik.com/256/15707/15707869.png?semt=ais_hybrid',
+      connectText: 'Connect Your Instagram Account',
     },
     {
-      id: "facebook",
-      name: "Facebook",
-      icon: "https://static.vecteezy.com/system/resources/previews/016/716/481/non_2x/facebook-icon-free-png.png",
-      connectText: "Connect Your Facebook Account",
+      id: 'facebook',
+      name: 'Facebook',
+      icon: 'https://static.vecteezy.com/system/resources/previews/016/716/481/non_2x/facebook-icon-free-png.png',
+      connectText: 'Connect Your Facebook Account',
     },
   ];
+
+  const handleButtonClick = () => {
+    router.push('/');
+  };
 
   return (
     <motion.div
@@ -103,14 +106,14 @@ export default function UserVerification() {
         </section>
 
         <div className="flex justify-between">
-          <Button variant="outline">Skip For Now</Button>
-          <Button disabled={!isVerified}>Continue</Button>
+          <Button variant="outline" onClick={handleButtonClick}>
+            Skip For Now
+          </Button>
+          <Button disabled={!isVerified} onClick={handleButtonClick}>
+            Continue
+          </Button>
         </div>
       </div>
     </motion.div>
   );
 }
-
-// export default function UserVerification() {
-//   return <div>UserVerification Page</div>;
-// }

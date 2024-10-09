@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import "./archivedConnection.scss";
-import Rating from "@mui/material/Rating";
+import { Rating } from "@mui/material";
 import { NavigationBar } from "@/components/navigation-bar";
 
 export default function UserArchivedConnection() {
