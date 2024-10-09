@@ -21,6 +21,18 @@ export function NavigationBar({ handleBackClick }) {
   const handlePreferencesClick = () => {
     router.push("/account/preferences");
   };
+  const handleChatClick = () => {
+    router.push("/connections/chats");
+  };
+
+  const handleConnectionClick = () => {
+    router.push("/connections");
+  };
+
+  const handleExperienceClick = () => {
+    router.push("/connections");
+    // will direct to connections/savedexperiences when the route is created
+  };
 
   return (
     <div className="drawer">
@@ -127,7 +139,9 @@ export function NavigationBar({ handleBackClick }) {
               </svg>
               <div className="flex flex-col justify-start py-0.5 m-0.5">
                 <p>Chats</p>
-                <p className="text-gray-500">You have 2 Unread Messages</p>
+                <p onClick={handleChatClick} className="text-gray-500">
+                  You have 2 Unread Messages
+                </p>
               </div>
             </a>
           </li>
@@ -148,8 +162,8 @@ export function NavigationBar({ handleBackClick }) {
                 />
               </svg>
               <div className="flex flex-col justify-start py-0.5 m-0.5">
-                <p>Conncetions</p>
-                <p className="text-gray-500">
+                <p>Connections</p>
+                <p onClick={handleConnectionClick} className="text-gray-500">
                   You have a new pending connection!
                 </p>
               </div>
@@ -173,7 +187,7 @@ export function NavigationBar({ handleBackClick }) {
               </svg>
               <div className="flex flex-col justify-start py-0.5 m-0.5">
                 <p>Experiences</p>
-                <p className="text-gray-500">
+                <p onClick={handleExperienceClick} className="text-gray-500">
                   You have 2 Experiences to review!
                 </p>
               </div>
