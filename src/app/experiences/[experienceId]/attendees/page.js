@@ -1,66 +1,102 @@
-"use client";
-
 import { NavigationBar } from "@/components/navigation-bar";
-import { useParams, useRouter } from "next/navigation";
+import { createServerComponentClient } from "@supabase/auth-helpers-nextjs";
+import { cookies } from "next/headers";
+import Image from "next/image";
 
-const locals = [
-  { name: "Hudson", age: 32, topMatch: true },
-  { name: "Brook", age: 29, topMatch: true },
-  { name: "Rochelle", age: 24, topMatch: false },
-  { name: "George", age: 28, topMatch: false },
-  { name: "Lynn", age: 32, topMatch: false },
-  { name: "Chelsea", age: 21, topMatch: false },
-  { name: "Lexi", age: 25, topMatch: false },
-];
+const calculateAge = (dob) => {
+  const today = new Date();
+  const birthDate = new Date(dob);
+  let age = today.getFullYear() - birthDate.getFullYear();
+  const m = today.getMonth() - birthDate.getMonth();
+  if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
+    age--;
+  }
+  return age;
+};
 
-export default function AttendeesList() {
-  const router = useRouter();
-  const params = useParams();
+export default async function AttendeesList() {
+  const cookieStore = cookies();
+  const supabase = createServerComponentClient({
+    cookies: () => cookieStore,
+  });
 
-  const handleBackClick = () => {
-    router.push(`/experiences/${params.experienceId}`);
+  const fetchAttendees = async () => {
+    try {
+      console.log("Fetching attendees...");
+      const { data, error, count } = await supabase
+        .from("Users")
+        .select("*", { count: "exact" });
+
+      if (error) {
+        console.error("Error fetching attendees:", error);
+        throw error;
+      }
+
+      console.log("Total users in database:", count);
+      console.log("Fetched data:", data);
+
+      if (!data || data.length === 0) {
+        console.log("No attendees found");
+        return { attendees: [], error: "No attendees found" };
+      }
+
+      console.log("Number of attendees fetched:", data.length);
+
+      const processedData = data.map((user) => ({
+        ...user,
+        age: calculateAge(user.user_dob),
+        topMatch: Math.random() < 0.3, // Randomly assign topMatch for demonstration
+      }));
+
+      console.log("Processed data:", processedData);
+
+      return { attendees: processedData, error: null };
+    } catch (error) {
+      console.error("Error in fetchAttendees:", error);
+      return { attendees: [], error: error.message };
+    }
   };
+
+  const { attendees, error } = await fetchAttendees();
+
+  if (error) return <div>Error: {error}</div>;
 
   return (
     <div className="bg-gray-100 min-h-screen">
       <header className="bg-white p-4 flex justify-between items-center shadow-sm">
-        {/* <button className="p-2">
-          <ArrowLeft
-            className="w-6 h-6 text-gray-600"
-            onClick={handleBackClick}
-          />
-        </button>
-        <h1 className="text-2xl font-semibold">
-          <Image
-            alt="Locally logo"
-            src="/images/LocallyBrandingAssets-04.png"
-            width={100}
-            height={100}
-          />
-        </h1> */}
-        <NavigationBar handleBackClick={handleBackClick} />
+        <NavigationBar />
       </header>
       <main className="p-4">
         <div className="mb-4">
-          <h2 className="text-2xl font-bold">46 Interested Locals</h2>
+          <h2 className="text-2xl font-bold">
+            {attendees.length} Interested Locals
+          </h2>
           <p className="text-gray-600">for Movies In The Park</p>
         </div>
 
         <div className="space-y-4 bg-[#C9E9E5] p-4 rounded-lg">
-          {locals.map((local, index) => (
+          {attendees.map((attendee) => (
             <div
-              key={index}
-              className="bg-white p-4 rounded-lg shadow flex justify-between items-center"
+              key={attendee.user_id}
+              className="bg-white p-4 rounded-lg shadow flex justify-between items-center cursor-pointer"
             >
               <div className="flex items-center">
-                <div className="w-12 h-12 bg-gray-200 rounded-full mr-4"></div>
+                <div className="w-12 h-12 bg-gray-200 rounded-full mr-4 overflow-hidden">
+                  <Image
+                    src={attendee.photo_url}
+                    alt={`${attendee.first_name}'s profile`}
+                    width={48}
+                    height={48}
+                    objectFit="cover"
+                  />
+                </div>
                 <div>
                   <h3 className="font-semibold">
-                    {local.name}, {local.age}
+                    {attendee.first_name}, {attendee.age}
                   </h3>
                 </div>
               </div>
-              {local.topMatch && (
+              {attendee.topMatch && (
                 <span className="bg-gray-200 text-gray-700 px-2 py-1 rounded text-sm">
                   Top Match
                 </span>
