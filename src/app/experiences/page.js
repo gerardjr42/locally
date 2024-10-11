@@ -11,6 +11,9 @@ import { CategoryNavbarComponent } from "@/components/category-navbar";
 import { NavigationBar } from "@/components/navigation-bar";
 import { Input } from "@/components/ui/input";
 
+import { formatDate } from '@/lib/utils';
+
+
 export default function AllExperiences() {
   const supabase = createClientComponentClient();
   const router = useRouter();
@@ -194,7 +197,7 @@ export default function AllExperiences() {
             <div className="p-4">
               <div className="flex justify-between items-center mb-2">
                 <span className="text-gray-600">
-                  {new Date(experience.event_time).toLocaleDateString()}
+                  {formatDate(experience.event_time)}
                 </span>
                 <span className="font-bold">
                   {experience.is_free ? "Free" : `$${experience.event_price}`}
