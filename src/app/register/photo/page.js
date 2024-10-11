@@ -122,7 +122,7 @@ export default function UserUploadPhoto() {
         "Profile photo uploaded and user record updated successfully"
       );
       setAvatarUrl(publicUrl);
-      router.push("/register/verification");
+      router.push("/register/aboutme");
     } catch (error) {
       console.error("Error in handleUpload:", error.message);
     } finally {
@@ -130,22 +130,27 @@ export default function UserUploadPhoto() {
     }
   };
 
+    const handleClick = (e) => {
+        handleUpload(e);
+        router.push("/register/aboutme");
+    }
+
   return (
     <div className="min-h-full flex flex-col items-center justify-center p-4">
       <div className="w-full max-w-md bg-white rounded-lg p-8">
         <Button
           variant="ghost"
           className="mb-4"
-          onClick={() => router.push("/register/interests")}
+          onClick={() => router.push('/register/aboutme')}
         >
           <ArrowLeft className="mr-2 h-10 w-4" />
         </Button>
 
         <div className="mb-6">
-          <Progress value={80} className="h-2" />
+          <Progress value={40} className="h-2" />
           <div className="flex justify-between mt-2 text-sm font-medium text-[#0D9488]">
             <span>Profile Creation</span>
-            <span>80%</span>
+            <span>40%</span>
           </div>
         </div>
 
@@ -186,13 +191,13 @@ export default function UserUploadPhoto() {
             htmlFor="photo-upload"
             className="block w-full text-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-[#0D9488] hover:bg-[#0B7A6E] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#0D9488] cursor-pointer"
           >
-            {avatarUrl ? "Change Photo" : "Upload Photo"}
+            {avatarUrl ? 'Change Photo' : 'Upload Photo'}
           </label>
         </div>
 
         <div className="mt-8 flex justify-center">
           <Button
-            onClick={handleUpload}
+            onClick={handleClick}
             className="bg-[#0D9488] hover:bg-[#0B7A6E] text-white w-full max-w-xs"
             disabled={uploading || !file}
           >
