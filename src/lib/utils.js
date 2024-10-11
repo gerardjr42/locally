@@ -10,3 +10,4 @@ export function formatDate(timestamp) {
   const options = { weekday: 'short', month: 'short', day: 'numeric' };
   return date.toLocaleDateString('en-US', options);
 }
+

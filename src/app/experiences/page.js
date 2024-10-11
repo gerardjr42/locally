@@ -126,15 +126,15 @@ export default function AllExperiences() {
         toggleCategory={toggleCategory}
       />
 
-      <div className="w-full flex flex-row px-4 mx-1 mt-3.5 justify-between">
-        <h1 className="text-left text-lg font-extrabold">Local Experiences For You</h1>
+      <div className="w-full flex flex-row px-4 mx-1 mt-3.5 justify-between lg:px-8">
+        <h1 className="text-left text-lg font-extrabold lg:text-2xl">Local Experiences For You</h1>
         <svg
           xmlns="http://www.w3.org/2000/svg"
           fill="none"
           viewBox="0 0 24 24"
           strokeWidth={1.5}
           stroke="currentColor"
-          className="size-6"
+          className="size-6 lg:size-8"
         >
           <path
             strokeLinecap="round"
@@ -145,11 +145,11 @@ export default function AllExperiences() {
       </div>
 
       {/* Events list */}
-      <div className="w-full p-4">
+      <div className="w-full p-4 md:flex-row md:flex md:flex-wrap md:justify-between lg:px-8">
         {filteredExperiences.map((experience) => (
           <div
             key={experience.event_id}
-            className="bg-white rounded-lg shadow-md mb-4 overflow-hidden cursor-pointer"
+            className="bg-white rounded-lg shadow-md mb-4 overflow-hidden cursor-pointer md:w-[48%] lg:w-[31%] lg:mb-8"
             onClick={() => router.push(`/experiences/${experience.event_id}`)}
           >
             <div className="relative">

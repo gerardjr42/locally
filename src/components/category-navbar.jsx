@@ -46,7 +46,7 @@ export function CategoryNavbarComponent({
   ];
 
   return (
-    <div className="w-full overflow-x-auto">
+    <div className="w-full overflow-x-auto lg:flex lg:justify-center">
       <div
         ref={scrollContainerRef}
         className="flex py-4 px-2"
