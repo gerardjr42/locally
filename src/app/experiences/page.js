@@ -203,18 +203,18 @@ export default function AllExperiences() {
               </div>
             </div>
             <div className="p-4">
-              <div className="flex justify-between items-center mb-2">
-                <span className="text-gray-600">
+              <div className="flex justify-between items-center">
+                <p className="text-gray-500 text-sm">
                   {formatDate(experience.event_time)}
-                </span>
-                <span className="font-bold">
+                </p>
+                <p className="text-gray-500 text-sm">
                   {experience.is_free ? "Free" : `$${experience.event_price}`}
-                </span>
+                </p>
               </div>
-              <h3 className="font-bold text-lg mb-1">
+              <h2 className="text-gray-700 font-bold text-m">
                 {experience.event_name}
-              </h3>
-              <p className="text-gray-600">{experience.event_zip_code}</p>
+              </h2>
+              <p className="text-gray-500 text-sm">{experience.event_zip_code}</p>
             </div>
           </div>
         ))}
