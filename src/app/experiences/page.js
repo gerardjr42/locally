@@ -11,8 +11,7 @@ import { CategoryNavbarComponent } from "@/components/category-navbar";
 import { NavigationBar } from "@/components/navigation-bar";
 import { Input } from "@/components/ui/input";
 
-import { formatDate } from '@/lib/utils';
-
+import { formatDate, sortExperiencesByDate } from "@/lib/utils";
 
 export default function AllExperiences() {
   const supabase = createClientComponentClient();
@@ -22,6 +21,7 @@ export default function AllExperiences() {
   const [categories, setCategories] = useState([]);
   const [selectedCategories, setSelectedCategories] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
+  const [sortAscending, setSortAscending] = useState(true);
 
   useEffect(() => {
     fetchExperiencesAndCategories();
@@ -102,6 +102,11 @@ export default function AllExperiences() {
     });
   }, [experiences, selectedCategories, searchTerm]);
 
+  const handleSortClick = () => {
+    setSortAscending(!sortAscending);
+    setExperiences(sortExperiencesByDate([...experiences], sortAscending));
+  };
+
   return (
     <div className="flex flex-col items-center justify-center">
       <NavigationBar />
@@ -127,19 +132,22 @@ export default function AllExperiences() {
       />
 
       <div className="w-full flex flex-row px-4 mx-1 mt-3.5 justify-between lg:px-8">
-        <h1 className="text-left text-lg font-extrabold lg:text-2xl">Local Experiences For You</h1>
+        <h1 className="text-left text-lg font-extrabold lg:text-2xl">
+          Local Experiences For You
+        </h1>
         <svg
           xmlns="http://www.w3.org/2000/svg"
           fill="none"
           viewBox="0 0 24 24"
           strokeWidth={1.5}
           stroke="currentColor"
-          className="size-6 lg:size-8"
+          className="size-6 lg:size-8 cursor-pointer"
+          onClick={handleSortClick}
         >
           <path
             strokeLinecap="round"
             strokeLinejoin="round"
-            d="M10.5 6h9.75M10.5 6a1.5 1.5 0 1 1-3 0m3 0a1.5 1.5 0 1 0-3 0M3.75 6H7.5m3 12h9.75m-9.75 0a1.5 1.5 0 0 1-3 0m3 0a1.5 1.5 0 0 0-3 0m-3.75 0H7.5m9-6h3.75m-3.75 0a1.5 1.5 0 0 1-3 0m3 0a1.5 1.5 0 0 0-3 0m-9.75 0h9.75"
+            d="M3 7.5 7.5 3m0 0L12 7.5M7.5 3v13.5m13.5 0L16.5 21m0 0L12 16.5m4.5 4.5V7.5"
           />
         </svg>
       </div>
@@ -206,7 +214,7 @@ export default function AllExperiences() {
               <h3 className="font-bold text-lg mb-1">
                 {experience.event_name}
               </h3>
-              <p className="text-gray-600">{experience.event_street_address}</p>
+              <p className="text-gray-600">{experience.event_zip_code}</p>
             </div>
           </div>
         ))}

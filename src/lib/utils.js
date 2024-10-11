@@ -11,3 +11,10 @@ export function formatDate(timestamp) {
   return date.toLocaleDateString('en-US', options);
 }
 
+export function sortExperiencesByDate(experiences, ascending = true) {
+  return experiences.sort((a, b) => {
+    const dateA = new Date(a.event_time);
+    const dateB = new Date(b.event_time);
+    return ascending ? dateA - dateB : dateB - dateA;
+  });
+}
