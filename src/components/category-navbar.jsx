@@ -49,7 +49,7 @@ export function CategoryNavbarComponent({
     <div className="w-full overflow-x-auto">
       <div
         ref={scrollContainerRef}
-        className="flex py-4 px-2 bg-white"
+        className="flex py-4 px-2"
         style={{ width: "max-content" }}
       >
         {categories.map((category) => (
