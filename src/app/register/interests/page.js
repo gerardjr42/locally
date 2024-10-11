@@ -262,20 +262,22 @@ export default function InterestsPage() {
 
   return (
     <div className="min-h-full flex flex-col items-center justify-center p-4">
-      <div className="w-full max-w-md bg-white rounded-lg p-8">
-        <Button
-          variant="ghost"
-          className="mb-4"
-          onClick={() => router.push("/register/aboutme")}
-        >
-          <ArrowLeft className="mr-2 h-10 w-4" />
-        </Button>
+      <div className="w-full max-w-md bg-white rounded-lg p-8 ">
+        <div className="flex justify-between items-center mb-6">
+          <Button
+            variant="ghost"
+            className="mb-4"
+            onClick={() => router.push('/register/aboutme')}
+          >
+            <ArrowLeft className="mr-2 h-10 w-4" />
+          </Button>
 
-        <div className="mb-6">
-          <Progress value={80} className="h-2" />
-          <div className="flex justify-between mt-2 text-sm font-medium text-[#0D9488]">
-            <span>Profile Creation</span>
-            <span>80%</span>
+          <div className="mb-6">
+            <Progress value={80} className="h-2" />
+            <div className="flex justify-between mt-2 text-sm font-medium text-[#0D9488]">
+              <span>Profile Creation</span>
+              <span>80%</span>
+            </div>
           </div>
         </div>
 
@@ -296,13 +298,13 @@ export default function InterestsPage() {
                     key={item.name}
                     variant={
                       selectedInterests.some((i) => i.name === item.name)
-                        ? "default"
-                        : "outline"
+                        ? 'default'
+                        : 'outline'
                     }
                     className={`text-sm ${
                       selectedInterests.some((i) => i.name === item.name)
-                        ? "bg-[#0D9488] hover:bg-[#0B7A6E] text-white"
-                        : "hover:bg-gray-100"
+                        ? 'bg-[#0D9488] hover:bg-[#0B7A6E] text-white'
+                        : 'hover:bg-gray-100'
                     }`}
                     onClick={() => toggleInterest(item)}
                   >

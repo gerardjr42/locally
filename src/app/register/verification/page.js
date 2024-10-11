@@ -3,6 +3,7 @@
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Progress } from '@/components/ui/progress';
+import { ArrowLeft } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
@@ -48,14 +49,22 @@ export default function UserVerification() {
 
   return (
     <div className="UserVerification min-h-full flex flex-col items-center justify-center m-10">
-      <div className="mb-6 w-full">
-        <Progress value={95} className="h-2 w-full" />{' '}
-        <div className="flex justify-between mt-2 text-sm font-medium text-[#0D9488]">
-          <span>Profile Creation</span>
-          <span>95%</span>
+      <div className="w-full max-w-md bg-white rounded-lg p-8">
+        <Button
+          variant="ghost"
+          className="mb-4"
+          onClick={() => router.push('/register/details')}
+        >
+          <ArrowLeft className="mr-2 h-10 w-4 " />
+        </Button>
+        <div className="mb-6 w-full">
+          <Progress value={95} className="h-2 w-full" />{' '}
+          <div className="flex justify-between mt-2 text-sm font-medium text-[#0D9488]">
+            <span>Profile Creation</span>
+            <span>95%</span>
+          </div>
         </div>
       </div>
-
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
@@ -116,7 +125,7 @@ export default function UserVerification() {
               Skip For Now
             </Button>
             <Button
-            //   disabled={!isVerified}
+              //   disabled={!isVerified}
               onClick={() => router.push('/experiences')}
             >
               Continue
