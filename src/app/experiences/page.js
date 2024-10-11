@@ -76,6 +76,10 @@ export default function AllExperiences() {
       const matchesCategories =
         selectedCategories.length === 0 ||
         selectedCategories.some((selectedCategoryId) => {
+          // ! Make this into a constant variable
+          // ? Do not hard code the category ID of the free events, just key into the is_free field
+          // ! Add console errors to database so all developers can see them and debug faster
+          // ? Add a catch all
           if (selectedCategoryId === 12) {
             return experience.is_free;
           }
