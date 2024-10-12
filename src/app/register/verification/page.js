@@ -117,20 +117,15 @@ export default function UserVerification() {
             </Button>
           </section>
 
-          <div className="flex justify-between">
-            <Button
-              variant="outline"
-              onClick={() => router.push('/experiences')}
-            >
-              Skip For Now
-            </Button>
-            <Button
-              //   disabled={!isVerified}
-              onClick={() => router.push('/experiences')}
-            >
-              Continue
-            </Button>
-          </div>
+        <div className="flex justify-between">
+          <Button variant="outline" onClick={ handleButtonClick }>
+            Skip For Now
+          </Button>
+          <Button disabled={!isVerified} onClick={ handleButtonClick }>
+            Continue
+          </Button>
+        </div>
+
         </div>
       </motion.div>
     </div>
