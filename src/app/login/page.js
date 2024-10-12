@@ -1,12 +1,14 @@
 "use client";
 
+import ParticleBackground from "@/components/ParticleBackground";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { supabase } from "@/lib/supabase";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import toast, { Toaster } from "react-hot-toast";
 
 export default function LoginPage() {
@@ -14,35 +16,6 @@ export default function LoginPage() {
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [particles, setParticles] = useState([]);
-
-  useEffect(() => {
-    const newParticles = Array.from({ length: 50 }, () => ({
-      x: Math.random() * window.innerWidth,
-      y: Math.random() * window.innerHeight,
-      size: Math.random() * 5 + 1,
-      speedX: Math.random() * 2 - 1,
-      speedY: Math.random() * 2 - 1,
-    }));
-    setParticles(newParticles);
-
-    const animateParticles = () => {
-      setParticles((prevParticles) =>
-        prevParticles.map((particle) => ({
-          ...particle,
-          x:
-            (particle.x + particle.speedX + window.innerWidth) %
-            window.innerWidth,
-          y:
-            (particle.y + particle.speedY + window.innerHeight) %
-            window.innerHeight,
-        }))
-      );
-    };
-
-    const intervalId = setInterval(animateParticles, 50);
-    return () => clearInterval(intervalId);
-  }, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -61,31 +34,31 @@ export default function LoginPage() {
     }
   };
 
-  const handleGoogleLogin = () => {
-    toast.loading('Logging in with Google...');
-  };
+  const handleGoogleSignIn = async () => {
+    try {
+      const { error, data } = await supabase.auth.signInWithOAuth({
+        provider: "google",
+        options: {
+          redirectTo: `${window.location.origin}/auth/callback`,
+        },
+      });
 
-  const handleFacebookLogin = () => {
-    toast.loading('Logging in with Facebook...');
+      if (error) throw error;
+
+      // The user will be redirected to Google for authentication
+    } catch (error) {
+      console.error("Error signing in with Google:", error);
+      toast.error("Failed to sign in with Google");
+    }
   };
 
   return (
-    <div className="min-h-screen bg-white text-gray-900 flex flex-col items-center justify-center p-4 overflow-hidden">
+    <div className="relative min-h-screen bg-white text-gray-900 flex flex-col items-center justify-center p-4 pt-8 overflow-hidden">
+      {" "}
       <div className="absolute inset-0">
-        {particles.map((particle, index) => (
-          <div
-            key={index}
-            className="absolute rounded-full bg-teal-500 opacity-20"
-            style={{
-              left: `${particle.x}px`,
-              top: `${particle.y}px`,
-              width: `${particle.size}px`,
-              height: `${particle.size}px`,
-            }}
-          />
-        ))}
+        <ParticleBackground />
       </div>
-      <div className="z-10 w-full space-y-8">
+      <div className="z-10 w-full max-w-md space-y-8 bg-white p-8 rounded-lg">
         <div className="text-center">
           <Image
             src="/images/logo.png"
@@ -101,7 +74,7 @@ export default function LoginPage() {
           <Button
             variant="outline"
             className="w-full border-gray-300 hover:bg-gray-50 text-gray-700 flex items-center justify-center"
-            onClick={handleGoogleLogin}
+            onClick={handleGoogleSignIn}
           >
             <svg
               className="w-5 h-5 mr-2"
@@ -127,47 +100,38 @@ export default function LoginPage() {
             </svg>
             Google
           </Button>
-          <Button
-            variant="outline"
-            className="w-full border-gray-300 hover:bg-gray-50 text-gray-700 flex items-center justify-center"
-            onClick={handleFacebookLogin}
-          >
-            <svg
-              className="w-5 h-5 mr-2"
-              viewBox="0 0 24 24"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path
-                d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"
-                fill="#1877F2"
-              />
-            </svg>
-            Facebook
-          </Button>
         </div>
 
         <div className="mt-8 text-center">
-          <span className="px-2 bg-white text-gray-500">OR CONTINUE WITH</span>
+          <span className="px-2 bg-white text-gray-500">OR</span>
           <hr className="border-gray-300 -mt-3" />
         </div>
 
         <form onSubmit={handleSubmit} className="mt-8 space-y-6">
-          <Input
-            type="email"
-            placeholder="Email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-            className="bg-white border-gray-300 text-gray-900 placeholder-gray-400"
-          />
-          <Input
-            type="password"
-            placeholder="Password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-            className="bg-white border-gray-300 text-gray-900 placeholder-gray-400"
-          />
+          <div>
+            <Label htmlFor="email">Email</Label>
+            <Input
+              id="email"
+              type="email"
+              placeholder="locally@example.com"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+              className="bg-white border-gray-300 text-gray-900 placeholder-gray-400"
+            />
+          </div>
+          <div>
+            <Label htmlFor="password">Password</Label>
+            <Input
+              id="password"
+              type="password"
+              placeholder="•••••••••"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+              className="bg-white border-gray-300 text-gray-900 placeholder-gray-400"
+            />
+          </div>
           <Button
             type="submit"
             className="w-full bg-teal-600 hover:bg-teal-700 text-white"
@@ -177,7 +141,7 @@ export default function LoginPage() {
         </form>
 
         <p className="mt-4 text-center text-sm text-gray-600">
-          Don&apos;t have an account?{' '}
+          Don&apos;t have an account?{" "}
           <Link
             href="/register"
             className="font-medium text-teal-600 hover:text-teal-500"
@@ -187,11 +151,11 @@ export default function LoginPage() {
         </p>
 
         <p className="mt-4 text-center text-sm text-gray-600">
-          By continuing, you agree to Locally&apos;s{' '}
+          By continuing, you agree to Locally&apos;s{" "}
           <a href="#" className="font-medium text-teal-600 hover:text-teal-500">
             Terms of Service
-          </a>{' '}
-          and{' '}
+          </a>{" "}
+          and{" "}
           <a href="#" className="font-medium text-teal-600 hover:text-teal-500">
             Privacy Policy
           </a>

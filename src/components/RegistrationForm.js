@@ -105,7 +105,7 @@ export default function RegistrationForm() {
           <Input
             id="email"
             type="email"
-            placeholder="john@example.com"
+            placeholder="locally@example.com"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             required

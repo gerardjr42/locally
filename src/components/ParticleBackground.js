@@ -10,7 +10,7 @@ export default function ParticleBackground() {
       x: Math.random() * window.innerWidth,
       y: Math.random() * window.innerHeight,
       // Increase the size range
-      size: Math.random() * 15 + 5, // Now ranges from 5 to 20
+      size: Math.random() * 10 + 4, // Now ranges from 5 to 20
       speedX: Math.random() * 2 - 1,
       speedY: Math.random() * 2 - 1,
     }));
