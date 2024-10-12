@@ -101,6 +101,7 @@ export default function DetailsPage() {
       if (error) throw error;
 
       console.log("User details saved successfully:", data);
+
       router.push("/register/aboutme");
     } catch (error) {
       console.error("Error saving user details:", error.message);
@@ -119,18 +120,17 @@ export default function DetailsPage() {
   };
 
   return (
-    <div className="min-h-full  flex flex-col items-center justify-center p-4">
+    <div className="min-h-full flex flex-col items-center justify-center p-4">
       <div className="w-full max-w-md bg-white rounded-lg p-8">
         <Button
           variant="ghost"
           className="mb-4"
-          onClick={() => router.push("/register")}
+          onClick={() => router.push("/register/details")}
         >
           <ArrowLeft className="mr-2 h-10 w-4" />
         </Button>
 
         <div className="mb-6">
-          <Progress value={20} className="h-2" />
           <Progress value={20} className="h-2" />
           <div className="flex justify-between mt-2 text-sm font-medium text-[#0D9488]">
             <span>Profile Creation</span>
@@ -197,6 +197,7 @@ export default function DetailsPage() {
             type="submit"
             className="w-full bg-[#0D9488] hover:bg-[#0B7A6E] text-white"
             disabled={!isFormValid()}
+            onClick={() => router.push("/register/photo")}
           >
             Continue
           </Button>

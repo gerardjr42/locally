@@ -257,12 +257,12 @@ export default function InterestsPage() {
   };
 
   const handleContinue = () => {
-    router.push("/register/photo");
+    router.push("/register/verification");
   };
 
   return (
     <div className="min-h-full flex flex-col items-center justify-center p-4">
-      <div className="w-full max-w-md bg-white rounded-lg p-8">
+      <div className="w-full max-w-md bg-white rounded-lg p-8 ">
         <Button
           variant="ghost"
           className="mb-4"
@@ -272,10 +272,10 @@ export default function InterestsPage() {
         </Button>
 
         <div className="mb-6">
-          <Progress value={60} className="h-2" />
+          <Progress value={80} className="h-2" />
           <div className="flex justify-between mt-2 text-sm font-medium text-[#0D9488]">
             <span>Profile Creation</span>
-            <span>60%</span>
+            <span>80%</span>
           </div>
         </div>
 

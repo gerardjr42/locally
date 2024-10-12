@@ -11,6 +11,12 @@ import { CategoryNavbarComponent } from "@/components/category-navbar";
 import { NavigationBar } from "@/components/navigation-bar";
 import { Input } from "@/components/ui/input";
 
+import {
+  formatDate,
+  sortExperiencesByDate,
+  fetchUsersForExperience,
+} from "@/lib/utils";
+
 export default function AllExperiences() {
   const supabase = createClientComponentClient();
   const router = useRouter();
@@ -19,6 +25,7 @@ export default function AllExperiences() {
   const [categories, setCategories] = useState([]);
   const [selectedCategories, setSelectedCategories] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
+  const [sortAscending, setSortAscending] = useState(true);
 
   useEffect(() => {
     fetchExperiencesAndCategories();
@@ -44,12 +51,18 @@ export default function AllExperiences() {
       if (eventsError) throw eventsError;
 
       // Process events data to include categories
-      const processedEvents = eventsData.map((event) => ({
-        ...event,
-        categories: event.Event_Category_Junction.map(
-          (junction) => junction.category_id
-        ),
-      }));
+      const processedEvents = await Promise.all(
+        eventsData.map(async (event) => {
+          const users = await fetchUsersForExperience(supabase, event.event_id);
+          return {
+            ...event,
+            categories: event.Event_Category_Junction.map(
+              (junction) => junction.category_id
+            ),
+            users: users,
+          };
+        })
+      );
 
       setCategories(categoriesData);
       setExperiences(processedEvents);
@@ -99,6 +112,11 @@ export default function AllExperiences() {
     });
   }, [experiences, selectedCategories, searchTerm]);
 
+  const handleSortClick = () => {
+    setSortAscending(!sortAscending);
+    setExperiences(sortExperiencesByDate([...experiences], sortAscending));
+  };
+
   return (
     <div className="flex flex-col items-center justify-center">
       <NavigationBar />
@@ -123,12 +141,33 @@ export default function AllExperiences() {
         toggleCategory={toggleCategory}
       />
 
+      <div className="w-full flex flex-row px-4 mx-1 mt-3.5 justify-between lg:px-8">
+        <h1 className="text-left text-lg font-extrabold lg:text-2xl">
+          Local Experiences For You
+        </h1>
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          fill="none"
+          viewBox="0 0 24 24"
+          strokeWidth={1.5}
+          stroke="currentColor"
+          className="size-6 lg:size-8 cursor-pointer"
+          onClick={handleSortClick}
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            d="M3 7.5 7.5 3m0 0L12 7.5M7.5 3v13.5m13.5 0L16.5 21m0 0L12 16.5m4.5 4.5V7.5"
+          />
+        </svg>
+      </div>
+
       {/* Events list */}
-      <div className="w-full p-4">
+      <div className="w-full p-4 md:flex-row md:flex md:flex-wrap md:justify-between lg:px-8">
         {filteredExperiences.map((experience) => (
           <div
             key={experience.event_id}
-            className="bg-white rounded-lg shadow-md mb-4 overflow-hidden cursor-pointer"
+            className="bg-white rounded-lg shadow-md mb-4 overflow-hidden cursor-pointer md:w-[48%] lg:w-[31%] lg:mb-8"
             onClick={() => router.push(`/experiences/${experience.event_id}`)}
           >
             <div className="relative">
@@ -174,18 +213,47 @@ export default function AllExperiences() {
               </div>
             </div>
             <div className="p-4">
-              <div className="flex justify-between items-center mb-2">
-                <span className="text-gray-600">
-                  {new Date(experience.event_time).toLocaleDateString()}
-                </span>
-                <span className="font-bold">
+              <div className="flex justify-between items-center">
+                <p className="text-gray-500 text-sm">
+                  {formatDate(experience.event_time)}
+                </p>
+                <p className="text-gray-500 text-sm">
                   {experience.is_free ? "Free" : `$${experience.event_price}`}
-                </span>
+                </p>
               </div>
-              <h3 className="font-bold text-lg mb-1">
+              <h2 className="text-gray-700 font-bold text-md">
                 {experience.event_name}
-              </h3>
-              <p className="text-gray-600">{experience.event_street_address}</p>
+              </h2>
+              <p className="text-gray-700 text-sm">
+                {experience.event_zip_code}
+              </p>
+              <div className="w-full flex justify-end">
+                <div className="flex flex-col items-center">
+                  <div className="avatar-group -space-x-6 rtl:space-x-reverse mt-3">
+                    {experience.users.length > 0 && (
+                      <div className="avatar">
+                        <div className="w-12">
+                          <img
+                            src={
+                              experience.users[0].photo_url ||
+                              "https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.webp"
+                            }
+                            alt={experience.users[0].first_name}
+                          />
+                        </div>
+                      </div>
+                    )}
+                    {experience.users.length > 1 && (
+                      <div className="avatar placeholder">
+                        <div className="bg-neutral text-neutral-content w-12">
+                          <span>+{experience.users.length - 1}</span>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                  <p className="text-center text-sm text-gray-500">Interested</p>
+                </div>
+              </div>
             </div>
           </div>
         ))}
