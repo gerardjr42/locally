@@ -1,26 +1,26 @@
-'use client';
+"use client";
 
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Progress } from '@/components/ui/progress';
-import { supabase } from '@/lib/supabase';
-import { ArrowLeft } from 'lucide-react';
-import { useRouter } from 'next/navigation';
-import { useEffect, useState } from 'react';
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Progress } from "@/components/ui/progress";
+import { supabase } from "@/lib/supabase";
+import { ArrowLeft } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 
 export default function DetailsPage() {
   const router = useRouter();
   const [user, setUser] = useState(null);
   const [formData, setFormData] = useState({
-    firstName: '',
-    lastName: '',
-    birthday: '',
-    zipCode: '',
+    firstName: "",
+    lastName: "",
+    birthday: "",
+    zipCode: "",
   });
   const [errors, setErrors] = useState({
-    birthday: '',
-    zipCode: '',
+    birthday: "",
+    zipCode: "",
   });
 
   useEffect(() => {
@@ -37,9 +37,9 @@ export default function DetailsPage() {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
 
-    if (name === 'birthday') {
+    if (name === "birthday") {
       validateAge(value);
-    } else if (name === 'zipCode') {
+    } else if (name === "zipCode") {
       validateZipCode(value);
     }
   };
@@ -60,10 +60,10 @@ export default function DetailsPage() {
     if (age < 18) {
       setErrors((prev) => ({
         ...prev,
-        birthday: 'You must be at least 18 years old.',
+        birthday: "You must be at least 18 years old.",
       }));
     } else {
-      setErrors((prev) => ({ ...prev, birthday: '' }));
+      setErrors((prev) => ({ ...prev, birthday: "" }));
     }
   };
 
@@ -71,28 +71,28 @@ export default function DetailsPage() {
     if (zipCode.length !== 5 || !/^\d+$/.test(zipCode)) {
       setErrors((prev) => ({
         ...prev,
-        zipCode: 'Zip code must be exactly 5 digits.',
+        zipCode: "Zip code must be exactly 5 digits.",
       }));
     } else {
-      setErrors((prev) => ({ ...prev, zipCode: '' }));
+      setErrors((prev) => ({ ...prev, zipCode: "" }));
     }
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!user || errors.birthday || errors.zipCode) {
-      console.error('Validation failed');
+      console.error("Validation failed");
       return;
     }
 
     try {
-      const { data, error } = await supabase.from('Users').insert([
+      const { data, error } = await supabase.from("Users").insert([
         {
           user_id: user.id,
           first_name: formData.firstName,
           last_name: formData.lastName,
-          photo_url: '',
-          bio: '',
+          photo_url: "",
+          bio: "",
           user_dob: formData.birthday,
           user_zipcode: formData.zipCode,
         },
@@ -100,11 +100,11 @@ export default function DetailsPage() {
 
       if (error) throw error;
 
-      console.log('User details saved successfully:', data);
+      console.log("User details saved successfully:", data);
 
-      router.push('/register/aboutme');
+      router.push("/register/aboutme");
     } catch (error) {
-      console.error('Error saving user details:', error.message);
+      console.error("Error saving user details:", error.message);
     }
   };
 
@@ -125,7 +125,7 @@ export default function DetailsPage() {
         <Button
           variant="ghost"
           className="mb-4"
-          onClick={() => router.push('/register/aboutme')}
+          onClick={() => router.push("/register/details")}
         >
           <ArrowLeft className="mr-2 h-10 w-4" />
         </Button>
@@ -197,7 +197,7 @@ export default function DetailsPage() {
             type="submit"
             className="w-full bg-[#0D9488] hover:bg-[#0B7A6E] text-white"
             disabled={!isFormValid()}
-            onClick={() => router.push('/register/photo')}
+            onClick={() => router.push("/register/photo")}
           >
             Continue
           </Button>
