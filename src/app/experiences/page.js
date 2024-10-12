@@ -11,7 +11,11 @@ import { CategoryNavbarComponent } from "@/components/category-navbar";
 import { NavigationBar } from "@/components/navigation-bar";
 import { Input } from "@/components/ui/input";
 
-import { formatDate, sortExperiencesByDate } from "@/lib/utils";
+import {
+  formatDate,
+  sortExperiencesByDate,
+  fetchUsersForExperience,
+} from "@/lib/utils";
 
 export default function AllExperiences() {
   const supabase = createClientComponentClient();
@@ -47,12 +51,18 @@ export default function AllExperiences() {
       if (eventsError) throw eventsError;
 
       // Process events data to include categories
-      const processedEvents = eventsData.map((event) => ({
-        ...event,
-        categories: event.Event_Category_Junction.map(
-          (junction) => junction.category_id
-        ),
-      }));
+      const processedEvents = await Promise.all(
+        eventsData.map(async (event) => {
+          const users = await fetchUsersForExperience(supabase, event.event_id);
+          return {
+            ...event,
+            categories: event.Event_Category_Junction.map(
+              (junction) => junction.category_id
+            ),
+            users: users,
+          };
+        })
+      );
 
       setCategories(categoriesData);
       setExperiences(processedEvents);
@@ -211,10 +221,39 @@ export default function AllExperiences() {
                   {experience.is_free ? "Free" : `$${experience.event_price}`}
                 </p>
               </div>
-              <h2 className="text-gray-700 font-bold text-m">
+              <h2 className="text-gray-700 font-bold text-md">
                 {experience.event_name}
               </h2>
-              <p className="text-gray-500 text-sm">{experience.event_zip_code}</p>
+              <p className="text-gray-700 text-sm">
+                {experience.event_zip_code}
+              </p>
+              <div className="w-full flex justify-end">
+                <div className="flex flex-col items-center">
+                  <div className="avatar-group -space-x-6 rtl:space-x-reverse mt-3">
+                    {experience.users.length > 0 && (
+                      <div className="avatar">
+                        <div className="w-12">
+                          <img
+                            src={
+                              experience.users[0].photo_url ||
+                              "https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.webp"
+                            }
+                            alt={experience.users[0].first_name}
+                          />
+                        </div>
+                      </div>
+                    )}
+                    {experience.users.length > 1 && (
+                      <div className="avatar placeholder">
+                        <div className="bg-neutral text-neutral-content w-12">
+                          <span>+{experience.users.length - 1}</span>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                  <p className="text-center text-sm text-gray-500">Interested</p>
+                </div>
+              </div>
             </div>
           </div>
         ))}

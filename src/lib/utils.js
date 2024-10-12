@@ -18,3 +18,28 @@ export function sortExperiencesByDate(experiences, ascending = true) {
     return ascending ? dateA - dateB : dateB - dateA;
   });
 }
+
+export async function fetchUsersForExperience(supabase, experienceId) {
+  try {
+    const { data, error } = await supabase
+      .from("User_Events")
+      .select(`
+        user_id,
+        Users (
+          user_id,
+          first_name,
+          last_name,
+          user_dob,
+          photo_url
+        )
+      `)
+      .eq("event_id", experienceId);
+
+    if (error) throw error;
+
+    return data.map(item => item.Users);
+  } catch (error) {
+    console.error("Error fetching users for experience:", error);
+    return [];
+  }
+}
