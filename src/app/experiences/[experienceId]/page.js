@@ -8,7 +8,7 @@ import {
 } from "@/components/ui/accordion";
 import { Button } from "@/components/ui/button";
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
-import { Clock, DollarSign, MapPin, Tag, Users } from "lucide-react";
+import { Check, Clock, DollarSign, MapPin, Tag, Users } from "lucide-react";
 import Image from "next/image";
 import { useParams, useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
@@ -93,6 +93,7 @@ export default function ExperienceDetails() {
     fetchExperienceAndUsers();
   }, [params.experienceId, supabase]);
 
+  // When to toggle read more accordion
   useEffect(() => {
     if (descriptionRef.current) {
       const lineHeight = parseInt(
@@ -200,10 +201,17 @@ export default function ExperienceDetails() {
             {formatDate(experience.event_time)}
           </p>
           <Button
-            className="w-full mb-6 text-white bg-teal-400 hover:bg-teal-500 transition-colors"
+            className="w-full mb-6 text-white bg-teal-400 hover:bg-teal-500 transition-colors flex items-center justify-center"
             onClick={handleInterestClick}
           >
-            {isInterested ? "Not Interested" : "I'm interested!"}
+            {isInterested ? (
+              <>
+                <Check className="w-5 h-5 mr-2" />
+                Not Interested
+              </>
+            ) : (
+              "I'm interested!"
+            )}
           </Button>
           <div className="mb-6">
             <div className="flex justify-between items-center mb-3">
