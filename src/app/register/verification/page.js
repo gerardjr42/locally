@@ -106,10 +106,10 @@ export default function UserVerification() {
         </section>
 
         <div className="flex justify-between">
-          <Button variant="outline" onClick={handleButtonClick}>
+          <Button variant="outline" onClick={ handleButtonClick }>
             Skip For Now
           </Button>
-          <Button disabled={!isVerified} onClick={handleButtonClick}>
+          <Button disabled={!isVerified} onClick={ handleButtonClick }>
             Continue
           </Button>
         </div>
