@@ -144,10 +144,10 @@ export default function UserBioCreation() {
         </Button>
 
         <div className="mb-6">
-          <Progress value={40} className="h-2" />
+          <Progress value={60} className="h-2" />
           <div className="flex justify-between mt-2 text-sm font-medium text-[#0D9488]">
             <span>Profile Creation</span>
-            <span>40%</span>
+            <span>60%</span>
           </div>
         </div>
 
