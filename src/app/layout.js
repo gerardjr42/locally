@@ -1,6 +1,7 @@
 import localFont from "next/font/local";
 import Script from "next/script";
 import "./globals.css";
+import { UserProvider } from "@/contexts/UserContext";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -24,7 +25,7 @@ export default function RootLayout({ children }) {
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        {children}
+        <UserProvider>{children}</UserProvider>
         <Script
           src="https://kit.fontawesome.com/c2a7616b54.js"
           strategy="lazyOnload"

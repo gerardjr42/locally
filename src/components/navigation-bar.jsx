@@ -1,5 +1,7 @@
 "use client";
 import { supabase } from "@/lib/supabase";
+import { useUserContext } from '@/contexts/UserContext';
+
 import {
   ArrowLeft,
   Camera,
@@ -14,6 +16,8 @@ import { useRouter } from "next/navigation";
 import { Button } from "./ui/button";
 
 export function NavigationBar({ handleBackClick }) {
+  const { user } = useUserContext();
+  console.log(user);
   const router = useRouter();
 
   const handleDetailsClick = () => {
@@ -136,7 +140,7 @@ export function NavigationBar({ handleBackClick }) {
               <div className="avatar">
                 <div className="ring-primary ring-offset-base-100 w-20 rounded-full ring ring-offset-2 align-middle">
                   <Image
-                    src="https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.webp"
+                    src= { user.photo_url }
                     alt="Profile Picture"
                     width={100}
                     height={100}
@@ -145,26 +149,12 @@ export function NavigationBar({ handleBackClick }) {
               </div>
               <div className="flex flex-col justify-start">
                 <p className="text-lg text-gray-600">
-                  Hello, <span className="font-bold">Loca</span>!
+                  Hello, <span className="font-bold">{ user.first_name }</span>!
                 </p>
                 <a>
                   <p className="text-gray-500">View Profile</p>
                 </a>
               </div>
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke-width="1"
-                stroke="black"
-                className="size-7"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  d="M15.75 9V5.25A2.25 2.25 0 0 0 13.5 3h-6a2.25 2.25 0 0 0-2.25 2.25v13.5A2.25 2.25 0 0 0 7.5 21h6a2.25 2.25 0 0 0 2.25-2.25V15m3 0 3-3m0 0-3-3m3 3H9"
-                />
-              </svg>
             </div>
             <p className="uppercase text-m mt-4 mb-2">Notifications</p>
             <li>
