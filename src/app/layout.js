@@ -30,10 +30,10 @@ export default function RootLayout({ children }) {
           strategy="lazyOnload"
           crossOrigin="anonymous"
         />
-        {/* <Script
+        <Script
           src="https://s3.amazonaws.com/idme/developer/idme-buttons/assets/js/idme-wallet-button.js"
           strategy="lazyOnload"
-        />{" "} */}
+        />{" "}
       </body>
     </html>
   );

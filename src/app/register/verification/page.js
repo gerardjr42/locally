@@ -7,26 +7,41 @@ import { ArrowLeft } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
+import axios from 'axios'; // Ensure axios is imported
 import './verification.scss';
 
 export default function UserVerification() {
   const router = useRouter();
-  const [isVerified, setIsVerified] = useState(false);
-  const bindIDme = (element) => {
-    if (element) {
-      element.addEventListener('click', () => {
-        console.log('ID.me verification initiated');
-        setIsVerified(true);
-      });
-    }
-  };
+    const [isVerified, setIsVerified] = useState(false);
 
-  useEffect(() => {
-    const idmeButton = document.getElementById('idme-wallet-button');
-    if (idmeButton) {
-      bindIDme(idmeButton);
-    }
-  }, []);
+  const clientId = process.env.NEXT_PUBLIC_CLIENT_ID;
+    const redirectUri = process.env.NEXT_PUBLIC_REDIRECT_URI;
+    const responseType = 'token';
+    const scopes = [
+      'identity',
+      'military_us',
+      'responder_us',
+      'student_us',
+      'teacher_us',
+      'government_us',
+      'alumni',
+      'medical',
+      'nurse',
+      'employee',
+      'senior',
+      'military_canada',
+      'responder_canada',
+      'student_canada',
+      'teacher_canada',
+      'government_canada',
+      'nurse_canada',
+      'hospital_employee',
+      'kba_replacement/covid/verify',
+      'kba_replacement/covid/questionnaire',
+      // "kba_replacement/covid/pcr_test"
+      // "sdca_resident",
+      // "mcnj_resident"
+    ].join(',');
 
   const accountOptions = [
     {
@@ -43,6 +58,58 @@ export default function UserVerification() {
     },
   ];
 
+    // export const groupsEndpoint = (sandbox) => {
+    //   const endpoint = 'https://groups.id.me';
+    //   const parameters = [
+    //     `client_id=${clientId}`,
+    //     `redirect_uri=${redirectUri}`,
+    //     `response_type=${responseType}`,
+    //     `scopes=${scopes}`,
+    //   ];
+
+    //   if (sandbox) {
+    //     parameters.push(`sandbox=${sandbox}`);
+    //   }
+
+    //   return `${endpoint}?${parameters.join('&')}`;
+    // };
+
+  const [payload, setPayload] = useState(null);
+  const token = window.location.hash.match(/access_token=([^&]+)/)?.[1];
+
+  const findAttributeValue = (attr) => {
+    return payload
+      ? payload.attributes.find((element) => element.handle === attr).value
+      : null;
+  };
+
+  const fname = findAttributeValue('fname');
+  const lname = findAttributeValue('lname');
+  console.log(payload);
+
+  useEffect(() => {
+    if (token) {
+      const tokenEndpoint = `https://api.id.me/api/public/v3/attributes.json?access_token=${token}`;
+
+      const asyncFetch = async (endpoint) => {
+        try {
+          const response = await axios.get(endpoint);
+          const data = response.data;
+          setPayload(data);
+        } catch (error) {
+          console.log('Error:', error);
+        }
+      };
+      asyncFetch(tokenEndpoint);
+    }
+  }, [token]);
+
+  // Define the bindIDme function
+  const bindIDme = () => {
+    window.location.href =
+      `https://api.id.me/oauth/authorize?client_id=${clientId}&redirect_uri=${redirectUri}&response_type=token&scope=military%20responder%20student%20teacher%20government`;
+  };
+
   const handleButtonClick = () => {
     router.push('/register/confirmation');
   };
@@ -55,7 +122,7 @@ export default function UserVerification() {
           className="mb-4"
           onClick={() => router.push('/register/details')}
         >
-          <ArrowLeft className="mr-2 h-10 w-4 " />
+          <ArrowLeft className="mr-2 h-10 w-4" />
         </Button>
         <div className="mb-6 w-full">
           <Progress value={95} className="h-2 w-full" />{' '}
@@ -111,21 +178,21 @@ export default function UserVerification() {
               id="idme-wallet-button"
               data-scope="military,responder,student,teacher,government"
               variant="outline"
+              onClick={bindIDme}
               className="w-full bg-green-600 text-white"
             >
               Verify with ID.me
             </Button>
           </section>
 
-        <div className="flex justify-between">
-          <Button variant="outline" onClick={ handleButtonClick }>
-            Skip For Now
-          </Button>
-          <Button disabled={!isVerified} onClick={ handleButtonClick }>
-            Continue
-          </Button>
-        </div>
-
+          <div className="flex justify-between">
+            <Button variant="outline" onClick={handleButtonClick}>
+              Skip For Now
+            </Button>
+            <Button disabled={!isVerified} onClick={handleButtonClick}>
+              Continue
+            </Button>
+          </div>
         </div>
       </motion.div>
     </div>
