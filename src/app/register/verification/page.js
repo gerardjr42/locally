@@ -5,44 +5,15 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Progress } from '@/components/ui/progress';
 import { ArrowLeft } from 'lucide-react';
 import { motion } from 'framer-motion';
-import { useRouter } from 'next/navigation';
+import { redirect, useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
-import axios from 'axios'; // Ensure axios is imported
+import Link from 'next/link';
+import { groupsEndpoint } from '@/utils/idmeHelpers';
 import './verification.scss';
 
 export default function UserVerification() {
   const router = useRouter();
-    const [isVerified, setIsVerified] = useState(false);
-
-  const clientId = process.env.NEXT_PUBLIC_CLIENT_ID;
-    const redirectUri = process.env.NEXT_PUBLIC_REDIRECT_URI;
-    const responseType = 'token';
-    const scopes = [
-      'identity',
-      'military_us',
-      'responder_us',
-      'student_us',
-      'teacher_us',
-      'government_us',
-      'alumni',
-      'medical',
-      'nurse',
-      'employee',
-      'senior',
-      'military_canada',
-      'responder_canada',
-      'student_canada',
-      'teacher_canada',
-      'government_canada',
-      'nurse_canada',
-      'hospital_employee',
-      'kba_replacement/covid/verify',
-      'kba_replacement/covid/questionnaire',
-      // "kba_replacement/covid/pcr_test"
-      // "sdca_resident",
-      // "mcnj_resident"
-    ].join(',');
-
+  const [isVerified, setIsVerified] = useState(false);
   const accountOptions = [
     {
       id: 'instagram',
@@ -58,61 +29,23 @@ export default function UserVerification() {
     },
   ];
 
-    // export const groupsEndpoint = (sandbox) => {
-    //   const endpoint = 'https://groups.id.me';
-    //   const parameters = [
-    //     `client_id=${clientId}`,
-    //     `redirect_uri=${redirectUri}`,
-    //     `response_type=${responseType}`,
-    //     `scopes=${scopes}`,
-    //   ];
-
-    //   if (sandbox) {
-    //     parameters.push(`sandbox=${sandbox}`);
-    //   }
-
-    //   return `${endpoint}?${parameters.join('&')}`;
-    // };
-
-  const [payload, setPayload] = useState(null);
-  const token = window.location.hash.match(/access_token=([^&]+)/)?.[1];
-
-  const findAttributeValue = (attr) => {
-    return payload
-      ? payload.attributes.find((element) => element.handle === attr).value
-      : null;
-  };
-
-  const fname = findAttributeValue('fname');
-  const lname = findAttributeValue('lname');
-  console.log(payload);
-
-  useEffect(() => {
-    if (token) {
-      const tokenEndpoint = `https://api.id.me/api/public/v3/attributes.json?access_token=${token}`;
-
-      const asyncFetch = async (endpoint) => {
-        try {
-          const response = await axios.get(endpoint);
-          const data = response.data;
-          setPayload(data);
-        } catch (error) {
-          console.log('Error:', error);
-        }
-      };
-      asyncFetch(tokenEndpoint);
-    }
-  }, [token]);
-
-  // Define the bindIDme function
-  const bindIDme = () => {
-    window.location.href =
-      `https://api.id.me/oauth/authorize?client_id=${clientId}&redirect_uri=${redirectUri}&response_type=token&scope=military%20responder%20student%20teacher%20government`;
-  };
+  //   const IDME_AUTH_URL = 'https://api.id.me/oauth/authorize';
+  //   const CLIENT_ID = process.env.NEXT_PUBLIC_CLIENT_ID;
+  //   const REDIRECT_URI = process.env.NEXT_PUBLIC_REDIRECT_URI;
+  //   const SCOPES = ['military', 'student', 'teacher', 'government'];
+  //   const scopeString = SCOPES.join(',');
 
   const handleButtonClick = () => {
     router.push('/register/confirmation');
   };
+
+  //   const redirectToIDME = () => {
+  //     const url = `${IDME_AUTH_URL}?client_id=${CLIENT_ID}&redirect_uri=${encodeURIComponent(
+  //       REDIRECT_URI
+  //     )}&response_type=code&scope=${encodeURIComponent(scopeString)}`;
+
+  //     window.location.href = url;
+  //   };
 
   return (
     <div className="UserVerification min-h-full flex flex-col items-center justify-center m-10">
@@ -174,15 +107,21 @@ export default function UserVerification() {
               Locally uses ID.me to verify users for added safety on our
               platform. Click here to verify.
             </p>
-            <Button
-              id="idme-wallet-button"
-              data-scope="military,responder,student,teacher,government"
-              variant="outline"
-              onClick={bindIDme}
-              className="w-full bg-green-600 text-white"
-            >
-              Verify with ID.me
-            </Button>
+            <a href={groupsEndpoint()}>
+              <Button
+                type="button"
+                id="idme-wallet-button"
+                data-scope=""
+                data-client-id={process.env.NEXT_PUBLIC_CLIENT_ID}
+                data-redirect={process.env.NEXT_PUBLIC_REDIRECT_URI}
+                data-response="code"
+                data-show-verify="true"
+                //   onClick={redirectToIDME}
+              >
+                {' '}
+                Verify with ID.me
+              </Button>
+            </a>
           </section>
 
           <div className="flex justify-between">
@@ -198,3 +137,6 @@ export default function UserVerification() {
     </div>
   );
 }
+
+// console.log(process.env.NEXT_PUBLIC_CLIENT_ID);
+// console.log(process.env.NEXT_PUBLIC_REDIRECT_URI);
