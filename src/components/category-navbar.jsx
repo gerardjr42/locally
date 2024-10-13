@@ -46,10 +46,10 @@ export function CategoryNavbarComponent({
   ];
 
   return (
-    <div className="w-full overflow-x-auto lg:flex lg:justify-center">
+    <div className="w-full overflow-x-auto">
       <div
         ref={scrollContainerRef}
-        className="flex py-4 px-2"
+        className="flex py-4 px-2 bg-white"
         style={{ width: "max-content" }}
       >
         {categories.map((category) => (
@@ -61,7 +61,7 @@ export function CategoryNavbarComponent({
             <div
               className={`w-12 h-12 rounded-full flex items-center justify-center mb-1 ${
                 selectedCategories.includes(category.id)
-                  ? "bg-teal-500 text-white"
+                  ? "bg-blue-500 text-white"
                   : "bg-gray-100"
               }`}
             >

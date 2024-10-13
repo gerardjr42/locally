@@ -1,9 +1,11 @@
 "use client";
 import { useRouter } from "next/navigation";
-
 import { ArrowLeft } from "lucide-react";
+import { useUserContext } from '@/contexts/UserContext';
 
 export function NavigationBar({ handleBackClick }) {
+  const { user } = useUserContext();
+  console.log(user);
   const router = useRouter();
 
   const handleDetailsClick = () => {
@@ -94,12 +96,12 @@ export function NavigationBar({ handleBackClick }) {
           <div className="container flex flex-row justify-between items-center w-90 px-2 py-3">
             <div className="avatar">
               <div className="ring-primary ring-offset-base-100 w-20 rounded-full ring ring-offset-2 align-middle">
-                <img src="https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.webp" />
+                <img src={ user.photo_url } />
               </div>
             </div>
             <div className="flex flex-col justify-start">
               <p className="text-lg text-gray-600">
-                Hello, <span className="font-bold">Loca</span>!
+                Hello, <span className="font-bold">{ user.first_name }</span>!
               </p>
               <a>
                 <p className="text-gray-500">View Profile</p>
