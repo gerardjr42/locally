@@ -1,7 +1,7 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { ArrowRight } from "lucide-react";
+import { motion } from "framer-motion";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -36,31 +36,20 @@ const onboardingContent = [
 ];
 
 export default function Home() {
-  const [currentImageIndex, setCurrentImageIndex] = useState(0);
-  const [currentContentIndex, setCurrentContentIndex] = useState(0);
+  const [currentIndex, setCurrentIndex] = useState(0);
   const router = useRouter();
 
   useEffect(() => {
     const timer = setInterval(() => {
-      setCurrentImageIndex(
+      setCurrentIndex(
         (prevIndex) => (prevIndex + 1) % onboardingContent.length
       );
-    }, 3000);
+    }, 4000);
 
     return () => clearInterval(timer);
   }, []);
 
-  const handleNext = () => {
-    if (currentContentIndex < onboardingContent.length - 1) {
-      const nextIndex = currentContentIndex + 1;
-      setCurrentContentIndex(nextIndex);
-      setCurrentImageIndex(nextIndex);
-    } else {
-      router.push("/register");
-    }
-  };
-
-  const isLastPage = currentContentIndex === onboardingContent.length - 1;
+  const isLastPage = currentIndex === onboardingContent.length - 1;
 
   return (
     <div className="flex flex-col min-h-screen bg-black text-white">
@@ -69,7 +58,7 @@ export default function Home() {
           <div
             key={index}
             className={`absolute inset-0 transition-opacity duration-1000 ${
-              index === currentImageIndex ? "opacity-100" : "opacity-0"
+              index === currentIndex ? "opacity-100" : "opacity-0"
             }`}
           >
             <Image
@@ -84,7 +73,7 @@ export default function Home() {
           </div>
         ))}
         <div className="relative z-10 text-center px-6 max-w-2xl mx-auto">
-          {currentContentIndex === 0 ? (
+          {currentIndex === 0 ? (
             <div className="w-64 h-24 mx-auto mb-8 relative animate-fade-in-up">
               <Image
                 src={onboardingContent[0].title}
@@ -95,11 +84,11 @@ export default function Home() {
             </div>
           ) : (
             <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold mb-4 animate-fade-in-up">
-              {onboardingContent[currentContentIndex].title}
+              {onboardingContent[currentIndex].title}
             </h1>
           )}
           <p className="text-xl sm:text-2xl mb-8 animate-fade-in-up delay-200">
-            {onboardingContent[currentContentIndex].subtitle}
+            {onboardingContent[currentIndex].subtitle}
           </p>
         </div>
       </div>
@@ -109,20 +98,24 @@ export default function Home() {
             <div
               key={index}
               className={`w-2 h-2 rounded-full transition-all duration-300 ${
-                index === currentContentIndex ? "bg-white w-4" : "bg-gray-600"
+                index === currentIndex ? "bg-white w-4" : "bg-gray-600"
               }`}
             />
           ))}
         </div>
 
-        <Button
-          onClick={handleNext}
-          className="w-full bg-white text-black hover:bg-gray-200 transition-all duration-300 transform hover:scale-105"
-          size="lg"
+        <motion.div
+          whileHover={{ scale: 1.05 }}
+          transition={{ type: "spring", stiffness: 400, damping: 10 }}
         >
-          {isLastPage ? "Get Started" : "Next"}{" "}
-          <ArrowRight className="ml-2 h-4 w-4" />
-        </Button>
+          <Button
+            onClick={() => router.push("/register")}
+            className="w-full bg-white text-black hover:bg-gray-200 transition-colors duration-300"
+            size="lg"
+          >
+            Get Started
+          </Button>
+        </motion.div>
       </div>
     </div>
   );
