@@ -1,11 +1,10 @@
 "use client";
 
+import { PageHeader } from "@/components/page-header";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Progress } from "@/components/ui/progress";
 import { supabase } from "@/lib/supabase";
-import { ArrowLeft } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
@@ -121,22 +120,12 @@ export default function DetailsPage() {
 
   return (
     <div className="min-h-full flex flex-col items-center justify-center p-4">
-      <div className="w-full max-w-md bg-white rounded-lg p-8">
-        <Button
-          variant="ghost"
-          className="mb-4"
-          onClick={() => router.push("/register/details")}
-        >
-          <ArrowLeft className="mr-2 h-10 w-4" />
-        </Button>
-
-        <div className="mb-6">
-          <Progress value={20} className="h-2" />
-          <div className="flex justify-between mt-2 text-sm font-medium text-[#0D9488]">
-            <span>Profile Creation</span>
-            <span>20%</span>
-          </div>
-        </div>
+      <div className="w-full max-w-md bg-white rounded-lg p-4">
+        <PageHeader
+          onBackClick={() => router.push("/register")}
+          progressValue={20}
+          progressText="20%"
+        />
 
         <div className="text-start mb-6">
           <h2 className="text-2xl font-bold text-gray-800">Your basic info</h2>
@@ -197,7 +186,7 @@ export default function DetailsPage() {
             type="submit"
             className="w-full bg-[#0D9488] hover:bg-[#0B7A6E] text-white"
             disabled={!isFormValid()}
-            onClick={() => router.push("/register/photo")}
+            onClick={() => router.push("/register/aboutme")}
           >
             Continue
           </Button>

@@ -1,9 +1,8 @@
 "use client";
 
+import { PageHeader } from "@/components/page-header";
 import { Button } from "@/components/ui/button";
-import { Progress } from "@/components/ui/progress";
 import { supabase } from "@/lib/supabase";
-import { ArrowLeft } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { Toaster } from "react-hot-toast";
@@ -122,22 +121,12 @@ export default function InterestsPage() {
 
   return (
     <div className="min-h-full flex flex-col items-center justify-center p-4">
-      <div className="w-full max-w-md bg-white rounded-lg p-8 ">
-        <Button
-          variant="ghost"
-          className="mb-4"
-          onClick={() => router.push("/register/aboutme")}
-        >
-          <ArrowLeft className="mr-2 h-10 w-4" />
-        </Button>
-
-        <div className="mb-6">
-          <Progress value={60} className="h-2" />
-          <div className="flex justify-between mt-2 text-sm font-medium text-[#0D9488]">
-            <span>Profile Creation</span>
-            <span>60%</span>
-          </div>
-        </div>
+      <div className="w-full max-w-md bg-white rounded-lg p-4">
+        <PageHeader
+          onBackClick={() => router.push("/register/aboutme")}
+          progressValue={60}
+          progressText="60%"
+        />
 
         <div className="text-start mb-6">
           <h2 className="text-2xl font-bold text-gray-800">Your Interests</h2>
