@@ -2,6 +2,7 @@
 
 import { PageHeader } from "@/components/page-header";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { supabase } from "@/lib/supabase";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -12,6 +13,7 @@ export default function InterestsPage() {
   const [interests, setInterests] = useState([]);
   const [loading, setLoading] = useState(true);
   const [expandedCategories, setExpandedCategories] = useState([]);
+  const [searchTerm, setSearchTerm] = useState("");
   const router = useRouter();
 
   useEffect(() => {
@@ -130,6 +132,21 @@ export default function InterestsPage() {
     router.push("/register/photo");
   };
 
+  const filterInterests = (interests, searchTerm) => {
+    return interests
+      .map((category) => ({
+        ...category,
+        items: category.items.filter((item) =>
+          item.name.toLowerCase().includes(searchTerm.toLowerCase())
+        ),
+      }))
+      .filter((category) => category.items.length > 0);
+  };
+
+  const filteredInterests = searchTerm
+    ? filterInterests(interests, searchTerm)
+    : interests;
+
   if (loading) {
     return <div>Loading interests...</div>;
   }
@@ -143,6 +160,13 @@ export default function InterestsPage() {
           progressText="60%"
         />
 
+        <Input
+          type="text"
+          placeholder="Search interests..."
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          className="mb-4"
+        />
         <h1 className="text-2xl font-bold mb-4">Interests</h1>
 
         {selectedInterests.length >= 3 && selectedInterests.length <= 10 ? (
@@ -158,7 +182,7 @@ export default function InterestsPage() {
         )}
 
         <div className="space-y-6">
-          {interests.map((category) => (
+          {filteredInterests.map((category) => (
             <div key={category.category} className="space-y-2">
               <h2 className="text-xl font-semibold">{category.category}</h2>
               <div className="flex flex-wrap gap-2">
@@ -192,7 +216,7 @@ export default function InterestsPage() {
                     </Button>
                   ))}
               </div>
-              {category.items.length > 8 && (
+              {category.items.length > 8 && !searchTerm && (
                 <Button
                   variant="ghost"
                   className="text-[#0D9488] hover:text-[#0B7A6E]"
