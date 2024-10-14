@@ -11,6 +11,7 @@ export default function InterestsPage() {
   const [selectedInterests, setSelectedInterests] = useState([]);
   const [interests, setInterests] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [expandedCategories, setExpandedCategories] = useState([]);
   const router = useRouter();
 
   useEffect(() => {
@@ -30,7 +31,6 @@ export default function InterestsPage() {
 
       if (error) throw error;
 
-      // Group interests by category while preserving order
       const groupedInterests = data.reduce((acc, interest) => {
         const existingCategory = acc.find(
           (item) => item.category === interest.category
@@ -71,6 +71,13 @@ export default function InterestsPage() {
   };
 
   const toggleInterest = async (interest) => {
+    if (
+      selectedInterests.length >= 10 &&
+      !selectedInterests.some((i) => i.id === interest.id)
+    ) {
+      return; // Don't add more than 10 interests
+    }
+
     const {
       data: { user },
     } = await supabase.auth.getUser();
@@ -111,6 +118,14 @@ export default function InterestsPage() {
     }
   };
 
+  const toggleCategory = (category) => {
+    setExpandedCategories((prev) =>
+      prev.includes(category)
+        ? prev.filter((c) => c !== category)
+        : [...prev, category]
+    );
+  };
+
   const handleContinue = () => {
     router.push("/register/photo");
   };
@@ -128,37 +143,66 @@ export default function InterestsPage() {
           progressText="60%"
         />
 
-        <div className="text-start mb-6">
-          <h2 className="text-2xl font-bold text-gray-800">Your Interests</h2>
-          <p className="text-sm text-gray-600 mt-2">
-            Select at least 3 interests to help us find the best events for you
-          </p>
-        </div>
+        <h1 className="text-2xl font-bold mb-4">Interests</h1>
 
-        <div className="space-y-4">
+        {selectedInterests.length >= 3 && selectedInterests.length <= 10 ? (
+          <p className="text-gray-600 mb-4">
+            You&apos;ve chosen {selectedInterests.length} interest
+            {selectedInterests.length !== 1 ? "s" : ""}. They sound great!
+          </p>
+        ) : (
+          <p className="text-gray-600 mb-4">
+            Select at least 3 interests (max 10) to help us find the best events
+            for you.
+          </p>
+        )}
+
+        <div className="space-y-6">
           {interests.map((category) => (
             <div key={category.category} className="space-y-2">
-              <h3 className="text-lg font-semibold">{category.category}</h3>
+              <h2 className="text-xl font-semibold">{category.category}</h2>
               <div className="flex flex-wrap gap-2">
-                {category.items.map((item) => (
-                  <Button
-                    key={item.id}
-                    variant={
-                      selectedInterests.some((i) => i.id === item.id)
-                        ? "default"
-                        : "outline"
-                    }
-                    className={`text-sm ${
-                      selectedInterests.some((i) => i.id === item.id)
-                        ? "bg-[#0D9488] hover:bg-[#0B7A6E] text-white"
-                        : "hover:bg-gray-100"
-                    }`}
-                    onClick={() => toggleInterest(item)}
-                  >
-                    {item.icon} {item.name}
-                  </Button>
-                ))}
+                {category.items
+                  .slice(
+                    0,
+                    expandedCategories.includes(category.category)
+                      ? category.items.length
+                      : 8
+                  )
+                  .map((item) => (
+                    <Button
+                      key={item.id}
+                      variant={
+                        selectedInterests.some((i) => i.id === item.id)
+                          ? "default"
+                          : "outline"
+                      }
+                      className={`rounded-full text-sm ${
+                        selectedInterests.some((i) => i.id === item.id)
+                          ? "bg-[#0D9488] hover:bg-[#0B7A6E] text-white"
+                          : "bg-white text-gray-800 border-gray-300 hover:bg-gray-100"
+                      }`}
+                      onClick={() => toggleInterest(item)}
+                      disabled={
+                        selectedInterests.length >= 10 &&
+                        !selectedInterests.some((i) => i.id === item.id)
+                      }
+                    >
+                      {item.icon} {item.name}
+                    </Button>
+                  ))}
               </div>
+              {category.items.length > 8 && (
+                <Button
+                  variant="ghost"
+                  className="text-[#0D9488] hover:text-[#0B7A6E]"
+                  onClick={() => toggleCategory(category.category)}
+                >
+                  {expandedCategories.includes(category.category)
+                    ? "Show less"
+                    : "Show more"}
+                </Button>
+              )}
             </div>
           ))}
         </div>
