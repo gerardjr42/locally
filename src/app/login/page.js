@@ -54,7 +54,6 @@ export default function LoginPage() {
 
   return (
     <div className="relative min-h-screen bg-white text-gray-900 flex flex-col items-center justify-center p-4 pt-8 overflow-hidden">
-      {" "}
       <div className="absolute inset-0">
         <ParticleBackground />
       </div>
@@ -140,6 +139,14 @@ export default function LoginPage() {
           </Button>
         </form>
 
+        <p className="mt-4 text-center text-sm text-gray-600">
+          <button
+            onClick={() => router.push("/login/reset-password")}
+            className="font-medium text-teal-600 hover:text-teal-500"
+          >
+            Forgot Password?
+          </button>
+        </p>
         <p className="mt-4 text-center text-sm text-gray-600">
           Don&apos;t have an account?{" "}
           <Link
