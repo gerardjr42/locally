@@ -14,7 +14,6 @@ export default function UserUploadPhoto() {
   const [file, setFile] = useState(null);
   const [uploading, setUploading] = useState(false);
   const [avatarUrl, setAvatarUrl] = useState(null);
-  const [particles, setParticles] = useState([]);
 
   useEffect(() => {
     const getUser = async () => {
@@ -24,32 +23,6 @@ export default function UserUploadPhoto() {
       setUser(user);
     };
     getUser();
-
-    const newParticles = Array.from({ length: 50 }, () => ({
-      x: Math.random() * window.innerWidth,
-      y: Math.random() * window.innerHeight,
-      size: Math.random() * 5 + 1,
-      speedX: Math.random() * 2 - 1,
-      speedY: Math.random() * 2 - 1,
-    }));
-    setParticles(newParticles);
-
-    const animateParticles = () => {
-      setParticles((prevParticles) =>
-        prevParticles.map((particle) => ({
-          ...particle,
-          x:
-            (particle.x + particle.speedX + window.innerWidth) %
-            window.innerWidth,
-          y:
-            (particle.y + particle.speedY + window.innerHeight) %
-            window.innerHeight,
-        }))
-      );
-    };
-
-    const intervalId = setInterval(animateParticles, 50);
-    return () => clearInterval(intervalId);
   }, []);
 
   useEffect(() => {
@@ -122,7 +95,7 @@ export default function UserUploadPhoto() {
         "Profile photo uploaded and user record updated successfully"
       );
       setAvatarUrl(publicUrl);
-      router.push("/register/aboutme");
+      router.push("/register/verification");
     } catch (error) {
       console.error("Error in handleUpload:", error.message);
     } finally {
@@ -130,10 +103,10 @@ export default function UserUploadPhoto() {
     }
   };
 
-    const handleClick = (e) => {
-        handleUpload(e);
-        router.push("/register/aboutme");
-    }
+  const handleClick = (e) => {
+    handleUpload(e);
+    router.push("/register/verification");
+  };
 
   return (
     <div className="min-h-full flex flex-col items-center justify-center p-4">
@@ -141,16 +114,16 @@ export default function UserUploadPhoto() {
         <Button
           variant="ghost"
           className="mb-4"
-          onClick={() => router.push('/register/aboutme')}
+          onClick={() => router.push("/register/interests")}
         >
           <ArrowLeft className="mr-2 h-10 w-4" />
         </Button>
 
         <div className="mb-6">
-          <Progress value={40} className="h-2" />
+          <Progress value={80} className="h-2" />
           <div className="flex justify-between mt-2 text-sm font-medium text-[#0D9488]">
             <span>Profile Creation</span>
-            <span>40%</span>
+            <span>80%</span>
           </div>
         </div>
 
@@ -191,7 +164,7 @@ export default function UserUploadPhoto() {
             htmlFor="photo-upload"
             className="block w-full text-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-[#0D9488] hover:bg-[#0B7A6E] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#0D9488] cursor-pointer"
           >
-            {avatarUrl ? 'Change Photo' : 'Upload Photo'}
+            {avatarUrl ? "Change Photo" : "Upload Photo"}
           </label>
         </div>
 
@@ -199,7 +172,7 @@ export default function UserUploadPhoto() {
           <Button
             onClick={handleClick}
             className="bg-[#0D9488] hover:bg-[#0B7A6E] text-white w-full max-w-xs"
-            disabled={uploading || !file}
+            disabled={uploading || (!file && !avatarUrl)}
           >
             Continue
           </Button>

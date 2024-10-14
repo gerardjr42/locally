@@ -1,28 +1,26 @@
-'use client';
+"use client";
 
-import { Button } from '@/components/ui/button';
-import { Checkbox } from '@/components/ui/checkbox';
-import { Progress } from '@/components/ui/progress';
-import { ArrowLeft } from 'lucide-react';
-import { motion } from 'framer-motion';
-import { useRouter } from 'next/navigation';
-import { useEffect, useState } from 'react';
-import './verification.scss';
+import { PageHeader } from "@/components/page-header";
+import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
+import { motion } from "framer-motion";
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 
 export default function UserVerification() {
   const router = useRouter();
   const [isVerified, setIsVerified] = useState(false);
   const bindIDme = (element) => {
     if (element) {
-      element.addEventListener('click', () => {
-        console.log('ID.me verification initiated');
+      element.addEventListener("click", () => {
+        console.log("ID.me verification initiated");
         setIsVerified(true);
       });
     }
   };
 
   useEffect(() => {
-    const idmeButton = document.getElementById('idme-wallet-button');
+    const idmeButton = document.getElementById("idme-wallet-button");
     if (idmeButton) {
       bindIDme(idmeButton);
     }
@@ -30,41 +28,30 @@ export default function UserVerification() {
 
   const accountOptions = [
     {
-      id: 'instagram',
-      name: 'Instagram',
-      icon: 'https://cdn-icons-png.freepik.com/256/15707/15707869.png?semt=ais_hybrid',
-      connectText: 'Connect Your Instagram Account',
+      id: "instagram",
+      name: "Instagram",
+      icon: "https://cdn-icons-png.freepik.com/256/15707/15707869.png?semt=ais_hybrid",
+      connectText: "Connect Your Instagram Account",
     },
     {
-      id: 'facebook',
-      name: 'Facebook',
-      icon: 'https://static.vecteezy.com/system/resources/previews/016/716/481/non_2x/facebook-icon-free-png.png',
-      connectText: 'Connect Your Facebook Account',
+      id: "facebook",
+      name: "Facebook",
+      icon: "https://static.vecteezy.com/system/resources/previews/016/716/481/non_2x/facebook-icon-free-png.png",
+      connectText: "Connect Your Facebook Account",
     },
   ];
 
   const handleButtonClick = () => {
-    router.push('/register/confirmation');
+    router.push("/register/confirmation");
   };
 
   return (
-    <div className="UserVerification min-h-full flex flex-col items-center justify-center m-10">
-      <div className="w-full max-w-md bg-white rounded-lg p-8">
-        <Button
-          variant="ghost"
-          className="mb-4"
-          onClick={() => router.push('/register/details')}
-        >
-          <ArrowLeft className="mr-2 h-10 w-4 " />
-        </Button>
-        <div className="mb-6 w-full">
-          <Progress value={95} className="h-2 w-full" />{' '}
-          <div className="flex justify-between mt-2 text-sm font-medium text-[#0D9488]">
-            <span>Profile Creation</span>
-            <span>95%</span>
-          </div>
-        </div>
-      </div>
+    <div>
+      <PageHeader
+        onBackClick={() => router.push("/register/photo")}
+        progressValue={95}
+        progressText="95%"
+      />
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
@@ -117,15 +104,14 @@ export default function UserVerification() {
             </Button>
           </section>
 
-        <div className="flex justify-between">
-          <Button variant="outline" onClick={ handleButtonClick }>
-            Skip For Now
-          </Button>
-          <Button disabled={!isVerified} onClick={ handleButtonClick }>
-            Continue
-          </Button>
-        </div>
-
+          <div className="flex justify-between">
+            <Button variant="outline" onClick={handleButtonClick}>
+              Skip For Now
+            </Button>
+            <Button disabled={!isVerified} onClick={handleButtonClick}>
+              Continue
+            </Button>
+          </div>
         </div>
       </motion.div>
     </div>

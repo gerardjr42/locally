@@ -48,8 +48,8 @@ export default function UserBioCreation() {
     { question: "", answer: "" },
     { question: "", answer: "" },
   ]);
-  const [particles, setParticles] = useState([]);
-  const [progress, setProgress] = useState(60);
+
+  const [progress, setProgress] = useState(40);
 
   useEffect(() => {
     const getUser = async () => {
@@ -59,32 +59,6 @@ export default function UserBioCreation() {
       setUser(user);
     };
     getUser();
-
-    const newParticles = Array.from({ length: 50 }, () => ({
-      x: Math.random() * window.innerWidth,
-      y: Math.random() * window.innerHeight,
-      size: Math.random() * 5 + 1,
-      speedX: Math.random() * 2 - 1,
-      speedY: Math.random() * 2 - 1,
-    }));
-    setParticles(newParticles);
-
-    const animateParticles = () => {
-      setParticles((prevParticles) =>
-        prevParticles.map((particle) => ({
-          ...particle,
-          x:
-            (particle.x + particle.speedX + window.innerWidth) %
-            window.innerWidth,
-          y:
-            (particle.y + particle.speedY + window.innerHeight) %
-            window.innerHeight,
-        }))
-      );
-    };
-
-    const intervalId = setInterval(animateParticles, 50);
-    return () => clearInterval(intervalId);
   }, []);
 
   const handleIcebreakerChange = (index, field, value) => {
@@ -144,10 +118,10 @@ export default function UserBioCreation() {
         </Button>
 
         <div className="mb-6">
-          <Progress value={60} className="h-2" />
+          <Progress value={40} className="h-2" />
           <div className="flex justify-between mt-2 text-sm font-medium text-[#0D9488]">
             <span>Profile Creation</span>
-            <span>60%</span>
+            <span>40%</span>
           </div>
         </div>
 
