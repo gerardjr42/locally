@@ -1,53 +1,74 @@
-import { useState, useEffect } from 'react';
-import { supabase } from '@/lib/supabase';
+import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
+import { useEffect, useState } from "react";
 
 export function useUser() {
   const [user, setUser] = useState(null);
   const [interests, setInterests] = useState([]);
   const [userEvents, setUserEvents] = useState([]);
   const [loading, setLoading] = useState(true);
+  const supabase = createClientComponentClient();
 
   useEffect(() => {
-    async function getUserData() {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (user) {
-        const { data: userData, error: userError } = await supabase
-          .from('Users')
-          .select('*')
-          .eq('user_id', user.id)
-          .single();
-
-        if (userData) {
-          setUser(userData);
-
-          // Fetch user interests
-          const { data: interestsData } = await supabase
-            .from('User_Interests')
-            .select('interest_id')
-            .eq('user_id', user.id);
-
-          if (interestsData) {
-            setInterests(interestsData.map(item => item.interest_id));
-          }
-
-          // Fetch user events
-          const { data: eventsData } = await supabase
-            .from('User_Events')
-            .select(`
-              event_id,
-              Events (*)
-            `)
-            .eq('user_id', user.id);
-
-          if (eventsData) {
-            setUserEvents(eventsData.map(item => item.Events));
-          }
+    const { data: authListener } = supabase.auth.onAuthStateChange(
+      async (event, session) => {
+        setLoading(true);
+        if (session?.user) {
+          await getUserData(session.user.id);
+        } else {
+          setUser(null);
+          setInterests([]);
+          setUserEvents([]);
         }
+        setLoading(false);
       }
-      setLoading(false);
+    );
+
+    return () => {
+      authListener.subscription.unsubscribe();
+    };
+  }, [supabase.auth]);
+
+  async function getUserData(userId) {
+    try {
+      const { data: userData, error: userError } = await supabase
+        .from("Users")
+        .select("*")
+        .eq("user_id", userId)
+        .single();
+
+      if (userError) throw userError;
+
+      setUser(userData);
+
+      const { data: interestsData, error: interestsError } = await supabase
+        .from("User_Interests")
+        .select("interest")
+        .eq("user_id", userId);
+
+      if (interestsError) throw interestsError;
+
+      setInterests(interestsData.map((item) => item.interest));
+
+      const { data: eventsData, error: eventsError } = await supabase
+        .from("User_Events")
+        .select(
+          `
+          event_id,
+          Events (*)
+        `
+        )
+        .eq("user_id", userId);
+
+      if (eventsError) throw eventsError;
+
+      setUserEvents(eventsData.map((item) => item.Events));
+    } catch (error) {
+      console.error("Error fetching user data:", error.message);
+      setUser(null);
+      setInterests([]);
+      setUserEvents([]);
     }
-    getUserData();
-  }, []);
+  }
 
   return { user, interests, userEvents, loading };
 }
