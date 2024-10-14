@@ -6,7 +6,6 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { supabase } from "@/lib/supabase";
 import Image from "next/image";
-import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import toast, { Toaster } from "react-hot-toast";
@@ -74,26 +73,6 @@ export default function UpdatePasswordPage() {
             {isLoading ? "Updating..." : "Update Password"}
           </Button>
         </form>
-
-        <p className="mt-4 text-center text-sm text-gray-600">
-          Remember your password?{" "}
-          <Link
-            href="/login"
-            className="font-medium text-teal-600 hover:text-teal-500"
-          >
-            Log in
-          </Link>
-        </p>
-
-        <p className="mt-4 text-center text-sm text-gray-600">
-          Need to reset your password?{" "}
-          <Link
-            href="/login/reset-password"
-            className="font-medium text-teal-600 hover:text-teal-500"
-          >
-            Reset password
-          </Link>
-        </p>
       </div>
       <Toaster position="top-center" />
     </div>
