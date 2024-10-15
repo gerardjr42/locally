@@ -7,47 +7,47 @@ export function useUser() {
   const [userEvents, setUserEvents] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    async function getUserData() {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (user) {
-        const { data: userData, error: userError } = await supabase
-          .from('Users')
-          .select('*')
-          .eq('user_id', user.id)
-          .single();
+  async function getUserData() {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (user) {
+      const { data: userData, error: userError } = await supabase
+        .from('Users')
+        .select('*')
+        .eq('user_id', user.id)
+        .single();
 
-        if (userData) {
-          setUser(userData);
+      if (userData) {
+        setUser(userData);
 
-          // Fetch user interests
-          const { data: interestsData } = await supabase
-            .from('User_Interests')
-            .select('interest_id')
-            .eq('user_id', user.id);
+        // Fetch user interests
+        const { data: interestsData } = await supabase
+          .from('User_Interests')
+          .select('interest_id')
+          .eq('user_id', user.id);
 
-          if (interestsData) {
-            setInterests(interestsData.map(item => item.interest_id));
-          }
+        if (interestsData) {
+          setInterests(interestsData.map(item => item.interest_id));
+        }
 
-          // Fetch user events
-          const { data: eventsData } = await supabase
-            .from('User_Events')
-            .select(`
-              event_id,
-              Events (*)
-            `)
-            .eq('user_id', user.id);
+        // Fetch user events
+        const { data: eventsData } = await supabase
+          .from('User_Events')
+          .select(`
+            event_id,
+            Events (*)
+          `)
+          .eq('user_id', user.id);
 
-          if (eventsData) {
-            setUserEvents(eventsData.map(item => item.Events));
-          }
+        if (eventsData) {
+          setUserEvents(eventsData.map(item => item.Events));
         }
       }
-      setLoading(false);
     }
+    setLoading(false);
+  }
+  useEffect(() => {
     getUserData();
   }, []);
 
-  return { user, interests, userEvents, loading };
+  return { user, setUser, interests, userEvents, loading, getUserData };
 }

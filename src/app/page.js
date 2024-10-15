@@ -1,5 +1,5 @@
 "use client";
-
+import { useUserContext } from '@/contexts/UserContext';
 import { Button } from "@/components/ui/button";
 import { motion } from "framer-motion";
 import Image from "next/image";
@@ -38,6 +38,8 @@ const onboardingContent = [
 export default function Home() {
   const [currentIndex, setCurrentIndex] = useState(0);
   const router = useRouter();
+  const { user } = useUserContext();
+  console.log("User:", user);
 
   useEffect(() => {
     const timer = setInterval(() => {
