@@ -47,6 +47,7 @@ export default function Account() {
   const router = useRouter();
   const params = useParams();
   const { user } = useUserContext();
+  console.log('User:', user);
   const [isExpanded, setIsExpanded] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [bio, setBio] = useState(``);
