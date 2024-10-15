@@ -11,6 +11,20 @@ export function formatDate(timestamp) {
   return date.toLocaleDateString('en-US', options);
 }
 
+export function calculateAge(birthdate) {
+  const today = new Date();
+  const birthDate = new Date(birthdate);
+  let age = today.getFullYear() - birthDate.getFullYear();
+  const monthDifference = today.getMonth() - birthDate.getMonth();
+  
+  if (monthDifference < 0 || (monthDifference === 0 && today.getDate() < birthDate.getDate())) {
+    age--;
+  }
+  
+  return age;
+}
+
+
 export function sortExperiencesByDate(experiences, ascending = true) {
   return experiences.sort((a, b) => {
     const dateA = new Date(a.event_time);
