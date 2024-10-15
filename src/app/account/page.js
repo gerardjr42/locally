@@ -98,14 +98,13 @@ export default function Account() {
       <NavigationBar />
       <main className="pb-24">
         <motion.div
-          className="aspect-square bg-gray-300 relative"
+          className="aspect-square bg-gray-300 relative w-full h-full"
           variants={fadeIn}
         >
           <img
-            src="https://i.redd.it/male-random-selfie-27m-v0-s6bd3ohvwx4c1.jpg?width=2208&format=pjpg&auto=webp&s=fee39976344658358256e1679cf8bfe5eff65159"
-            alt="Hudson's profile picture"
-            layout="fill"
-            objectFit="cover"
+            src={ user?.photo_url }
+            alt={`${user?.first_name}'s Photo`}
+            className="absolute inset-0 w-full h-full object-cover"
             onClick={() => {
               if (isEditing) {
                 router.push('/account/photo');
@@ -122,7 +121,7 @@ export default function Account() {
 
           <div className="flex justify-between items-center">
             <div>
-              <p className="text-sm text-gray-600">Events Attended</p>
+              <p className="text-sm text-gray-600">Past Connections</p>
               <p className="text-xl font-bold">19</p>
             </div>
             <motion.div
