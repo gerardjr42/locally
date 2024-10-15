@@ -53,6 +53,7 @@ export default function Account() {
   const [isEditing, setIsEditing] = useState(false);
   const [bio, setBio] = useState(``);
   const [age, setAge] = useState(0);
+  const [name, setName] = useState(``);
 
   const bioSliceIndex = 250;
   const bioSummary = bio.slice(0, bioSliceIndex);
@@ -69,6 +70,7 @@ export default function Account() {
   useEffect(() => {
     if (user) {
       handleAge();
+      handleName(user);
     }
   }, [user]);
 
@@ -76,6 +78,14 @@ export default function Account() {
     const birthdate = new Date(user.user_dob);
     const age = calculateAge(birthdate);
     setAge(age);
+  };
+
+  const handleName = (user) => {
+    const firstName = user.first_name || '';
+    const lastName = user.last_name || '';
+
+    let nameString = `${firstName} ${lastName[0]}.`;
+    setName(nameString);
   };
 
 
@@ -106,7 +116,7 @@ export default function Account() {
 
         <motion.div className="p-4 space-y-4" variants={slideUp}>
           <div>
-            <h3 className="text-2xl font-bold">Hudson R., { age }</h3>
+            <h3 className="text-2xl font-bold">{ name }, { age }</h3>
             <p className="text-gray-600">New York, NY</p>
           </div>
 
