@@ -1,6 +1,8 @@
 'use client';
 import { NavigationBar } from '@/components/navigation-bar';
 import { Button } from '@/components/ui/button';
+import { useUserContext } from '@/contexts/UserContext';
+
 import {
   Collapsible,
   CollapsibleContent,
@@ -44,13 +46,10 @@ const slideUp = {
 export default function Account() {
   const router = useRouter();
   const params = useParams();
+  const { user } = useUserContext();
   const [isExpanded, setIsExpanded] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
-  const [bio, setBio] =
-    useState(` Hello! I'm Hudson, a 32-year-old enthusiast of all things
-                creative and captivating. My journey in life is a colorful
-                tapestry woven with my passions for photography, film, theater,
-                art, and the companionship of my loyal canine friend.Capturing moments through the lens is my way of telling stories, and my camera is always ready to seize the magic of the moment. I’m an avid film buff, always on the lookout for the next cinematic masterpiece, enjoying everything from indie films to blockbuster hits. The stage is where stories come to life, and I love attending live theater performances, whether it’s a gripping drama or a lighthearted musical. My furry friend is more than just a pet; they’re family, reminding me to enjoy the simple pleasures in life. Art is everywhere, and I find inspiration in galleries, street murals, and even in everyday objects, as I dabble in painting and sketching. I’m always eager to connect with fellow enthusiasts and explorers, so feel free to reach out—I’d love to hear from you!`);
+  const [bio, setBio] = useState(``);
 
   const bioSliceIndex = 250;
   const bioSummary = bio.slice(0, bioSliceIndex);

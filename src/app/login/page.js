@@ -5,6 +5,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { supabase } from "@/lib/supabase";
+import { useUserContext } from '@/contexts/UserContext';
+
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -17,6 +19,8 @@ export default function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
+  const { getUserData } = useUserContext();
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
@@ -24,9 +28,8 @@ export default function LoginPage() {
         email: email,
         password: password,
       });
-
       if (error) throw error;
-
+      getUserData();
       toast.success("Login successful!");
       router.push("/experiences");
     } catch (error) {
