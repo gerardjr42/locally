@@ -1,22 +1,14 @@
 "use client";
 
+
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { NavigationBar } from "@/components/navigation-bar";
 import { fetchUsersForExperience } from "@/lib/utils";
 import Image from "next/image";
-
-const calculateAge = (dob) => {
-  const today = new Date();
-  const birthDate = new Date(dob);
-  let age = today.getFullYear() - birthDate.getFullYear();
-  const m = today.getMonth() - birthDate.getMonth();
-  if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
-    age--;
-  }
-  return age;
-};
+import { useRouter } from "next/navigation";
+import { useEffect, useMemo, useState } from "react";
 
 export default function AttendeesList() {
   const supabase = createClientComponentClient();
@@ -44,16 +36,18 @@ export default function AttendeesList() {
     loadData();
   }, [params.experienceId]);
 
-  console.log(experience);
-
+  const handleBackClick = () => {
+    router.back();
+  };
 
   return (
     <div className="bg-gray-100 min-h-screen">
       <header className="bg-white p-4 flex justify-between items-center shadow-sm">
-        <NavigationBar />
+        <NavigationBar handleBackClick={handleBackClick} />
       </header>
       <main className="p-4">
         <div className="mb-4">
+
           <h2 className="text-xl font-bold">
             Explore a potential connection for {}!
           </h2>
@@ -74,6 +68,7 @@ export default function AttendeesList() {
                     width={48}
                     height={48}
                     objectFit="cover"
+                    style={{ width: "100%", height: "auto" }}
                   />
                 </div>
                 <div>

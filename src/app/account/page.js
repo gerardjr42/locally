@@ -1,14 +1,15 @@
-'use client';
-import { NavigationBar } from '@/components/navigation-bar';
-import { Button } from '@/components/ui/button';
-import { useUserContext } from '@/contexts/UserContext';
+"use client";
+import { NavigationBar } from "@/components/navigation-bar";
+import { Button } from "@/components/ui/button";
+import { useUserContext } from "@/contexts/UserContext";
+import { calculateAge, fetchUserInterests, buildNameString } from "@/lib/utils";
 
 import {
   Collapsible,
   CollapsibleContent,
   CollapsibleTrigger,
-} from '@/components/ui/collapsible';
-import { AnimatePresence, motion } from 'framer-motion';
+} from "@/components/ui/collapsible";
+import { AnimatePresence, motion } from "framer-motion";
 import {
   ArrowLeft,
   BadgeCheck,
@@ -21,17 +22,9 @@ import {
   Theater,
   Pencil,
   X,
-} from 'lucide-react';
-import { useParams, useRouter } from 'next/navigation';
-import { useState } from 'react';
-
-const interests = [
-  { name: 'Photography', icon: Camera },
-  { name: 'Film', icon: Film },
-  { name: 'Theatre', icon: Theater },
-  { name: 'Dogs', icon: Dog },
-  { name: 'Art', icon: Palette },
-];
+} from "lucide-react";
+import { useParams, useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 
 const fadeIn = {
   hidden: { opacity: 0 },
@@ -50,6 +43,9 @@ export default function Account() {
   const [isExpanded, setIsExpanded] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [bio, setBio] = useState(``);
+  const [age, setAge] = useState(0);
+  const [name, setName] = useState(``);
+  const [interests, setInterests] = useState([]);
 
   const bioSliceIndex = 250;
   const bioSummary = bio.slice(0, bioSliceIndex);
@@ -59,8 +55,25 @@ export default function Account() {
     setIsEditing(!isEditing);
   };
 
-  const handleBioChange = (e) => {
-    setBio(e.target.value);
+  const handleBioChange = (user) => {
+    setBio(user.bio);
+  };
+
+  useEffect(() => {
+    if (user) {
+      handleAge();
+      buildNameString(user);
+      setName(buildNameString(user));
+      fetchUserInterests(user.user_id).then((fetchedInterests) => {
+        setInterests(fetchedInterests);
+      });
+    }
+  }, [user]);
+
+  const handleAge = () => {
+    const birthdate = new Date(user.user_dob);
+    const age = calculateAge(birthdate);
+    setAge(age);
   };
 
   return (
@@ -72,17 +85,16 @@ export default function Account() {
       <NavigationBar />
       <main className="pb-24">
         <motion.div
-          className="aspect-square bg-gray-300 relative"
+          className="aspect-square bg-gray-300 relative w-full h-full"
           variants={fadeIn}
         >
           <img
-            src="https://i.redd.it/male-random-selfie-27m-v0-s6bd3ohvwx4c1.jpg?width=2208&format=pjpg&auto=webp&s=fee39976344658358256e1679cf8bfe5eff65159"
-            alt="Hudson's profile picture"
-            layout="fill"
-            objectFit="cover"
+            src={user?.photo_url}
+            alt={`${user?.first_name}'s Photo`}
+            className="absolute inset-0 w-full h-full object-cover"
             onClick={() => {
               if (isEditing) {
-                router.push('/account/photo');
+                router.push("/account/photo");
               }
             }}
           />
@@ -90,13 +102,15 @@ export default function Account() {
 
         <motion.div className="p-4 space-y-4" variants={slideUp}>
           <div>
-            <h3 className="text-2xl font-bold">Hudson R., 32</h3>
+            <h3 className="text-2xl font-bold">
+              {name}, {age}
+            </h3>
             <p className="text-gray-600">New York, NY</p>
           </div>
 
           <div className="flex justify-between items-center">
             <div>
-              <p className="text-sm text-gray-600">Events Attended</p>
+              <p className="text-sm text-gray-600">Past Connections</p>
               <p className="text-xl font-bold">19</p>
             </div>
             <motion.div
@@ -109,13 +123,12 @@ export default function Account() {
               </p>
             </motion.div>
           </div>
-
           <div>
             <h4 className="text-lg font-bold mb-2">Interests</h4>
             <div className="flex space-x-4 overflow-x-auto pb-2">
               {interests.map((interest, index) => (
                 <motion.div
-                  key={index}
+                  key={interest.id}
                   className="flex flex-col items-center cursor-pointer"
                   whileHover={{ scale: 1.1 }}
                   initial={{ opacity: 0, y: 20 }}
@@ -123,21 +136,20 @@ export default function Account() {
                   transition={{ delay: index * 0.1 }}
                   onClick={() => {
                     if (isEditing) {
-                      router.push('/account/interests');
+                      router.push("/account/interests");
                     }
                   }}
                 >
                   <div className="w-12 h-12 rounded-full border-2 border-gray-300 flex items-center justify-center">
-                    <interest.icon className="w-6 h-6 text-gray-600" />
+                    {/* You may need to add logic here to display the correct icon based on the interest name */}
                   </div>
-                  <p className="text-[10px] mt-1 text-[#15B8A6] font-bold">
+                  <p className="text-[10px] mt-1 text-[#15B8A6] font-bold text-center">
                     {interest.name}
                   </p>
                 </motion.div>
               ))}
             </div>
           </div>
-
           <Collapsible
             open={isExpanded}
             onOpenChange={setIsExpanded}
@@ -162,7 +174,7 @@ export default function Account() {
             </motion.div>
             <CollapsibleTrigger asChild>
               <Button variant="ghost" size="sm" className="p-0">
-                {isExpanded ? 'Read less' : 'Read more'}
+                {isExpanded ? "Read less" : "Read more"}
               </Button>
             </CollapsibleTrigger>
           </Collapsible>
@@ -178,7 +190,7 @@ export default function Account() {
             }}
           >
             <Pencil className="mr-2" />
-            {isEditing ? 'Save' : 'Edit profile'}
+            {isEditing ? "Save" : "Edit profile"}
           </motion.button>
         </div>
       </footer>

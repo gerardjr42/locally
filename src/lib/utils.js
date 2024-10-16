@@ -1,5 +1,6 @@
 import { clsx } from "clsx";
 import { twMerge } from "tailwind-merge"
+import { supabase } from "./supabase";
 
 export function cn(...inputs) {
   return twMerge(clsx(inputs));
@@ -10,6 +11,27 @@ export function formatDate(timestamp) {
   const options = { weekday: 'short', month: 'short', day: 'numeric' };
   return date.toLocaleDateString('en-US', options);
 }
+
+export function calculateAge(birthdate) {
+  const today = new Date();
+  const birthDate = new Date(birthdate);
+  let age = today.getFullYear() - birthDate.getFullYear();
+  const monthDifference = today.getMonth() - birthDate.getMonth();
+  
+  if (monthDifference < 0 || (monthDifference === 0 && today.getDate() < birthDate.getDate())) {
+    age--;
+  }
+  
+  return age;
+}
+
+export const buildNameString = (user) => {
+  const firstName = user.first_name || "";
+  const lastName = user.last_name || "";
+
+  let nameString = `${firstName} ${lastName[0]}.`;
+  return nameString;
+};
 
 export function sortExperiencesByDate(experiences, ascending = true) {
   return experiences.sort((a, b) => {
@@ -43,3 +65,25 @@ export async function fetchUsersForExperience(supabase, experienceId) {
     return [];
   }
 }
+
+export const fetchUserInterests = async (userId) => {
+  const { data, error } = await supabase
+    .from('User_Interests')
+    .select(`
+      interest_id,
+      Interests (
+        name
+      )
+    `)
+    .eq('user_id', userId);
+
+  if (error) {
+    console.error('Error fetching user interests:', error);
+    return [];
+  }
+
+  return data.map(item => ({
+    id: item.interest_id,
+    name: item.Interests.name
+  }));
+};

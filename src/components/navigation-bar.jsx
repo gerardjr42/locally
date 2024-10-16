@@ -21,6 +21,9 @@ export function NavigationBar({ handleBackClick }) {
   const handleDetailsClick = () => {
     router.push("/account/details");
   };
+  const handleProfileClick = () => {
+    router.push("/account");
+  };
   const handlePhotoClick = () => {
     router.push("/account/photo");
   };
@@ -153,7 +156,7 @@ export function NavigationBar({ handleBackClick }) {
                     Hello, <span className="font-bold">{user.first_name}</span>!
                   </p>
                   <a>
-                    <p className="text-gray-500">View Profile</p>
+                    <p className="text-gray-500" onClick={handleProfileClick}>View Profile</p>
                   </a>
                 </div>
               </div>

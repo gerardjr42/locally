@@ -59,6 +59,7 @@ export default function ExperienceDetails() {
         .select(
           `
           user_id,
+          expressed_interest,
           Users (
             user_id,
             first_name,
@@ -68,7 +69,8 @@ export default function ExperienceDetails() {
           )
         `
         )
-        .eq("event_id", params.experienceId);
+        .eq("event_id", params.experienceId)
+        .eq("expressed_interest", true);
 
       if (userError) {
         console.error("Error fetching interested users:", userError);
@@ -87,7 +89,7 @@ export default function ExperienceDetails() {
           .eq("user_id", user.id)
           .single();
 
-        if (data) {
+        if (data && data.expressed_interest) {
           setIsInterested(true);
         }
       }
