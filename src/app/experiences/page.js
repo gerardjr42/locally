@@ -50,6 +50,7 @@ export default function AllExperiences() {
       if (categoriesError) throw categoriesError;
       if (eventsError) throw eventsError;
 
+
       // Process events data to include categories
       const processedEvents = await Promise.all(
         eventsData.map(async (event) => {
@@ -75,6 +76,7 @@ export default function AllExperiences() {
       toast.error(`Error fetching data: ${error.message}`);
     }
   }
+
 
   const toggleCategory = (categoryId) => {
     setSelectedCategories((prev) =>
@@ -116,6 +118,8 @@ export default function AllExperiences() {
     setSortAscending(!sortAscending);
     setExperiences(sortExperiencesByDate([...experiences], sortAscending));
   };
+
+  console.log(experiences)
 
   return (
     <div className="flex flex-col items-center justify-center">

@@ -8,6 +8,10 @@ import {
 } from "@/components/ui/accordion";
 import { Button } from "@/components/ui/button";
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
+import { fetchUsersForExperience } from "@/lib/utils";
+
+
+
 import { Clock, DollarSign, MapPin, Tag, Users } from "lucide-react";
 import Image from "next/image";
 import { useParams, useRouter } from "next/navigation";
@@ -16,6 +20,7 @@ import { useEffect, useRef, useState } from "react";
 export default function ExperienceDetails() {
   const [experience, setExperience] = useState(null);
   const [interestedUsers, setInterestedUsers] = useState([]);
+  const [interested, setInterested] = useState([]);
   const [loading, setLoading] = useState(true);
   const [isInterested, setIsInterested] = useState(false);
   const [isExpanded, setIsExpanded] = useState(false);
@@ -104,6 +109,16 @@ export default function ExperienceDetails() {
       setShowReadMore(descriptionRef.current.scrollHeight > maxHeight);
     }
   }, [experience]);
+
+  useEffect(() => {
+    async function loadInterestedUsers() {
+      const users = await fetchUsersForExperience(supabase, params.experienceId);
+      setInterested(users);
+    }
+  
+    loadInterestedUsers();
+    console.log(interested);
+  }, [params.experienceId]);
 
   const handleInterestClick = async () => {
     const {
@@ -226,7 +241,10 @@ export default function ExperienceDetails() {
               {interestedUsers.slice(0, 5).map((user, index) => (
                 <div key={user.user_id} className="flex-shrink-0 w-20">
                   <div className="relative mb-1">
-                    <div className="rounded-full overflow-hidden w-20 h-20">
+                    <div 
+                      className="rounded-full overflow-hidden w-20 h-20 cursor-pointer"
+                      onClick={() => router.push(`/experiences/${params.experienceId}/attendees/${user.user_id}`)}
+                    >
                       <Image
                         src={user.photo_url || "/default-avatar.png"}
                         alt={`${user.first_name} ${user.last_name}`}
