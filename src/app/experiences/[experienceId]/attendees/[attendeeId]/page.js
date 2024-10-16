@@ -139,10 +139,7 @@ export default function UserProfile() {
           >
             <motion.div className="text-gray-600" variants={fadeIn}>
               <p className="text-sm">
-                Hello! I&apos;m Hudson, a 32-year-old enthusiast of all things
-                creative and captivating. My journey in life is a colorful
-                tapestry woven with my passions for photography, film, theater,
-                art, and the companionship of my loyal canine friend.
+                {interestedUser.bio}
               </p>
               <CollapsibleContent className="text-sm">
                 <p className="pt-2">
