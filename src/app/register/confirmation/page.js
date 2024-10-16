@@ -1,14 +1,13 @@
-'use client';
+"use client";
 
-import React from 'react';
-import { useRouter } from 'next/navigation';
-import './confirmation.scss';
+import { useRouter } from "next/navigation";
+import "./confirmation.scss";
 
 export default function ConfirmationPage() {
   const router = useRouter();
 
   const handleLoginRedirect = () => {
-    router.push('/login');
+    router.push("/login");
   };
 
   return (
