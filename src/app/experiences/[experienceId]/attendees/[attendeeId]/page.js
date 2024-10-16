@@ -2,33 +2,18 @@
 
 import { NavigationBar } from "@/components/navigation-bar";
 import { Button } from "@/components/ui/button";
+import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
+import { BadgeCheck, Check, X } from "lucide-react";
 import {
   Collapsible,
   CollapsibleContent,
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
 import { AnimatePresence, motion } from "framer-motion";
-import {
-  BadgeCheck,
-  Camera,
-  Check,
-  Dog,
-  Film,
-  Palette,
-  Theater,
-  X,
-} from "lucide-react";
 import Image from "next/image";
 import { useParams, useRouter } from "next/navigation";
-import { useState } from "react";
-
-const interests = [
-  { name: "Photography", icon: Camera },
-  { name: "Film", icon: Film },
-  { name: "Theatre", icon: Theater },
-  { name: "Dogs", icon: Dog },
-  { name: "Art", icon: Palette },
-];
+import { useState, useEffect } from "react";
+import { calculateAge, fetchUserInterests, buildNameString } from "@/lib/utils";
 
 const fadeIn = {
   hidden: { opacity: 0 },
@@ -43,8 +28,11 @@ const slideUp = {
 export default function UserProfile() {
   const router = useRouter();
   const params = useParams();
+  const supabase = createClientComponentClient();
   const [feedback, setFeedback] = useState({ message: "", type: "" });
   const [isExpanded, setIsExpanded] = useState(false);
+  const [interests, setInterests] = useState([]);
+  const [interestedUser, setInterestedUser] = useState({});
 
   const handleConnect = () => {
     setFeedback({ message: "Connected with Hudson!", type: "connect" });
@@ -60,6 +48,28 @@ export default function UserProfile() {
     router.push(`/experiences/${params.experienceId}/attendees`);
   };
 
+  useEffect(() => {
+    async function fetchUserInfo() {
+      if (params.attendeeId) {
+        const { data, error } = await supabase
+          .from('Users')
+          .select('*')
+          .eq('id', params.attendeeId)
+          .single();
+
+        if (data && !error) {
+          setInterestedUser(data);
+          const interests = await fetchUserInterests(supabase, params.attendeeId);
+          setInterests(interests);
+        }
+      }
+    }
+
+    fetchUserInfo();
+  }, [params.attendeeId, supabase]);
+
+  console.log("Interested User Info", interestedUser);
+
   return (
     <motion.div
       initial="hidden"
@@ -71,32 +81,31 @@ export default function UserProfile() {
       </header>
       <main className="pt-16 pb-24">
         <motion.div className="bg-gray-100 p-4" variants={slideUp}>
-          <p className="font-semibold">Hudson also wants to attend</p>
+          <p className="font-semibold">{interestedUser.first_name} also wants to attend</p>
           <h2 className="text-xl font-bold">Movies In The Park!</h2>
         </motion.div>
 
         <motion.div
-          className="aspect-square bg-gray-300 relative"
+          className="aspect-square bg-gray-300 relative w-full h-full"
           variants={fadeIn}
         >
           <Image
-            src="/placeholder.svg"
-            alt="Hudson's profile picture"
-            layout="fill"
-            objectFit="cover"
+            src={interestedUser?.photo_url}
+            alt={`${interestedUser?.first_name}'s Photo`}
+            className="absolute inset-0 w-full h-full object-cover"
           />
         </motion.div>
 
         <motion.div className="p-4 space-y-4" variants={slideUp}>
           <div>
-            <h3 className="text-2xl font-bold">Hudson R., 32</h3>
-            <p className="text-gray-600">New York, NY</p>
+            <h3 className="text-2xl font-bold">{buildNameString(interestedUser)}, {calculateAge(interestedUser.user_dob)}</h3>
+            <p className="text-gray-600">{interestedUser.user_zipcode}</p>
           </div>
 
           <div className="flex justify-between items-center">
             <div>
-              <p className="text-sm text-gray-600">Events Attended</p>
-              <p className="text-xl font-bold">19</p>
+              <p className="text-sm text-gray-600">Past Connections</p>
+              <p className="text-xl font-bold">10</p>
             </div>
             <motion.div
               className="flex items-center bg-green-50 px-3 py-1 rounded-full border border-green-200"
@@ -110,21 +119,21 @@ export default function UserProfile() {
           </div>
 
           <div>
-            <h4 className="text-lg font-bold mb-2">INTERESTS</h4>
+            <h4 className="text-lg font-bold mb-2">Interests</h4>
             <div className="flex space-x-4 overflow-x-auto pb-2">
               {interests.map((interest, index) => (
                 <motion.div
-                  key={index}
-                  className="flex flex-col items-center"
+                  key={interest.id}
+                  className="flex flex-col items-center cursor-pointer"
                   whileHover={{ scale: 1.1 }}
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: index * 0.1 }}
                 >
                   <div className="w-12 h-12 rounded-full border-2 border-gray-300 flex items-center justify-center">
-                    <interest.icon className="w-6 h-6 text-gray-600" />
+                    {/* You may need to add logic here to display the correct icon based on the interest name */}
                   </div>
-                  <p className="text-[10px] mt-1 text-[#15B8A6] font-bold">
+                  <p className="text-[10px] mt-1 text-[#15B8A6] font-bold text-center">
                     {interest.name}
                   </p>
                 </motion.div>
@@ -139,10 +148,7 @@ export default function UserProfile() {
           >
             <motion.div className="text-gray-600" variants={fadeIn}>
               <p className="text-sm">
-                Hello! I&apos;m Hudson, a 32-year-old enthusiast of all things
-                creative and captivating. My journey in life is a colorful
-                tapestry woven with my passions for photography, film, theater,
-                art, and the companionship of my loyal canine friend.
+                {interestedUser.bio}
               </p>
               <CollapsibleContent className="text-sm">
                 <p className="pt-2">
