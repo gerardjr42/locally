@@ -141,7 +141,7 @@ export default function LoginPage() {
 
         <p className="mt-4 text-center text-sm text-gray-600">
           <button
-            onClick={() => router.push("/login/reset-password")}
+            onClick={() => router.push("/account/reset-password")}
             className="font-medium text-teal-600 hover:text-teal-500"
           >
             Forgot Password?
