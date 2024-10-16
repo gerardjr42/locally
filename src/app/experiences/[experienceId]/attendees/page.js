@@ -7,8 +7,6 @@ import { useParams, useRouter } from "next/navigation";
 import { NavigationBar } from "@/components/navigation-bar";
 import { fetchUsersForExperience } from "@/lib/utils";
 import Image from "next/image";
-import { useRouter } from "next/navigation";
-import { useEffect, useMemo, useState } from "react";
 
 export default function AttendeesList() {
   const supabase = createClientComponentClient();
