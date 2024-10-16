@@ -12,9 +12,9 @@ import { NavigationBar } from "@/components/navigation-bar";
 import { Input } from "@/components/ui/input";
 
 import {
+  fetchUsersForExperience,
   formatDate,
   sortExperiencesByDate,
-  fetchUsersForExperience,
 } from "@/lib/utils";
 
 export default function AllExperiences() {
@@ -233,12 +233,14 @@ export default function AllExperiences() {
                     {experience.users.length > 0 && (
                       <div className="avatar">
                         <div className="w-12">
-                          <img
+                          <Image
                             src={
                               experience.users[0].photo_url ||
                               "https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.webp"
                             }
                             alt={experience.users[0].first_name}
+                            width={400}
+                            height={400}
                           />
                         </div>
                       </div>
@@ -251,7 +253,9 @@ export default function AllExperiences() {
                       </div>
                     )}
                   </div>
-                  <p className="text-center text-sm text-gray-500">Interested</p>
+                  <p className="text-center text-sm text-gray-500">
+                    Interested
+                  </p>
                 </div>
               </div>
             </div>
