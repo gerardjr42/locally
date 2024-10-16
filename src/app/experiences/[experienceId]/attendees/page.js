@@ -29,7 +29,16 @@ export default function AttendeesList({ params }) {
     const fetchAttendees = async () => {
       setIsLoading(true);
       try {
-        const { data, error } = await supabase.from("Users").select("*");
+        const { data, error } = await supabase
+          .from("User_Events")
+          .select(
+            `
+            *,
+            Users:user_id (*)
+          `
+          )
+          .eq("event_id", experienceId)
+          .eq("expressed_interest", true);
 
         if (error) throw error;
 
@@ -38,7 +47,7 @@ export default function AttendeesList({ params }) {
           return;
         }
 
-        setAttendees(data);
+        setAttendees(data.map((item) => item.Users));
       } catch (error) {
         console.error("Error in fetchAttendees:", error);
         setError(error.message);
@@ -48,7 +57,7 @@ export default function AttendeesList({ params }) {
     };
 
     fetchAttendees();
-  }, [supabase]);
+  }, [supabase, experienceId]);
 
   const processedAttendees = useMemo(() => {
     return attendees.map((user) => ({
