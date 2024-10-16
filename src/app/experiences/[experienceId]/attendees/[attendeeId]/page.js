@@ -98,8 +98,8 @@ export default function UserProfile() {
 
         <motion.div className="p-4 space-y-4" variants={slideUp}>
           <div>
-            <h3 className="text-2xl font-bold">{buildNameString(interestedUser)}, 32</h3>
-            <p className="text-gray-600">New York, NY</p>
+            <h3 className="text-2xl font-bold">{buildNameString(interestedUser)}, {calculateAge(interestedUser.user_dob)}</h3>
+            <p className="text-gray-600">{interestedUser.user_zipcode}</p>
           </div>
 
           <div className="flex justify-between items-center">
