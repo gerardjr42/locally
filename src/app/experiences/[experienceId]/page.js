@@ -20,7 +20,7 @@ import { useEffect, useRef, useState } from "react";
 export default function ExperienceDetails() {
   const [experience, setExperience] = useState(null);
   const [interestedUsers, setInterestedUsers] = useState([]);
-  const [intersted, setInterested] = useState([]);
+  const [interested, setInterested] = useState([]);
   const [loading, setLoading] = useState(true);
   const [isInterested, setIsInterested] = useState(false);
   const [isExpanded, setIsExpanded] = useState(false);
@@ -115,9 +115,8 @@ export default function ExperienceDetails() {
     }
   
     loadInterestedUsers();
-    console.log(intersted);
+    console.log(interested);
   }, [params.experienceId]);
-  
 
   const handleInterestClick = async () => {
     const {

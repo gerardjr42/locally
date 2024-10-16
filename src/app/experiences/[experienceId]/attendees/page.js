@@ -1,6 +1,10 @@
+"use client";
+
+import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
+import { useEffect, useState } from "react";
+import { useParams, useRouter } from "next/navigation";
 import { NavigationBar } from "@/components/navigation-bar";
-import { createServerComponentClient } from "@supabase/auth-helpers-nextjs";
-import { cookies } from "next/headers";
+import { fetchUsersForExperience } from "@/lib/utils";
 import Image from "next/image";
 
 const calculateAge = (dob) => {
@@ -14,52 +18,34 @@ const calculateAge = (dob) => {
   return age;
 };
 
-export default async function AttendeesList() {
-  const cookieStore = cookies();
-  const supabase = createServerComponentClient({
-    cookies: () => cookieStore,
-  });
+export default function AttendeesList() {
+  const supabase = createClientComponentClient();
+  const params = useParams();
+  const router = useRouter();
+  const [interestedUsers, setInterestedUsers] = useState([]);
+  const [experience, setExperience] = useState({});
 
-  const fetchAttendees = async () => {
-    try {
-      console.log("Fetching attendees...");
-      const { data, error, count } = await supabase
-        .from("Users")
-        .select("*", { count: "exact" });
+  useEffect(() => {
+    async function loadData() {
+      const { data: experienceData } = await supabase
+        .from("Events")
+        .select("*")
+        .eq("id", params.experienceId)
+        .single();
+      setExperience(experienceData);
 
-      if (error) {
-        console.error("Error fetching attendees:", error);
-        throw error;
-      }
-
-      console.log("Total users in database:", count);
-      console.log("Fetched data:", data);
-
-      if (!data || data.length === 0) {
-        console.log("No attendees found");
-        return { attendees: [], error: "No attendees found" };
-      }
-
-      console.log("Number of attendees fetched:", data.length);
-
-      const processedData = data.map((user) => ({
-        ...user,
-        age: calculateAge(user.user_dob),
-        topMatch: Math.random() < 0.3, // Randomly assign topMatch for demonstration
-      }));
-
-      console.log("Processed data:", processedData);
-
-      return { attendees: processedData, error: null };
-    } catch (error) {
-      console.error("Error in fetchAttendees:", error);
-      return { attendees: [], error: error.message };
+      const users = await fetchUsersForExperience(
+        supabase,
+        params.experienceId
+      );
+      setInterestedUsers(users);
     }
-  };
 
-  const { attendees, error } = await fetchAttendees();
+    loadData();
+  }, [params.experienceId]);
 
-  if (error) return <div>Error: {error}</div>;
+  console.log(experience);
+
 
   return (
     <div className="bg-gray-100 min-h-screen">
@@ -68,23 +54,23 @@ export default async function AttendeesList() {
       </header>
       <main className="p-4">
         <div className="mb-4">
-          <h2 className="text-2xl font-bold">
-            {attendees.length} Interested Locals
+          <h2 className="text-xl font-bold">
+            Explore a potential connection for {}!
           </h2>
-          <p className="text-gray-600">for Movies In The Park</p>
         </div>
 
         <div className="space-y-4 bg-[#C9E9E5] p-4 rounded-lg">
-          {attendees.map((attendee) => (
+          {interestedUsers.map((interestedUser) => (
             <div
-              key={attendee.user_id}
+              key={interestedUser.user_id}
               className="bg-white p-4 rounded-lg shadow flex justify-between items-center cursor-pointer"
+              onClick={() => router.push(`/experiences/${params.experienceId}/attendees/${interestedUser.user_id}`)}
             >
               <div className="flex items-center">
                 <div className="w-12 h-12 bg-gray-200 rounded-full mr-4 overflow-hidden">
                   <Image
-                    src={attendee.photo_url}
-                    alt={`${attendee.first_name}'s profile`}
+                    src={interestedUser.photo_url}
+                    alt={`${interestedUser.first_name}'s profile`}
                     width={48}
                     height={48}
                     objectFit="cover"
@@ -92,11 +78,11 @@ export default async function AttendeesList() {
                 </div>
                 <div>
                   <h3 className="font-semibold">
-                    {attendee.first_name}, {attendee.age}
+                    {interestedUser.first_name} {interestedUser.last_name[0]}.
                   </h3>
                 </div>
               </div>
-              {attendee.topMatch && (
+              {interestedUser.topMatch && (
                 <span className="bg-gray-200 text-gray-700 px-2 py-1 rounded text-sm">
                   Top Match
                 </span>

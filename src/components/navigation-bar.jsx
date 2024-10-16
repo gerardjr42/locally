@@ -17,9 +17,7 @@ import { Button } from "./ui/button";
 
 export function NavigationBar({ handleBackClick }) {
   const { user, setUser } = useUserContext();
-  console.log("User:", user);
   const router = useRouter();
-
   const handleDetailsClick = () => {
     router.push("/account/details");
   };
