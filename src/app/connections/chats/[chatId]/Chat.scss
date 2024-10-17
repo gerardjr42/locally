@@ -1,0 +1,20 @@
+.Chat {
+    h1 {
+        font-weight: 700;
+    }
+
+    .Chat-header {
+        padding: 1rem 2rem;
+
+        span {
+            color: grey;
+            display: block;
+            font-weight: normal;
+        }
+    }
+
+    .Chat-container {
+        background-color: #C3E6E3;
+        height: 75vh;
+    }
+}
