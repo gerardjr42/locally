@@ -9,7 +9,7 @@ import {
   CollapsibleContent,
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
-import { AnimatePresence, motion } from "framer-motion";
+import { AnimatePresence, interpolate, motion } from "framer-motion";
 import Image from "next/image";
 import { useParams, useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
@@ -33,6 +33,7 @@ export default function UserProfile() {
   const [isExpanded, setIsExpanded] = useState(false);
   const [interests, setInterests] = useState([]);
   const [interestedUser, setInterestedUser] = useState({});
+  const [eventName, setEventName] = useState('');
 
   const handleConnect = () => {
     setFeedback({ message: "Connected with Hudson!", type: "connect" });
@@ -49,26 +50,38 @@ export default function UserProfile() {
   };
 
   useEffect(() => {
-    async function fetchUserInfo() {
-      if (params.attendeeId) {
-        const { data, error } = await supabase
+    async function fetchData() {
+      if (params.attendeeId && params.experienceId) {
+        // Fetch user info
+        const { data: userData, error: userError } = await supabase
           .from('Users')
           .select('*')
-          .eq('id', params.attendeeId)
+          .eq('user_id', params.attendeeId)
           .single();
 
-        if (data && !error) {
-          setInterestedUser(data);
-          const interests = await fetchUserInterests(supabase, params.attendeeId);
-          setInterests(interests);
+        if (userData && !userError) {
+          setInterestedUser(userData);
+        }
+
+        const interests = await fetchUserInterests(params.attendeeId);
+        setInterests(interests);
+        
+        const { data: eventData, error: eventError } = await supabase
+          .from('Events')
+          .select('event_name')
+          .eq('event_id', params.experienceId)
+          .single();
+
+        if (eventData && !eventError) {
+          setEventName(eventData.event_name);
         }
       }
     }
 
-    fetchUserInfo();
-  }, [params.attendeeId, supabase]);
+    fetchData();
+  }, [params.attendeeId, params.experienceId, supabase]);
 
-  console.log("Interested User Info", interestedUser);
+  console.log(interests);
 
   return (
     <motion.div
@@ -76,20 +89,18 @@ export default function UserProfile() {
       animate="visible"
       className="bg-white min-h-screen font-sans text-gray-900"
     >
-      <header className="bg-white p-4 flex justify-between items-center shadow-sm fixed top-0 left-0 right-0 z-10">
         <NavigationBar handleBackClick={handleBackClick} />
-      </header>
-      <main className="pt-16 pb-24">
+      <main className="pt-15 pb-24">
         <motion.div className="bg-gray-100 p-4" variants={slideUp}>
           <p className="font-semibold">{interestedUser.first_name} also wants to attend</p>
-          <h2 className="text-xl font-bold">Movies In The Park!</h2>
+          <h2 className="text-xl font-bold">{eventName}!</h2>
         </motion.div>
 
         <motion.div
           className="aspect-square bg-gray-300 relative w-full h-full"
           variants={fadeIn}
         >
-          <Image
+          <img
             src={interestedUser?.photo_url}
             alt={`${interestedUser?.first_name}'s Photo`}
             className="absolute inset-0 w-full h-full object-cover"
@@ -181,16 +192,7 @@ export default function UserProfile() {
       </main>
       <footer className="fixed bottom-0 left-0 right-0 bg-white p-4 shadow-lg">
         <div className="flex justify-between space-x-4">
-          <motion.button
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            className="w-1/2 bg-teal-500 text-white py-3 rounded-full font-semibold flex items-center justify-center"
-            onClick={handleConnect}
-            aria-label="Connect with Hudson"
-          >
-            <Check className="w-5 h-5 mr-2" />
-            Connect
-          </motion.button>
+          
           <motion.button
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
@@ -199,7 +201,17 @@ export default function UserProfile() {
             aria-label="Pass on Hudson"
           >
             <X className="w-5 h-5 mr-2" />
-            Pass
+            Let's Not
+          </motion.button>
+          <motion.button
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            className="w-1/2 bg-teal-500 text-white py-3 rounded-full font-semibold flex items-center justify-center"
+            onClick={handleConnect}
+            aria-label="Connect with Hudson"
+          >
+            <Check className="w-5 h-5 mr-2" />
+            Let's Connect
           </motion.button>
         </div>
         <AnimatePresence>
