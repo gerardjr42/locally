@@ -11,6 +11,9 @@ import {
   ChatBubbleMessage,
 } from '@/components/ui/chat/chat-bubble';
 import { ChatMessageList } from '@/components/ui/chat/chat-message-list';
+import { ChatInput } from '@/components/ui/chat/chat-input';
+import { Button } from '@mui/material';
+import { Paperclip, Mic, CornerDownLeft } from 'lucide-react';
 import './Chat.scss';
 
 export default function Chat() {
@@ -42,10 +45,27 @@ export default function Chat() {
             <ChatBubbleMessage isLoading />
           </ChatBubble>
         </ChatMessageList>
-        <div>
+        <div className="Chat-footer">
           <h2>Confirm my attendance</h2>
-          <button>Confirm</button>
+          <button className="Chat-footer-button">Confirm</button>
         </div>
+        <form className="relative rounded-lg border bg-background focus-within:ring-1 focus-within:ring-ring p-1">
+          <ChatInput
+            placeholder="Type your message here..."
+            className="min-h-12 resize-none rounded-lg bg-background border-0 p-3 shadow-none focus-visible:ring-0"
+          />
+          <div className="flex items-center p-3 pt-0">
+            <Button variant="ghost" size="icon">
+              <Mic className="size-4" />
+              <span className="sr-only">Use Microphone</span>
+            </Button>
+
+            <Button size="sm" className="ml-auto gap-1.5">
+              Send
+              <CornerDownLeft className="size-3.5" />
+            </Button>
+          </div>
+        </form>
       </div>
     </div>
   );

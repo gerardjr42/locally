@@ -4,7 +4,7 @@
     }
 
     .Chat-header {
-        padding: 1rem 2rem;
+        padding: 0.5rem 1.5rem;
 
         span {
             color: grey;
@@ -16,5 +16,19 @@
     .Chat-container {
         background-color: #C3E6E3;
         height: 75vh;
+    }
+
+    .Chat-footer {
+        padding: 0.5rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+
+        .Chat-footer-button {
+            padding: 5px 15px;
+            border-radius: 10px;
+            background-color: #60D8C6;
+            color: #fff;
+        }
     }
 }
