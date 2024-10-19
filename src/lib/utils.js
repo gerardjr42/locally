@@ -67,23 +67,42 @@ export async function fetchUsersForExperience(supabase, experienceId) {
 }
 
 export const fetchUserInterests = async (userId) => {
-  const { data, error } = await supabase
-    .from('User_Interests')
-    .select(`
-      interest_id,
-      Interests (
-        name
-      )
-    `)
-    .eq('user_id', userId);
-
-  if (error) {
-    console.error('Error fetching user interests:', error);
+  if (!userId) {
+    console.error('fetchUserInterests: userId is null or undefined');
     return [];
   }
 
-  return data.map(item => ({
-    id: item.interest_id,
-    name: item.Interests.name
-  }));
+  try {
+    const { data, error } = await supabase
+      .from('User_Interests')
+      .select(`
+        interest_id,
+        Interests (
+          name
+        )
+      `)
+      .eq('user_id', userId);
+
+    if (error) throw error;
+
+    if (!data) {
+      console.warn('fetchUserInterests: No data returned from query');
+      return [];
+    }
+
+    return data.map(item => {
+      if (!item || !item.Interests) {
+        console.warn(`fetchUserInterests: Invalid item structure for interest_id: ${item?.interest_id}`);
+        return null;
+      }
+      return {
+        id: item.interest_id,
+        name: item.Interests.name || 'Unknown Interest'
+      };
+    }).filter(Boolean); // Remove any null entries
+
+  } catch (error) {
+    console.error('Error fetching user interests:', error);
+    return [];
+  }
 };

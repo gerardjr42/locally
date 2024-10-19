@@ -7,6 +7,7 @@ export function useUser() {
   const [userEvents, setUserEvents] = useState([]);
   const [loading, setLoading] = useState(true);
 
+  // Fetch user data
   async function getUserData() {
     const { data: { user } } = await supabase.auth.getUser();
     if (user) {
@@ -45,9 +46,48 @@ export function useUser() {
     }
     setLoading(false);
   }
+
+  // New function to delete user photo
+  const deleteUserPhoto = async () => {
+    if (user.photo_url) {
+      const photoPath = user.photo_url.replace(
+        "https://your-storage-bucket-url/",
+        ""
+      ); // Extract file path from the full URL
+
+      const { error } = await supabase.storage
+        .from("user-avatars")
+        .remove([photoPath]); // Remove the old photo using its file path
+
+      if (error) {
+        console.error("Error deleting old photo:", error.message);
+        // Continue with the upload even if there's an error deleting the old photo
+      }
+    }
+  };
+
+  // New function to upload user photo
+  const uploadUserPhoto = async (file) => {
+    const fileExtension = file.name.match(/\.[^.]+$/)[0]; // Extract file extension
+    const uniqueFileName = `${user.user_id}${fileExtension}`; // Use user ID with the original extension
+
+    const { data, error } = await supabase.storage
+      .from("user-avatars")
+      .upload(uniqueFileName, file, {
+        cacheControl: "3600",
+        upsert: true,
+      });
+
+    if (error) {
+      throw new Error(error.message);
+    }
+
+    return uniqueFileName; // Return the filename of the uploaded photo
+  };
+
   useEffect(() => {
     getUserData();
   }, []);
 
-  return { user, setUser, interests, userEvents, loading, getUserData };
+  return { user, setUser, interests, userEvents, loading, getUserData, deleteUserPhoto, uploadUserPhoto };
 }
