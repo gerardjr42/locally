@@ -300,10 +300,16 @@ export default function ExperienceDetails() {
           <div className="grid grid-cols-[auto,1fr] gap-x-2 gap-y-1 items-start mb-6">
             <MapPin className="w-4 h-4 text-gray-600 mt-0.5" />
             <div>
-              <p className="font-semibold text-sm text-gray-800">
-                {experience.event_street_address}
-              </p>
-            </div>
+  <p className="font-semibold text-sm text-gray-800">
+    <a
+      href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(experience.event_street_address + ', ' + experience.event_zip_code)}`}
+      target="_blank"
+      rel="noopener noreferrer"
+    >
+      {experience.event_street_address}, {experience.event_zip_code}
+    </a>
+  </p>
+</div>
             <Clock className="w-4 h-4 text-gray-600 mt-0.5" />
             <p className="text-gray-600 text-sm">
               {new Date(experience.event_time).toLocaleTimeString("en-US", {
