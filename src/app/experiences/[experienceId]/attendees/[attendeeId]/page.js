@@ -2,18 +2,17 @@
 
 import { NavigationBar } from "@/components/navigation-bar";
 import { Button } from "@/components/ui/button";
-import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 import { BadgeCheck, Check, X } from "lucide-react";
 import {
   Collapsible,
   CollapsibleContent,
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
-import { AnimatePresence, interpolate, motion } from "framer-motion";
-import Image from "next/image";
+import { AnimatePresence, motion } from "framer-motion";
 import { useParams, useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
 import { calculateAge, fetchUserInterests, buildNameString } from "@/lib/utils";
+import { supabase } from "@/lib/supabase";
 
 const fadeIn = {
   hidden: { opacity: 0 },
@@ -28,7 +27,6 @@ const slideUp = {
 export default function UserProfile() {
   const router = useRouter();
   const params = useParams();
-  const supabase = createClientComponentClient();
   const [feedback, setFeedback] = useState({ message: "", type: "" });
   const [isExpanded, setIsExpanded] = useState(false);
   const [interests, setInterests] = useState([]);
@@ -52,36 +50,44 @@ export default function UserProfile() {
   useEffect(() => {
     async function fetchData() {
       if (params.attendeeId && params.experienceId) {
-        // Fetch user info
-        const { data: userData, error: userError } = await supabase
-          .from('Users')
-          .select('*')
-          .eq('user_id', params.attendeeId)
-          .single();
+        try {
 
-        if (userData && !userError) {
+  
+          // Fetch user info
+          const { data: userData, error: userError } = await supabase
+            .from('Users')
+            .select('*')
+            .eq('user_id', params.attendeeId)
+            .single();
+  
+          if (userError) throw userError;
+
           setInterestedUser(userData);
-        }
-
-        const interests = await fetchUserInterests(params.attendeeId);
-        setInterests(interests);
-        
-        const { data: eventData, error: eventError } = await supabase
-          .from('Events')
-          .select('event_name')
-          .eq('event_id', params.experienceId)
-          .single();
-
-        if (eventData && !eventError) {
+  
+          // Fetch interests
+          const fetchedInterests = await fetchUserInterests(params.attendeeId);
+          setInterests(fetchedInterests);
+          
+          // Fetch event name
+          const { data: eventData, error: eventError } = await supabase
+            .from('Events')
+            .select('event_name')
+            .eq('event_id', params.experienceId)
+            .single();
+  
+          if (eventError) throw eventError;
           setEventName(eventData.event_name);
+  
+        } catch (error) {
+          console.error("Error fetching data:", error.message);
         }
       }
     }
-
+  
     fetchData();
-  }, [params.attendeeId, params.experienceId, supabase]);
+  }, [params.attendeeId, params.experienceId]);
 
-  console.log(interests);
+
 
   return (
     <motion.div
@@ -89,7 +95,7 @@ export default function UserProfile() {
       animate="visible"
       className="bg-white min-h-screen font-sans text-gray-900"
     >
-        <NavigationBar handleBackClick={handleBackClick} />
+      <NavigationBar handleBackClick={handleBackClick} />
       <main className="pt-15 pb-24">
         <motion.div className="bg-gray-100 p-4" variants={slideUp}>
           <p className="font-semibold">{interestedUser.first_name} also wants to attend</p>
@@ -129,28 +135,27 @@ export default function UserProfile() {
             </motion.div>
           </div>
 
-          <div>
-            <h4 className="text-lg font-bold mb-2">Interests</h4>
-            <div className="flex space-x-4 overflow-x-auto pb-2">
-              {interests.map((interest, index) => (
-                <motion.div
-                  key={interest.id}
-                  className="flex flex-col items-center cursor-pointer"
-                  whileHover={{ scale: 1.1 }}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: index * 0.1 }}
-                >
-                  <div className="w-12 h-12 rounded-full border-2 border-gray-300 flex items-center justify-center">
-                    {/* You may need to add logic here to display the correct icon based on the interest name */}
-                  </div>
-                  <p className="text-[10px] mt-1 text-[#15B8A6] font-bold text-center">
-                    {interest.name}
-                  </p>
-                </motion.div>
-              ))}
-            </div>
-          </div>
+          <div className="flex space-x-4 overflow-x-auto pb-2">
+  {interests.map((interest, index) => (
+    <motion.div
+      key={interest.id || index}
+      className="flex flex-col items-center cursor-pointer"
+      whileHover={{ scale: 1.1 }}
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ delay: index * 0.1 }}
+    >
+      <div className="w-12 h-12 rounded-full border-2 border-gray-300 flex items-center justify-center">
+        {interest.icon && (
+          <span>{interest.icon}</span>
+        )}
+      </div>
+      <p className="text-[10px] mt-1 text-[#15B8A6] font-bold text-center">
+        {interest.name}
+      </p>
+    </motion.div>
+  ))}
+</div>
 
           <Collapsible
             open={isExpanded}
@@ -165,19 +170,19 @@ export default function UserProfile() {
                 <p className="pt-2">
                   Capturing moments through the lens is my way of telling
                   stories, and my camera is always ready to seize the magic of
-                  the moment. I&apos;m an avid film buff, always on the lookout
+                  the moment. I'm an avid film buff, always on the lookout
                   for the next cinematic masterpiece, enjoying everything from
                   indie films to blockbuster hits. The stage is where stories
                   come to life, and I love attending live theater performances,
-                  whether it&apos;s a gripping drama or a lighthearted musical.
+                  whether it's a gripping drama or a lighthearted musical.
                 </p>
                 <p className="pt-2">
-                  My furry friend is more than just a pet; they&apos;re family,
+                  My furry friend is more than just a pet; they're family,
                   reminding me to enjoy the simple pleasures in life. Art is
                   everywhere, and I find inspiration in galleries, street
                   murals, and even in everyday objects, as I dabble in painting
-                  and sketching. I&apos;m always eager to connect with fellow
-                  enthusiasts and explorers, so feel free to reach out—I&apos;d
+                  and sketching. I'm always eager to connect with fellow
+                  enthusiasts and explorers, so feel free to reach out—I'd
                   love to hear from you!
                 </p>
               </CollapsibleContent>
@@ -192,7 +197,6 @@ export default function UserProfile() {
       </main>
       <footer className="fixed bottom-0 left-0 right-0 bg-white p-4 shadow-lg">
         <div className="flex justify-between space-x-4">
-          
           <motion.button
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}

@@ -5,10 +5,10 @@ import { useUser } from '@/hooks/useUser';
 const UserContext = createContext();
 
 export function UserProvider({ children }) {
-  const { user, setUser, loading, getUserData } = useUser();
+  const { user, setUser, loading, getUserData, uploadUserPhoto, deleteUserPhoto } = useUser();
 
   return (
-    <UserContext.Provider value={{ user, setUser, loading, getUserData }}>
+    <UserContext.Provider value={{ user, setUser, loading, getUserData, uploadUserPhoto, deleteUserPhoto }}>
       {children}
     </UserContext.Provider>
   );
