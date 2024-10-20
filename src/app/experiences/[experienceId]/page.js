@@ -10,8 +10,6 @@ import { Button } from "@/components/ui/button";
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 import { fetchUsersForExperience } from "@/lib/utils";
 
-
-
 import { Clock, DollarSign, MapPin, Tag, Users } from "lucide-react";
 import Image from "next/image";
 import { useParams, useRouter } from "next/navigation";
@@ -112,10 +110,13 @@ export default function ExperienceDetails() {
 
   useEffect(() => {
     async function loadInterestedUsers() {
-      const users = await fetchUsersForExperience(supabase, params.experienceId);
+      const users = await fetchUsersForExperience(
+        supabase,
+        params.experienceId
+      );
       setInterested(users);
     }
-  
+
     loadInterestedUsers();
     console.log(interested);
   }, [params.experienceId]);
@@ -241,16 +242,18 @@ export default function ExperienceDetails() {
               {interestedUsers.slice(0, 5).map((user, index) => (
                 <div key={user.user_id} className="flex-shrink-0 w-20">
                   <div className="relative mb-1">
-                    <div 
+                    <div
                       className="rounded-full overflow-hidden w-20 h-20 cursor-pointer"
-                      onClick={() => router.push(`/experiences/${params.experienceId}/attendees/${user.user_id}`)}
+                      onClick={() =>
+                        router.push(
+                          `/experiences/${params.experienceId}/attendees/${user.user_id}`
+                        )
+                      }
                     >
-                      <Image
+                      <img
                         src={user.photo_url || "/default-avatar.png"}
                         alt={`${user.first_name} ${user.last_name}`}
-                        width={80}
-                        height={80}
-                        className="object-cover"
+                        className="object-cover w-full h-full"
                       />
                     </div>
                     {index < 2 && (
@@ -300,16 +303,20 @@ export default function ExperienceDetails() {
           <div className="grid grid-cols-[auto,1fr] gap-x-2 gap-y-1 items-start mb-6">
             <MapPin className="w-4 h-4 text-gray-600 mt-0.5" />
             <div>
-  <p className="font-semibold text-sm text-gray-800">
-    <a
-      href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(experience.event_street_address + ', ' + experience.event_zip_code)}`}
-      target="_blank"
-      rel="noopener noreferrer"
-    >
-      {experience.event_street_address}, {experience.event_zip_code}
-    </a>
-  </p>
-</div>
+              <p className="font-semibold text-sm text-gray-800">
+                <a
+                  href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
+                    experience.event_street_address +
+                      ", " +
+                      experience.event_zip_code
+                  )}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  {experience.event_street_address}, {experience.event_zip_code}
+                </a>
+              </p>
+            </div>
             <Clock className="w-4 h-4 text-gray-600 mt-0.5" />
             <p className="text-gray-600 text-sm">
               {new Date(experience.event_time).toLocaleTimeString("en-US", {
