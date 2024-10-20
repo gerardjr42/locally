@@ -1,5 +1,5 @@
 import { clsx } from "clsx";
-import { twMerge } from "tailwind-merge"
+import { twMerge } from "tailwind-merge";
 import { supabase } from "./supabase";
 
 export function cn(...inputs) {
@@ -8,8 +8,8 @@ export function cn(...inputs) {
 
 export function formatDate(timestamp) {
   const date = new Date(timestamp);
-  const options = { weekday: 'short', month: 'short', day: 'numeric' };
-  return date.toLocaleDateString('en-US', options);
+  const options = { weekday: "short", month: "short", day: "numeric" };
+  return date.toLocaleDateString("en-US", options);
 }
 
 export function calculateAge(birthdate) {
@@ -17,11 +17,14 @@ export function calculateAge(birthdate) {
   const birthDate = new Date(birthdate);
   let age = today.getFullYear() - birthDate.getFullYear();
   const monthDifference = today.getMonth() - birthDate.getMonth();
-  
-  if (monthDifference < 0 || (monthDifference === 0 && today.getDate() < birthDate.getDate())) {
+
+  if (
+    monthDifference < 0 ||
+    (monthDifference === 0 && today.getDate() < birthDate.getDate())
+  ) {
     age--;
   }
-  
+
   return age;
 }
 
@@ -45,7 +48,8 @@ export async function fetchUsersForExperience(supabase, experienceId) {
   try {
     const { data, error } = await supabase
       .from("User_Events")
-      .select(`
+      .select(
+        `
         user_id,
         Users (
           user_id,
@@ -54,12 +58,13 @@ export async function fetchUsersForExperience(supabase, experienceId) {
           user_dob,
           photo_url
         )
-      `)
+      `
+      )
       .eq("event_id", experienceId);
 
     if (error) throw error;
 
-    return data.map(item => item.Users);
+    return data.map((item) => item.Users);
   } catch (error) {
     console.error("Error fetching users for experience:", error);
     return [];
@@ -68,22 +73,66 @@ export async function fetchUsersForExperience(supabase, experienceId) {
 
 export const fetchUserInterests = async (userId) => {
   const { data, error } = await supabase
-    .from('User_Interests')
-    .select(`
+    .from("User_Interests")
+    .select(
+      `
       interest_id,
       Interests (
         name
       )
-    `)
-    .eq('user_id', userId);
+    `
+    )
+    .eq("user_id", userId);
 
   if (error) {
-    console.error('Error fetching user interests:', error);
+    console.error("Error fetching user interests:", error);
     return [];
   }
 
-  return data.map(item => ({
+  return data.map((item) => ({
     id: item.interest_id,
-    name: item.Interests.name
+    name: item.Interests.name,
   }));
 };
+
+// Matchmaking Fetch User Data and Interests
+export async function fetchUserDataAndInterests(supabase, userId) {
+  try {
+    const { data: userData, error: userError } = await supabase
+      .from("Users")
+      .select(
+        "user_id, first_name, last_name, photo_url, bio, icebreaker_responses"
+      )
+      .eq("user_id", userId)
+      .single();
+
+    if (userError) throw userError;
+
+    const { data: interestData, error: interestError } = await supabase
+      .from("User_Interests")
+      .select("interest")
+      .eq("user_id", userId);
+
+    if (interestError) throw interestError;
+
+    const interests = interestData.map((item) => item.interest.name);
+
+    return {
+      ...userData,
+      interests,
+    };
+  } catch (error) {
+    console.error("Error fetching user data and interests:", error);
+    return null;
+  }
+}
+
+// Convert User Data to Text for Matchmaking
+export function prepareUserDataForMatchmaking(usersData) {
+  return usersData.map((user) => ({
+    user_id: user.user_id,
+    text: `${user.bio} ${user.interests.join(" ")} ${
+      user.icebreaker_responses ? JSON.stringify(user.icebreaker_responses) : ""
+    }`,
+  }));
+}
