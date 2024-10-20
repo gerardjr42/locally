@@ -7,10 +7,8 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import { Button } from "@/components/ui/button";
-import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 import { fetchUsersForExperience } from "@/lib/utils";
-
-
+import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 
 import { Clock, DollarSign, MapPin, Tag, Users } from "lucide-react";
 import Image from "next/image";
@@ -29,6 +27,7 @@ export default function ExperienceDetails() {
   const supabase = createClientComponentClient();
   const router = useRouter();
   const descriptionRef = useRef(null);
+  const [topMatches, setTopMatches] = useState([]);
 
   useEffect(() => {
     async function fetchExperienceAndUsers() {
@@ -112,13 +111,29 @@ export default function ExperienceDetails() {
 
   useEffect(() => {
     async function loadInterestedUsers() {
-      const users = await fetchUsersForExperience(supabase, params.experienceId);
+      const users = await fetchUsersForExperience(
+        supabase,
+        params.experienceId
+      );
       setInterested(users);
     }
-  
+
     loadInterestedUsers();
     console.log(interested);
   }, [params.experienceId]);
+
+  const fetchTopMatches = async (userId, eventId) => {
+    const response = await fetch("/api/matchmaking", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ userId, eventId }),
+    });
+
+    const data = await response.json();
+    setTopMatches(data.matches);
+  };
 
   const handleInterestClick = async () => {
     const {
@@ -164,6 +179,12 @@ export default function ExperienceDetails() {
         } else {
           setInterestedUsers((prevUsers) => [...prevUsers, userData]);
         }
+      }
+    }
+
+    if (!isInterested) {
+      if (user) {
+        await fetchTopMatches(user.id, params.experienceId);
       }
     }
   };
@@ -238,32 +259,68 @@ export default function ExperienceDetails() {
               </Button>
             </div>
             <div className="flex space-x-3 overflow-x-auto pb-2">
-              {interestedUsers.slice(0, 5).map((user, index) => (
-                <div key={user.user_id} className="flex-shrink-0 w-20">
-                  <div className="relative mb-1">
-                    <div 
-                      className="rounded-full overflow-hidden w-20 h-20 cursor-pointer"
-                      onClick={() => router.push(`/experiences/${params.experienceId}/attendees/${user.user_id}`)}
-                    >
-                      <Image
-                        src={user.photo_url || "/default-avatar.png"}
-                        alt={`${user.first_name} ${user.last_name}`}
-                        width={80}
-                        height={80}
-                        className="object-cover"
-                      />
+              {topMatches.map((userId) => {
+                const user = interestedUsers.find((u) => u.user_id === userId);
+                if (user) {
+                  return (
+                    <div key={user.user_id} className="flex-shrink-0 w-20">
+                      <div className="relative mb-1">
+                        <div
+                          className="rounded-full overflow-hidden w-20 h-20 cursor-pointer"
+                          onClick={() =>
+                            router.push(
+                              `/experiences/${params.experienceId}/attendees/${user.user_id}`
+                            )
+                          }
+                        >
+                          <Image
+                            src={user.photo_url || "/default-avatar.png"}
+                            alt={`${user.first_name} ${user.last_name}`}
+                            width={80}
+                            height={80}
+                            className="object-cover"
+                          />
+                        </div>
+                        <span className="absolute top-0 right-0 bg-green-500 text-white text-xs px-1 py-0.5 rounded-full text-[10px]">
+                          Top Match
+                        </span>
+                      </div>
+                      <p className="text-center text-xs">
+                        {user.first_name}, {calculateAge(user.user_dob)}
+                      </p>
                     </div>
-                    {index < 2 && (
-                      <span className="absolute top-0 right-0 bg-green-500 text-white text-xs px-1 py-0.5 rounded-full text-[10px]">
-                        Top Match
-                      </span>
-                    )}
+                  );
+                }
+                return null;
+              })}
+              {interestedUsers
+                .filter((user) => !topMatches.includes(user.user_id))
+                .slice(0, 5)
+                .map((user) => (
+                  <div key={user.user_id} className="flex-shrink-0 w-20">
+                    <div className="relative mb-1">
+                      <div
+                        className="rounded-full overflow-hidden w-20 h-20 cursor-pointer"
+                        onClick={() =>
+                          router.push(
+                            `/experiences/${params.experienceId}/attendees/${user.user_id}`
+                          )
+                        }
+                      >
+                        <Image
+                          src={user.photo_url || "/default-avatar.png"}
+                          alt={`${user.first_name} ${user.last_name}`}
+                          width={80}
+                          height={80}
+                          className="object-cover"
+                        />
+                      </div>
+                      <p className="text-center text-xs">
+                        {user.first_name}, {calculateAge(user.user_dob)}
+                      </p>
+                    </div>
                   </div>
-                  <p className="text-center text-xs">
-                    {user.first_name}, {calculateAge(user.user_dob)}
-                  </p>
-                </div>
-              ))}
+                ))}
             </div>
           </div>
           <div className="grid grid-cols-3 gap-3 mb-6">
