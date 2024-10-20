@@ -1,9 +1,9 @@
 "use client";
+
 import { NavigationBar } from "@/components/navigation-bar";
 import { Button } from "@/components/ui/button";
 import { useUserContext } from "@/contexts/UserContext";
 import { calculateAge, fetchUserInterests, buildNameString } from "@/lib/utils";
-
 import {
   Collapsible,
   CollapsibleContent,
@@ -64,9 +64,14 @@ export default function Account() {
       handleAge();
       buildNameString(user);
       setName(buildNameString(user));
-      fetchUserInterests(user.user_id).then((fetchedInterests) => {
-        setInterests(fetchedInterests);
-      });
+      fetchUserInterests(user.user_id)
+        .then((fetchedInterests) => {
+          console.log("Fetched interests:", fetchedInterests);
+          setInterests(fetchedInterests);
+        })
+        .catch((error) => {
+          console.error("Error fetching interests:", error);
+        });
     }
   }, [user]);
 
@@ -123,32 +128,24 @@ export default function Account() {
               </p>
             </motion.div>
           </div>
-          <div>
-            <h4 className="text-lg font-bold mb-2">Interests</h4>
-            <div className="flex space-x-4 overflow-x-auto pb-2">
-              {interests.map((interest, index) => (
-                <motion.div
-                  key={interest.id}
-                  className="flex flex-col items-center cursor-pointer"
-                  whileHover={{ scale: 1.1 }}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: index * 0.1 }}
-                  onClick={() => {
-                    if (isEditing) {
-                      router.push("/account/interests");
-                    }
-                  }}
-                >
-                  <div className="w-12 h-12 rounded-full border-2 border-gray-300 flex items-center justify-center">
-                    {/* You may need to add logic here to display the correct icon based on the interest name */}
-                  </div>
-                  <p className="text-[10px] mt-1 text-[#15B8A6] font-bold text-center">
-                    {interest.name}
-                  </p>
-                </motion.div>
-              ))}
-            </div>
+          <div className="flex space-x-4 overflow-x-auto pb-2">
+            {interests.map((interest, index) => (
+              <motion.div
+                key={interest.id || index}
+                className="flex flex-col items-center cursor-pointer"
+                whileHover={{ scale: 1.1 }}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: index * 0.1 }}
+              >
+                <div className="w-12 h-12 rounded-full border-2 border-gray-300 flex items-center justify-center">
+                  {interest.icon && <span>{interest.icon}</span>}
+                </div>
+                <p className="text-[10px] mt-1 text-[#15B8A6] font-bold text-center">
+                  {interest.name}
+                </p>
+              </motion.div>
+            ))}
           </div>
           <Collapsible
             open={isExpanded}
@@ -165,7 +162,7 @@ export default function Account() {
                 </>
               ) : (
                 <textarea
-                  value={bio}
+                  value={user.bio}
                   onChange={handleBioChange}
                   className="w-full p-2 border border-gray-300 rounded-md"
                   rows={5}

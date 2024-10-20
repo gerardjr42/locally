@@ -73,33 +73,28 @@ export const fetchUserInterests = async (userId) => {
   }
 
   try {
+    console.log("Fetching interests for userId:", userId);
     const { data, error } = await supabase
       .from('User_Interests')
-      .select(`
-        interest_id,
-        Interests (
-          name
-        )
-      `)
+      .select('interest')
       .eq('user_id', userId);
 
-    if (error) throw error;
+    if (error) {
+      console.error("Error fetching interests:", error);
+      throw error;
+    }
 
-    if (!data) {
-      console.warn('fetchUserInterests: No data returned from query');
+    console.log("Raw User_Interests data:", data);
+
+    if (!data || data.length === 0) {
+      console.warn('fetchUserInterests: No data returned from query for userId:', userId);
       return [];
     }
 
-    return data.map(item => {
-      if (!item || !item.Interests) {
-        console.warn(`fetchUserInterests: Invalid item structure for interest_id: ${item?.interest_id}`);
-        return null;
-      }
-      return {
-        id: item.interest_id,
-        name: item.Interests.name || 'Unknown Interest'
-      };
-    }).filter(Boolean); // Remove any null entries
+    const processedInterests = data.map(item => item.interest);
+
+    console.log("Processed interests:", processedInterests);
+    return processedInterests;
 
   } catch (error) {
     console.error('Error fetching user interests:', error);
