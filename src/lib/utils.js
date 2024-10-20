@@ -84,6 +84,6 @@ export const fetchUserInterests = async (userId) => {
 
   return data.map(item => ({
     id: item.interest_id,
-    name: item.Interests.name
+    name: item.Interests?.name || 'Interest'
   }));
 };

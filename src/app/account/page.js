@@ -158,7 +158,7 @@ export default function Account() {
             <motion.div className="text-gray-600" variants={fadeIn}>
               {!isEditing ? (
                 <>
-                  {!isExpanded && <p className="text-sm">{bioSummary}...</p>}
+                  {!isExpanded && <p className="text-sm">{user.bio}...</p>}
                   <CollapsibleContent className="text-sm">
                     {isExpanded && <p className="pt-2">{bio}</p>}
                   </CollapsibleContent>
