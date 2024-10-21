@@ -1,5 +1,5 @@
 import { createClient } from "@supabase/supabase-js";
-import { find_top_matches } from "../../lib/matchmaking.py";
+import { spawn } from "child_process";
 import {
   fetchUserDataAndInterests,
   prepareUserDataForMatchmaking,
@@ -27,10 +27,26 @@ export default async function handler(req, res) {
     // Prepare user data for the matchmaking algorithm
     const preparedUserData = prepareUserDataForMatchmaking(usersData);
 
-    // Find top matches using the matchmaking algorithm
-    const topMatches = find_top_matches(userId, preparedUserData);
+    // Run Python script
+    const pythonProcess = spawn("python", [
+      "src/lib/matchmaking.py",
+      userId,
+      JSON.stringify(preparedUserData),
+    ]);
 
-    res.status(200).json({ matches: topMatches });
+    let result = "";
+    pythonProcess.stdout.on("data", (data) => {
+      result += data.toString();
+    });
+
+    pythonProcess.on("close", (code) => {
+      if (code !== 0) {
+        res.status(500).json({ error: "Python script execution failed" });
+        return;
+      }
+      const topMatches = JSON.parse(result);
+      res.status(200).json({ matches: topMatches });
+    });
   } else {
     res.status(405).json({ error: "Method not allowed" });
   }

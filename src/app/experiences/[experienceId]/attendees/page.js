@@ -71,9 +71,7 @@ export default function AttendeesList() {
       </header>
       <main className="p-4">
         <div className="mb-4">
-          <h2 className="text-xl font-bold">
-            Explore a potential connection for {}!
-          </h2>
+          <h2 className="text-xl font-bold">Explore a potential connection!</h2>
         </div>
 
         <div className="space-y-4 bg-[#C9E9E5] p-4 rounded-lg">

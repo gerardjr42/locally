@@ -1,0 +1,21 @@
+{
+  "buildCommand": "pip install -r requirements.txt && next build",
+  "builds": [
+    {
+      "src": "package.json",
+      "use": "@vercel/next"
+    },
+    {
+      "src": "src/lib/matchmaking.py",
+      "use": "@vercel/python"
+    }
+  ],
+  "installCommand": "pip install -r requirements.txt",
+  "outputDirectory": ".next",
+  "routes": [
+    {
+      "dest": "src/pages/api/matchmaking.js",
+      "src": "/api/matchmaking"
+    }
+  ]
+}
