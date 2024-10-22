@@ -67,21 +67,38 @@ export async function fetchUsersForExperience(supabase, experienceId) {
 }
 
 export const fetchUserInterests = async (userId) => {
-  const { data, error } = await supabase
-    .from('User_Interests')
-    .select(`
-      interest_id,
-      Interests (
-        name
-      )
-    `)
-    .eq('user_id', userId);
+  if (!userId) {
+    console.error('fetchUserInterests: userId is null or undefined');
+    return [];
+  }
+  try {
+    console.log("Fetching interests for userId:", userId);
+    const { data, error } = await supabase
+      .from('User_Interests')
+      .select('interest')
+      .eq('user_id', userId);
 
-  if (error) {
+    if (error) {
+      console.error("Error fetching interests:", error);
+      throw error;
+    }
+
+    console.log("Raw User_Interests data:", data);
+
+    if (!data || data.length === 0) {
+      console.warn('fetchUserInterests: No data returned from query for userId:', userId);
+      return [];
+    }
+
+    const processedInterests = data.map(item => item.interest);
+
+    console.log("Processed interests:", processedInterests);
+    return processedInterests;
+
+  } catch (error) {
     console.error('Error fetching user interests:', error);
     return [];
   }
-
   return data.map(item => ({
     id: item.interest_id,
     name: item.Interests?.name || 'Interest'
