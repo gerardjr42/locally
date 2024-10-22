@@ -1,83 +1,57 @@
-import "./myMatches.scss";
+"use client";
+
+import { NavigationBar } from "@/components/navigation-bar";
+import { Button } from "@/components/ui/button";
+import { useUserContext } from "@/contexts/UserContext";
+import { useRouter } from "next/navigation";
+import Image from "next/image";
+import { formatDate, buildNameString } from "@/lib/utils";
+import { supabase } from "@/lib/supabase";
+import { useEffect, useState } from "react";
 
 export default function UserMatches() {
+  const router = useRouter();
+  const { user } = useUserContext();
+  const [userEvents, setUserEvents] = useState([]);
+ 
+
+  useEffect(() => {
+    const fetchEvents = async () => {
+      const { data, error } = await supabase
+        .from('User_Events')
+        .select('*, Events(*)')
+        .eq('user_id', user.user_id);
+  
+      if (error) {
+        console.error('Error fetching events:', error);
+      } else {
+        setUserEvents(data);
+      }
+    };
+  
+    if (user) {
+      fetchEvents();
+    }
+  }, [user, supabase]);
+
   return (
-    <div className="UserMatches">
-      <button className="back-button">←</button>
-      <button className="menu-button">☰</button>
-      <div className="title">Locally</div>
-      <div className="Header">
-        <p>
-          You've made <strong>3 MATCHES</strong> within <strong>3 EVENTS</strong>
-        </p>
-      </div>
+    <div className="flex flex-col items-center justify-center">
+      <NavigationBar />
 
-      <div className="UserEvents">
-        <div className="collapse collapse-arrow matched-event">
-          <input type="radio" name="event-accordion" defaultChecked />
-          <div className="collapse-title Matched-event-header">
-            <h3><strong>Movies In The Park</strong></h3>
-            <p>Thu, Nov 14</p>
-            <span>Status: 
-              <strong>
-              Connection Pending
-              </strong>
-              </span>
-          </div>
-          <div className="collapse-content">
-            <div className="UserMatchList">
-              <div className="match-item Match-pending">
-                <img className="match-icon" src="https://i.pinimg.com/736x/3f/94/70/3f9470b34a8e3f526dbdb022f9f19cf7.jpg" alt="icon" />
-                Hudson
-              </div>
-              <div className="match-item Match-pending">
-                <img className="match-icon" src="https://i.pinimg.com/736x/3f/94/70/3f9470b34a8e3f526dbdb022f9f19cf7.jpg" alt="icon" />
-                Vernon
-              </div>
-              <div className="match-item Match-pending">
-                <img className="match-icon" src="https://i.pinimg.com/736x/3f/94/70/3f9470b34a8e3f526dbdb022f9f19cf7.jpg" alt="icon" />
-                Rochelle
-              </div>
+      <div className="w-full p-4 md:flex-row md:flex md:flex-wrap md:justify-between lg:px-8">
+        {userEvents.map((event) => (
+          <div key={event.Events.event_id} className="collapse collapse-arrow border-base-300 bg-base-200 border pb-1 mb-4">
+            <input type="checkbox" />
+            <div className="collapse-title text-sm font-medium text-gray-500">
+              <p>{event.Events.event_name}</p>
+              <p className="text-xs">{formatDate(event.Events.event_time)}</p>
+            </div>
+            <div className="collapse-content flex flex-row items-center justify-evenly">
+              {/* Render matched users here */}
+              {/* You can add logic to display matched users for each event */}
             </div>
           </div>
-        </div>
-
-        {/* Event 2 */}
-        <div className="collapse collapse-arrow saved-event">
-          <input type="radio" name="event-accordion" />
-          <div className=" saved-event-header collapse-title">
-            <h3><strong>Dancing In The Rain</strong></h3>
-            <p>Fri, Nov 29</p>
-            <span>Status: <strong>Saved
-            </strong>
-            </span>
-          </div>
-        </div>
-
-        <div className="collapse collapse-arrow confirmed-event">
-          <input type="radio" name="event-accordion" />
-          <div className="collapse-title confirmed-event-header">
-            <h3><strong>
-              
-              
-            Next In Tech Conference
-              </strong>
-              </h3>
-            <p>Sat, Dec 7</p>
-            <span>Status: <strong>
-              Connection Confirmed</strong></span>
-          </div>
-          <div className="collapse-content">
-            <div className="UserMatchList">
-            <div className="UserMatchList">
-              <div className="match-item confirmed-match">
-                <img className="match-icon" src="https://i.pinimg.com/736x/3f/94/70/3f9470b34a8e3f526dbdb022f9f19cf7.jpg" alt="icon" />
-                Brooke
-              </div>
-              </div>
-            </div>
-          </div>
-        </div>
+        ))}
       </div>
     </div>
   );

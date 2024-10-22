@@ -87,7 +87,6 @@ export default function UserProfile() {
     setTimeout(() => setFeedback({ message: "", type: "" }), 3000);
   };
 
-
   const handlePass = () => {
     setFeedback({ message: "Passed on Hudson", type: "pass" });
     setTimeout(() => setFeedback({ message: "", type: "" }), 3000);

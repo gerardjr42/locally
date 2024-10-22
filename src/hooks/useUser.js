@@ -39,7 +39,7 @@ export function useUser() {
           .eq('user_id', user.id);
 
         if (eventsData) {
-          setUserEvents(eventsData.map(item => item.Events));
+          setUserEvents(eventsData.map(item => item.event_id));
         }
       }
     }
