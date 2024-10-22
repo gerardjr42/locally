@@ -131,8 +131,28 @@ export async function fetchUserDataAndInterests(supabase, userId) {
 export function prepareUserDataForMatchmaking(usersData) {
   return usersData.map((user) => ({
     user_id: user.user_id,
-    text: `${user.bio} ${user.interests.join(" ")} ${
-      user.icebreaker_responses ? JSON.stringify(user.icebreaker_responses) : ""
-    }`,
+    features: createFeatureVector(user),
   }));
+}
+
+function createFeatureVector(user) {
+  const interestsVector = new Array(100).fill(0); // Assuming 100 possible interests
+  user.interests.forEach((interest) => {
+    const interestIndex = hashString(interest) % 100;
+    interestsVector[interestIndex] = 1;
+  });
+
+  const ageVector = [calculateAge(user.user_dob) / 100]; // Normalize age
+
+  return [...interestsVector, ...ageVector];
+}
+
+function hashString(str) {
+  let hash = 0;
+  for (let i = 0; i < str.length; i++) {
+    const char = str.charCodeAt(i);
+    hash = (hash << 5) - hash + char;
+    hash = hash & hash; // Convert to 32-bit integer
+  }
+  return Math.abs(hash);
 }

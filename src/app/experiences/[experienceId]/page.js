@@ -28,6 +28,7 @@ export default function ExperienceDetails() {
   const router = useRouter();
   const descriptionRef = useRef(null);
   const [topMatches, setTopMatches] = useState([]);
+  const [top3Matches, setTop3Matches] = useState([]);
 
   useEffect(() => {
     async function fetchExperienceAndUsers() {
@@ -123,16 +124,27 @@ export default function ExperienceDetails() {
   }, [params.experienceId]);
 
   const fetchTopMatches = async (userId, eventId) => {
-    const response = await fetch("/api/matchmaking", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ userId, eventId }),
-    });
+    try {
+      const response = await fetch("/api/matchmaking", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ userId, eventId }),
+      });
 
-    const data = await response.json();
-    setTopMatches(data.matches);
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const data = await response.json();
+      console.log("All Matches:", data.matches);
+      console.log("Top 3 Matches:", data.top3Matches);
+      setTopMatches(data.matches);
+      setTop3Matches(data.top3Matches);
+    } catch (error) {
+      console.error("Error fetching top matches:", error);
+    }
   };
 
   const handleInterestClick = async () => {
@@ -259,7 +271,7 @@ export default function ExperienceDetails() {
               </Button>
             </div>
             <div className="flex space-x-3 overflow-x-auto pb-2">
-              {topMatches.map((userId) => {
+              {top3Matches.map((userId) => {
                 const user = interestedUsers.find((u) => u.user_id === userId);
                 if (user) {
                   return (
@@ -294,8 +306,8 @@ export default function ExperienceDetails() {
                 return null;
               })}
               {interestedUsers
-                .filter((user) => !topMatches.includes(user.user_id))
-                .slice(0, 5)
+                .filter((user) => !top3Matches.includes(user.user_id))
+                .slice(0, 5 - top3Matches.length)
                 .map((user) => (
                   <div key={user.user_id} className="flex-shrink-0 w-20">
                     <div className="relative mb-1">
