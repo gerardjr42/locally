@@ -7,7 +7,7 @@ export default function ConfirmationPage() {
   const router = useRouter();
 
   const handleLoginRedirect = () => {
-    router.push("/login");
+    router.push("/experiences");
   };
 
   return (
@@ -15,7 +15,7 @@ export default function ConfirmationPage() {
       <div>
         <h1>Welcome!</h1>
         <h2>You are now a member of the Locally community!</h2>
-        <button onClick={handleLoginRedirect}>Log In</button>
+        <button onClick={handleLoginRedirect}>Get Started</button>
       </div>
     </div>
   );
