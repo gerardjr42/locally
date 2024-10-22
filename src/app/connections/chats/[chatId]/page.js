@@ -1,28 +1,53 @@
 'use client';
-import { useEffect, useState } from 'react';
-import { supabase } from '@/lib/supabase';
-import { useUserContext } from '@/contexts/UserContext';
-import { NavigationBar } from '@/components/navigation-bar';
-import {
-  ChatBubble,
-  ChatBubbleAvatar,
-  ChatBubbleMessage,
-} from '@/components/ui/chat/chat-bubble';
-import { ChatMessageList } from '@/components/ui/chat/chat-message-list';
-import { ChatInput } from '@/components/ui/chat/chat-input';
-import { Button } from '@mui/material';
-import { Mic, CornerDownLeft } from 'lucide-react';
-import './Chat.scss';
 
-export default function Chat({ params }) {
+import { NavigationBar } from '@/components/navigation-bar';
+import { useUserContext } from '@/contexts/UserContext';
+import { supabase } from '@/lib/supabase';
+import { useEffect, useState } from 'react';
+import { StreamChat } from 'stream-chat';
+import {
+  Chat,
+  Channel,
+  MessageList,
+  MessageInput,
+  Thread,
+  Window,
+  ChannelHeader,
+} from 'stream-chat-react';
+import 'stream-chat-react/dist/scss/v2/index.scss';
+import './matchChat.scss';
+
+export default function MatchChat({ params }) {
   const { user, loading } = useUserContext();
-  const [messages, setMessages] = useState([]);
-  const [newMessage, setNewMessage] = useState('');
   const [chatDetails, setChatDetails] = useState(null);
-  const [senders, setSenders] = useState({});
+  const [matchId, setMatchId] = useState(null);
+  const [newMessage, setNewMessage] = useState('');
+  const [channel, setChannel] = useState(null);
+  const [client, setClient] = useState(null);
+  const [userId, setUserId] = useState(null);
+  const [userName, setUserName] = useState(null);
   const { chatId } = params;
 
-  // Fetch chat details by ID
+  const apiKey = process.env.NEXT_PUBLIC_STREAM_API_KEY;
+
+  const fetchUserToken = async (userId) => {
+    const response = await fetch('/api/getToken', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ userId }),
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(data.error || 'Failed to fetch user token');
+    }
+
+    return data.token;
+  };
+
   useEffect(() => {
     async function fetchChatDetails() {
       const { data: chatData, error } = await supabase
@@ -37,165 +62,162 @@ export default function Chat({ params }) {
         console.warn('No chat data found for this chatId.');
       } else {
         setChatDetails(chatData);
+        setMatchId(chatData.match_id);
       }
     }
 
     fetchChatDetails();
   }, [chatId]);
 
-  // Fetch messages from chat details
   useEffect(() => {
-    async function fetchMessages() {
-      if (!chatDetails) return;
-
-      const { data: messagesData, error } = await supabase
-        .from('Messages')
-        .select('*')
-        .eq('chat_id', chatDetails.chat_id);
-
-      if (error) {
-        console.error('Error fetching messages:', error);
-      } else {
-        setMessages(messagesData || []);
-      }
-    }
-
-    fetchMessages();
-  }, [chatDetails]);
-
-  // Fetch user details based on messages
-  useEffect(() => {
-    async function fetchUserDetails() {
-      if (!messages.length) return;
-
-      const senderIds = [];
-      messages.forEach((msg) => {
-        if (!senderIds.includes(msg.sender_id)) {
-          senderIds.push(msg.sender_id);
-        }
-      });
-
-      const fetchPromises = senderIds.map(async (senderId) => {
-        const { data: senderData, error: senderError } = await supabase
-          .from('Users')
+    const fetchEventMatches = async (matchId) => {
+      try {
+        const { data, error } = await supabase
+          .from('Event_Matches')
           .select('*')
-          .eq('user_id', senderId)
+          .eq('match_id', matchId)
           .single();
 
-        if (senderError) {
-          console.error('Error fetching sender details:', senderError);
-          return null;
-        } else {
-          return { [senderId]: senderData };
+        if (error) {
+          throw error;
         }
-      });
 
-      const senderDataArray = await Promise.all(fetchPromises);
-
-      const senderMap = {};
-      senderDataArray.forEach((sender) => {
-        if (sender) {
-          Object.assign(senderMap, sender);
+        if (data) {
+          setUserId(data.interest_in_user_id);
+          return data;
         }
-      });
-
-      setSenders(senderMap);
-    }
-
-    fetchUserDetails();
-  }, [messages]);
-
-  if (loading) {
-    return <div>Loading user...</div>;
-  }
-
-  if (!user) {
-    return <div>Please log in to access this chat.</div>;
-  }
-
-  async function handleSendMessage() {
-    if (!newMessage || !user.id) return;
-
-    const message = {
-      chat_id: chatDetails.chat_id,
-      text: newMessage,
-      timestamp: new Date().toISOString(),
-      event_id: chatDetails.event_id,
-      sender_id: user.user.id,
+      } catch (error) {
+        console.error('Error fetching event matches:', error);
+      }
     };
 
-    try {
-      const { data, error } = await supabase.from('Messages').insert([message]).select();
-
-      if (error) {
-        throw error;
-      }
-
-      console.log('Message added:', newMessage);
-
-      setMessages((prevMessages) => [...prevMessages, message]);
-      setNewMessage('');
-    } catch (error) {
-      console.error('Error adding message:', error);
+    if (matchId) {
+      fetchEventMatches(matchId);
     }
-  }
+  }, [matchId]);
+
+  useEffect(() => {
+    const fetchUserName = async (userId) => {
+      try {
+        const { data, error } = await supabase
+          .from('Users')
+          .select('first_name')
+          .eq('user_id', userId)
+          .single();
+
+        if (error) {
+          throw error;
+        }
+
+        if (data) {
+          setUserName(data.first_name);
+        } else {
+          console.log('User not found');
+        }
+      } catch (error) {
+        console.error(`Error fetching user 2's name:`, error);
+      }
+    };
+
+    if (userId) {
+      fetchUserName(userId);
+    }
+  }, [userId]);
+
+  const initializeChat = async () => {
+    if (!user || !chatDetails) return;
+
+    try {
+      const userToken = await fetchUserToken(user.user_id);
+      const chatClient = StreamChat.getInstance(apiKey);
+      await chatClient.connectUser(
+        { id: user.user_id, name: user.first_name },
+        userToken
+      );
+
+      const channelInstance = chatClient.channel('messaging', chatId, {
+        name: `Match Chat`,
+      });
+      await channelInstance.watch();
+      setChannel(channelInstance);
+      console.log('Channel:', channelInstance);
+      setClient(chatClient);
+    } catch (error) {
+      console.error('Error initializing chat:', error);
+    }
+  };
+
+  useEffect(() => {
+    if (!loading && user) {
+      initializeChat();
+    }
+
+    return () => {
+      if (client) {
+        client.disconnectUser();
+      }
+    };
+  }, [user, loading, chatDetails]);
+
+  const sendMessage = async () => {
+    console.log('sendMessage called');
+    if (!channel || !newMessage) return;
+
+    const message = {
+      chat_id: chatId,
+      text: newMessage,
+      timestamp: new Date().toISOString(),
+      event_id: chatDetails.event_id || null,
+      sender_id: user.user_id,
+    };
+
+    await channel.sendMessage({
+      text: newMessage,
+      user: {
+        id: user.user_id,
+        name: user.first_name,
+      },
+    });
+
+    const { data, error } = await supabase.from('Messages').insert([message]);
+
+    if (error) {
+      console.error('Error inserting message into Supabase:', error);
+    } else {
+      console.log('Message inserted successfully:', data);
+    }
+
+    setNewMessage('');
+  };
+
+  if (loading) return <div>Loading...</div>;
 
   return (
-    <div className="Chat">
-      <NavigationBar />
-      <div className="Chat-header">
-        <h1>{`Chat with ${
-          messages.length > 0
-            ? senders[messages[0].sender_id]?.first_name || 'Blank'
-            : 'Blank'
-        }`}</h1>
-      </div>
-      <div className="Chat-container">
-        <ChatMessageList>
-          {messages.map((msg) => (
-            <ChatBubble
-              key={msg.message_id}
-              variant={msg.sender_id === user.id ? 'sent' : 'received'}
-            >
-              <ChatBubbleAvatar
-                fallback={
-                  msg.sender_id === user.id
-                    ? 'You'
-                    : senders[msg.sender_id]?.first_name.slice(0, 1) || 'User'
-                }
-              />
-              <ChatBubbleMessage
-                variant={msg.sender_id === user.id ? 'sent' : 'received'}
-              >
-                {msg.text}
-              </ChatBubbleMessage>
-            </ChatBubble>
-          ))}
-        </ChatMessageList>
-        <form
-          className="relative rounded-lg border bg-background p-1"
-          onSubmit={(e) => {
-            e.preventDefault();
-            handleSendMessage();
-          }}
-        >
-          <ChatInput
-            placeholder="Type your message here..."
-            className="min-h-12 resize-none rounded-lg bg-background border-0 p-3"
-            value={newMessage}
-            onChange={(e) => setNewMessage(e.target.value)}
-          />
-          <div className="flex items-center p-3 pt-0">
-            <Button variant="ghost" size="icon">
-              <Mic className="size-4" />
-              <span className="sr-only">Use Microphone</span>
-            </Button>
-            <Button size="sm" className="ml-auto gap-1.5" type="submit">
-              Send
-              <CornerDownLeft className="size-3.5" />
-            </Button>
-          </div>
-        </form>
+    <div className="MatchChat">
+      <div className="chat-container">
+        <NavigationBar />
+        {channel ? (
+          <Chat client={client}>
+            <Channel channel={channel} sendMessage={sendMessage}>
+              <Window>
+                <ChannelHeader title={`Chat with ${userName}`} />
+                <MessageList />
+                <MessageInput
+                  onChange={(e) => {
+                    console.log('message', e.target.value);
+                    setNewMessage(e.target.value);
+                  }}
+                  value={newMessage}
+                  onSendMessage={sendMessage}
+                  placeholder="Type a message"
+                />
+              </Window>
+              <Thread />
+            </Channel>
+          </Chat>
+        ) : (
+          <div>Loading chat...</div>
+        )}
       </div>
     </div>
   );
