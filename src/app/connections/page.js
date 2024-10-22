@@ -119,8 +119,10 @@ export default function UserMatches() {
             className="collapse collapse-arrow bg-gray-100 pb-1 mb-4"
           >
             <input type="checkbox" defaultChecked={true} />
-            <div className="collapse-title text-sm text-gray-500 font-semibold">
-              <p>{event.Events.event_name}</p>
+            <div className="collapse-title">
+              <p className="text-sm text-teal-700 font-semibold">
+                {event.Events.event_name}
+              </p>
               <p className="text-xs text-gray-400">
                 {formatDate(event.Events.event_time)}
               </p>
@@ -178,13 +180,45 @@ export default function UserMatches() {
                       )
                     }
                   >
-                  Browse Interested Users
+                    Browse Interested Users
                   </button>
                 </div>
               )}
             </div>
           </div>
         ))}
+      </div>
+
+      <div className="flex flex-col items-center justify-center py-3 px-10 mb-2">
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          fill="none"
+          viewBox="0 0 24 24"
+          strokeWidth={1.5}
+          stroke="gray"
+          className="size-6 mb-2"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            d="M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"
+          />
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1 1 15 0Z"
+          />
+        </svg>
+
+        <p className="text-center w-3/4 text-gray-500 text-xs mb-2">
+          There's always more people to meet and places to go!
+        </p>
+        <button
+          className="w-3/4 bg-teal-500 text-white text-sm p-4 my-2 rounded-full font-semibold flex items-center justify-center"
+          onClick={() => router.push(`/experiences/`)}
+        >
+          Find More Experiences
+        </button>
       </div>
     </div>
   );
