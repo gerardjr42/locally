@@ -41,7 +41,7 @@ export default function UserMatches() {
       <div className="w-full p-4 md:flex-row md:flex md:flex-wrap md:justify-between lg:px-8">
         {userEvents.map((event) => (
           <div key={event.Events.event_id} className="collapse collapse-arrow border-base-300 bg-base-200 border pb-1 mb-4">
-            <input type="checkbox" />
+            <input type="checkbox" defaultChecked={true}/>
             <div className="collapse-title text-sm font-medium text-gray-500">
               <p>{event.Events.event_name}</p>
               <p className="text-xs">{formatDate(event.Events.event_time)}</p>
