@@ -128,6 +128,17 @@ export default function UserMatches() {
                       className="object-cover"
                     />
                   </div>
+                  {match.is_confirmed && (
+                    <span className="absolute top-0 right-0 bg-teal-500 text-white text-xs px-1 py-0.5 rounded-full text-[10px]">
+                      Confirmed
+                    </span>
+                  )}
+                  
+                  {!match.is_confirmed && match.is_mutual && (
+                    <span className="absolute top-0 right-0 bg-teal-500 text-white text-xs px-1 py-0.5 rounded-full text-[10px]">
+                      Matched
+                    </span>
+                  )}
                   
                 </div>
                 <p className="text-center text-xs">
