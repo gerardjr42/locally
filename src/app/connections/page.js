@@ -54,13 +54,13 @@ export default function UserMatches() {
           }
 
           return {
-            match_id: match.id,
+            match_id: match.match_id,
             other_user_id: userData.user_id,
             other_user_photo_url: userData.photo_url,
             other_user_first_name: userData.first_name,
             other_user_last_name: userData.last_name,
             is_mutual: match.mutual_interest,
-            is_confirmed: match.is_confirmed
+            is_confirmed: match.confirmed_together
           };
         }));
 
@@ -113,8 +113,28 @@ export default function UserMatches() {
               <p className="text-xs text-gray-400">{formatDate(event.Events.event_time)}</p>
             </div>
             <div className="collapse-content flex flex-row items-center justify-evenly">
-              {/* Render matched users here */}
-              {/* You can add logic to display matched users for each event */}
+              {event.matches.map((match) => (
+                <div key={match.match_id} className="flex-shrink-0 w-20">
+                <div className="relative mb-1">
+                  <div 
+                    className="rounded-full overflow-hidden w-20 h-20 cursor-pointer"
+                    onClick={() => router.push(`/connections/${match.match_id}`)}
+                  >
+                    <Image
+                      src={match.other_user_photo_url}
+                      alt={`${match.other_user_first_name} ${match.other_user_last_name[0]}.`}
+                      width={80}
+                      height={80}
+                      className="object-cover"
+                    />
+                  </div>
+                  
+                </div>
+                <p className="text-center text-xs">
+                  {match.other_user_first_name} {match.other_user_last_name[0]}.
+                </p>
+              </div>
+              ))}
             </div>
           </div>
         ))}
