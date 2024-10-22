@@ -8,9 +8,9 @@ import {
 } from "@/components/ui/accordion";
 import { Button } from "@/components/ui/button";
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
+import { useUserContext } from "@/contexts/UserContext";
+
 import { fetchUsersForExperience } from "@/lib/utils";
-
-
 
 import { Clock, DollarSign, MapPin, Tag, Users } from "lucide-react";
 import Image from "next/image";
@@ -29,6 +29,7 @@ export default function ExperienceDetails() {
   const supabase = createClientComponentClient();
   const router = useRouter();
   const descriptionRef = useRef(null);
+  const { user } = useUserContext();
 
   useEffect(() => {
     async function fetchExperienceAndUsers() {
@@ -86,7 +87,7 @@ export default function ExperienceDetails() {
           .from("User_Events")
           .select()
           .eq("event_id", params.experienceId)
-          .eq("user_id", user.id)
+          .eq("user_id", user.user_id)
           .single();
 
         if (data && data.expressed_interest) {
@@ -121,9 +122,6 @@ export default function ExperienceDetails() {
   }, [params.experienceId]);
 
   const handleInterestClick = async () => {
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
     if (!user) {
       console.error("User not authenticated");
       return;
@@ -134,20 +132,20 @@ export default function ExperienceDetails() {
         .from("User_Events")
         .delete()
         .eq("event_id", params.experienceId)
-        .eq("user_id", user.id);
+        .eq("user_id", user.user_id);
 
       if (error) {
         console.error("Error removing interest:", error);
       } else {
         setIsInterested(false);
         setInterestedUsers((prevUsers) =>
-          prevUsers.filter((u) => u.user_id !== user.id)
+          prevUsers.filter((u) => u.user_id !== user.user_id)
         );
       }
     } else {
       const { error } = await supabase
         .from("User_Events")
-        .insert({ event_id: params.experienceId, user_id: user.id });
+        .insert({ event_id: params.experienceId, user_id: user.user_id });
 
       if (error) {
         console.error("Error adding interest:", error);
@@ -156,7 +154,7 @@ export default function ExperienceDetails() {
         const { data: userData, error: userError } = await supabase
           .from("Users")
           .select("user_id, first_name, last_name, user_dob, photo_url")
-          .eq("user_id", user.id)
+          .eq("user_id", user.user_id)
           .single();
 
         if (userError) {
@@ -220,7 +218,7 @@ export default function ExperienceDetails() {
             className="w-full mb-6 text-white bg-teal-400 hover:bg-teal-500 transition-colors"
             onClick={handleInterestClick}
           >
-            {isInterested ? "Not Interested" : "I'm interested!"}
+            {isInterested ? "Not Interested" : "I'm Interested!"}
           </Button>
           <div className="mb-6">
             <div className="flex justify-between items-center mb-3">

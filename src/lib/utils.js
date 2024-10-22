@@ -71,7 +71,6 @@ export const fetchUserInterests = async (userId) => {
     console.error('fetchUserInterests: userId is null or undefined');
     return [];
   }
-
   try {
     console.log("Fetching interests for userId:", userId);
     const { data, error } = await supabase
@@ -100,4 +99,8 @@ export const fetchUserInterests = async (userId) => {
     console.error('Error fetching user interests:', error);
     return [];
   }
+  return data.map(item => ({
+    id: item.interest_id,
+    name: item.Interests?.name || 'Interest'
+  }));
 };
