@@ -49,6 +49,10 @@ export function NavigationBar({ handleBackClick }) {
     // will direct to connections/savedexperiences when the route is created
   };
 
+  const handleLogoClick = () => {
+    router.push("/experiences");
+  };
+
   const handleSignOut = async () => {
     try {
       const { error } = await supabase.auth.signOut();
@@ -100,6 +104,7 @@ export function NavigationBar({ handleBackClick }) {
             className="h-12 w-auto"
             width={100}
             height={100}
+            onClick={handleLogoClick}
           />
         </div>
 
