@@ -3,6 +3,7 @@
 import { NavigationBar } from "@/components/navigation-bar";
 import { Button } from "@/components/ui/button";
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
+import { useUserContext } from "@/contexts/UserContext";
 import { BadgeCheck, Check, X } from "lucide-react";
 import {
   Collapsible,
@@ -34,9 +35,55 @@ export default function UserProfile() {
   const [interests, setInterests] = useState([]);
   const [interestedUser, setInterestedUser] = useState({});
   const [eventName, setEventName] = useState('');
+  const { user } = useUserContext();
 
-  const handleConnect = () => {
-    setFeedback({ message: "Connected with Hudson!", type: "connect" });
+  const handleConnect = async () => {
+    if (!user) {
+      console.error("User not authenticated");
+      return;
+    }
+
+    const { data: existingMatch, error: matchError } = await supabase
+      .from('Event_Matches')
+      .select('*')
+      .or(`and(attendee_id.eq.${user.user_id},interest_in_user_id.eq.${params.attendeeId}),and(attendee_id.eq.${params.attendeeId},interest_in_user_id.eq.${user.user_id})`)
+      .eq('event_id', params.experienceId)
+      .single();
+
+    if (matchError && matchError.code !== 'PGRST116') {
+      console.error("Error checking existing match:", matchError);
+      return;
+    }
+
+    if (existingMatch) {
+      const { data, error: updateError } = await supabase
+        .from('Event_Matches')
+        .update({ mutual_interest: true })
+        .eq('match_id', existingMatch.match_id);
+
+      if (updateError) {
+        console.error("Error updating match:", updateError);
+        return;
+      }
+    } else {
+      const [lesserUserId, greaterUserId] = [user.user_id, params.attendeeId].sort();
+      const { data, error: insertError } = await supabase
+        .from('Event_Matches')
+        .insert({
+          attendee_id: lesserUserId,
+          interest_in_user_id: greaterUserId,
+          event_id: params.experienceId,
+          mutual_interest: false,
+          date_matched: new Date()
+        });
+
+      if (insertError) {
+        console.error("Error inserting match:", insertError);
+        return;
+      }
+    }
+
+    setFeedback({ message: `Connected with ${interestedUser.first_name}!`, type: "connect" });
     setTimeout(() => setFeedback({ message: "", type: "" }), 3000);
   };
 
@@ -80,8 +127,6 @@ export default function UserProfile() {
 
     fetchData();
   }, [params.attendeeId, params.experienceId, supabase]);
-
-  console.log(interests);
 
   return (
     <motion.div
