@@ -91,6 +91,13 @@ export default function AttendeesList() {
     }
   };
 
+  useEffect(() => {
+    if (!topMatches || !interestedUsers) {
+      // If data is not available, redirect back to the experience page
+      router.push(`/experiences/${params.experienceId}`);
+    }
+  }, [topMatches, interestedUsers]);
+
   return (
     <div className="bg-gray-100 min-h-screen">
       <header className="bg-white p-4 flex justify-between items-center shadow-sm">

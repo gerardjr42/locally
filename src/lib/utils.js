@@ -156,3 +156,25 @@ function hashString(str) {
   }
   return Math.abs(hash);
 }
+
+export async function fetchTopMatches(userId, eventId) {
+  try {
+    const response = await fetch("/api/matchmaking", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ userId, eventId }),
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    const data = await response.json();
+    return data.matches;
+  } catch (error) {
+    console.error("Error fetching top matches:", error);
+    return [];
+  }
+}
