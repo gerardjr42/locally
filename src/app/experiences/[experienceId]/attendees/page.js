@@ -5,7 +5,7 @@ import { useUser } from "@/hooks/useUser";
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 import Image from "next/image";
 import { useParams, useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 export default function AttendeesList() {
   console.log("AttendeesList component rendered");
@@ -98,6 +98,12 @@ export default function AttendeesList() {
     }
   }, [topMatches, interestedUsers]);
 
+  const memoizedTopMatches = useMemo(() => topMatches, [topMatches]);
+  const memoizedInterestedUsers = useMemo(
+    () => interestedUsers,
+    [interestedUsers]
+  );
+
   return (
     <div className="bg-gray-100 min-h-screen">
       <header className="bg-white p-4 flex justify-between items-center shadow-sm">
@@ -109,10 +115,10 @@ export default function AttendeesList() {
         </div>
 
         <div className="space-y-4 bg-[#C9E9E5] p-4 rounded-lg">
-          {interestedUsers
+          {memoizedInterestedUsers
             .sort((a, b) => {
-              const aIndex = topMatches.indexOf(a.user_id);
-              const bIndex = topMatches.indexOf(b.user_id);
+              const aIndex = memoizedTopMatches.indexOf(a.user_id);
+              const bIndex = memoizedTopMatches.indexOf(b.user_id);
               return aIndex - bIndex;
             })
             .map((user, index) => (

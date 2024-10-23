@@ -14,7 +14,7 @@ import { useUser } from "@/hooks/useUser";
 import { Clock, DollarSign, MapPin, Tag, Users } from "lucide-react";
 import Image from "next/image";
 import { useParams, useRouter } from "next/navigation";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 
 export default function ExperienceDetails() {
   const [experience, setExperience] = useState(null);
@@ -31,6 +31,12 @@ export default function ExperienceDetails() {
   const [topMatches, setTopMatches] = useState([]);
   const [top3Matches, setTop3Matches] = useState([]);
   const { user, loading: userLoading } = useUser();
+
+  const memoizedTopMatches = useMemo(() => topMatches, [topMatches]);
+  const memoizedInterestedUsers = useMemo(
+    () => interestedUsers,
+    [interestedUsers]
+  );
 
   const fetchTopMatches = async (userId, eventId) => {
     try {
@@ -261,7 +267,10 @@ export default function ExperienceDetails() {
                 className="text-sm bg-gray-200 rounded-lg"
                 onClick={() =>
                   router.push(`/experiences/${params.experienceId}/attendees`, {
-                    state: { topMatches, interestedUsers },
+                    state: {
+                      topMatches: memoizedTopMatches,
+                      interestedUsers: memoizedInterestedUsers,
+                    },
                   })
                 }
               >
