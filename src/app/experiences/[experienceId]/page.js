@@ -7,15 +7,14 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import { Button } from "@/components/ui/button";
-import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
-import { useUserContext } from "@/contexts/UserContext";
-
 import { fetchUsersForExperience } from "@/lib/utils";
+import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 
+import { useUser } from "@/hooks/useUser";
 import { Clock, DollarSign, MapPin, Tag, Users } from "lucide-react";
 import Image from "next/image";
 import { useParams, useRouter } from "next/navigation";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 
 export default function ExperienceDetails() {
   const [experience, setExperience] = useState(null);
@@ -29,10 +28,70 @@ export default function ExperienceDetails() {
   const supabase = createClientComponentClient();
   const router = useRouter();
   const descriptionRef = useRef(null);
-  const { user } = useUserContext();
+  const [topMatches, setTopMatches] = useState([]);
+  const [top3Matches, setTop3Matches] = useState([]);
+  const { user, loading: userLoading } = useUser();
+
+  const memoizedTopMatches = useMemo(() => topMatches, [topMatches]);
+  const memoizedInterestedUsers = useMemo(
+    () => interestedUsers,
+    [interestedUsers]
+  );
+
+  const fetchTopMatches = async (userId, eventId) => {
+    try {
+      console.log(
+        "Fetching top matches for userId:",
+        userId,
+        "eventId:",
+        eventId
+      );
+      const response = await fetch("/api/matchmaking", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ userId, eventId }),
+      });
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(
+          `HTTP error! status: ${response.status}, message: ${errorText}`
+        );
+      }
+
+      const data = await response.json();
+      console.log("Top Matches:", data.matches);
+      setTopMatches(data.matches);
+
+      // Fetch interested users' data
+      const interestedUsersData = await Promise.all(
+        data.matches.map(async (userId) => {
+          const { data: userData, error } = await supabase
+            .from("Users")
+            .select("user_id, first_name, last_name, user_dob, photo_url")
+            .eq("user_id", userId)
+            .single();
+
+          if (error) {
+            console.error("Error fetching user data:", error);
+            return null;
+          }
+          return userData;
+        })
+      );
+
+      setInterestedUsers(interestedUsersData.filter(Boolean));
+    } catch (error) {
+      console.error("Error fetching top matches:", error);
+    }
+  };
 
   useEffect(() => {
     async function fetchExperienceAndUsers() {
+      if (userLoading) return;
+
       const { data: experienceData, error: experienceError } = await supabase
         .from("Events")
         .select(
@@ -55,33 +114,6 @@ export default function ExperienceDetails() {
 
       setExperience(experienceData);
 
-      const { data: userData, error: userError } = await supabase
-        .from("User_Events")
-        .select(
-          `
-          user_id,
-          expressed_interest,
-          Users (
-            user_id,
-            first_name,
-            last_name,
-            user_dob,
-            photo_url
-          )
-        `
-        )
-        .eq("event_id", params.experienceId)
-        .eq("expressed_interest", true);
-
-      if (userError) {
-        console.error("Error fetching interested users:", userError);
-      } else {
-        setInterestedUsers(userData.map((item) => item.Users));
-      }
-
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
       if (user) {
         const { data, error } = await supabase
           .from("User_Events")
@@ -93,13 +125,20 @@ export default function ExperienceDetails() {
         if (data && data.expressed_interest) {
           setIsInterested(true);
         }
+
+        // Fetch top matches
+        try {
+          await fetchTopMatches(user.user_id, params.experienceId);
+        } catch (error) {
+          console.error("Error fetching top matches:", error);
+        }
       }
 
       setLoading(false);
     }
 
     fetchExperienceAndUsers();
-  }, [params.experienceId, supabase]);
+  }, [params.experienceId, supabase, user, userLoading]);
 
   useEffect(() => {
     if (descriptionRef.current) {
@@ -113,10 +152,13 @@ export default function ExperienceDetails() {
 
   useEffect(() => {
     async function loadInterestedUsers() {
-      const users = await fetchUsersForExperience(supabase, params.experienceId);
+      const users = await fetchUsersForExperience(
+        supabase,
+        params.experienceId
+      );
       setInterested(users);
     }
-  
+
     loadInterestedUsers();
     console.log(interested);
   }, [params.experienceId]);
@@ -141,6 +183,7 @@ export default function ExperienceDetails() {
         setInterestedUsers((prevUsers) =>
           prevUsers.filter((u) => u.user_id !== user.user_id)
         );
+        setTopMatches([]); // Clear top matches when uninterested
       }
     } else {
       const { error } = await supabase
@@ -151,16 +194,10 @@ export default function ExperienceDetails() {
         console.error("Error adding interest:", error);
       } else {
         setIsInterested(true);
-        const { data: userData, error: userError } = await supabase
-          .from("Users")
-          .select("user_id, first_name, last_name, user_dob, photo_url")
-          .eq("user_id", user.user_id)
-          .single();
-
-        if (userError) {
-          console.error("Error fetching user data:", userError);
-        } else {
-          setInterestedUsers((prevUsers) => [...prevUsers, userData]);
+        try {
+          await fetchTopMatches(user.user_id, params.experienceId);
+        } catch (error) {
+          console.error("Error fetching top matches:", error);
         }
       }
     }
@@ -218,7 +255,7 @@ export default function ExperienceDetails() {
             className="w-full mb-6 text-white bg-teal-400 hover:bg-teal-500 transition-colors"
             onClick={handleInterestClick}
           >
-            {isInterested ? "Not Interested" : "I'm Interested!"}
+            {isInterested ? "Not Interested" : "I'm interested!"}
           </Button>
           <div className="mb-6">
             <div className="flex justify-between items-center mb-3">
@@ -229,19 +266,28 @@ export default function ExperienceDetails() {
                 variant="link"
                 className="text-sm bg-gray-200 rounded-lg"
                 onClick={() =>
-                  router.push(`/experiences/${params.experienceId}/attendees`)
+                  router.push(`/experiences/${params.experienceId}/attendees`, {
+                    state: {
+                      topMatches: memoizedTopMatches,
+                      interestedUsers: memoizedInterestedUsers,
+                    },
+                  })
                 }
               >
                 View all
               </Button>
             </div>
             <div className="flex space-x-3 overflow-x-auto pb-2">
-              {interestedUsers.slice(0, 5).map((user, index) => (
+              {interestedUsers.map((user, index) => (
                 <div key={user.user_id} className="flex-shrink-0 w-20">
                   <div className="relative mb-1">
-                    <div 
+                    <div
                       className="rounded-full overflow-hidden w-20 h-20 cursor-pointer"
-                      onClick={() => router.push(`/experiences/${params.experienceId}/attendees/${user.user_id}`)}
+                      onClick={() =>
+                        router.push(
+                          `/experiences/${params.experienceId}/attendees/${user.user_id}`
+                        )
+                      }
                     >
                       <Image
                         src={user.photo_url || "/default-avatar.png"}
@@ -251,7 +297,7 @@ export default function ExperienceDetails() {
                         className="object-cover"
                       />
                     </div>
-                    {index < 2 && (
+                    {index < 3 && (
                       <span className="absolute top-0 right-0 bg-green-500 text-white text-xs px-1 py-0.5 rounded-full text-[10px]">
                         Top Match
                       </span>
