@@ -175,6 +175,24 @@ export default function UserMatches() {
             </button>
           </div>
         </div>
+
+        <div className="collapse collapse-arrow bg-gray-100 pb-1 mb-4 shadow-sm">
+          <input type="checkbox"/>
+          <div className="collapse-title">
+            <p className="text-sm text-gray-400 font-semibold">
+              Cancel This Match
+            </p>
+           
+          </div>
+          <div className="collapse-content flex flex-col items-center justify-evenly">
+          <p className="text-xs text-gray-400">
+              {`Are you sure you want to cancel your match with ${otherUser?.first_name} for the ${eventInfo?.event_name}?`}
+            </p>
+            <button className="w-1/2 outline text-gray-400 text-sm p-4 my-2 rounded-full font-semibold flex items-center justify-center">
+              Cancel
+            </button>
+          </div>
+        </div>
       </div>
     </div>
   );
