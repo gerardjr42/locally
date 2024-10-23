@@ -14,6 +14,8 @@ export default function UserMatches() {
   const { user } = useUserContext();
   const params = useParams();
   const [eventInfo, setEventInfo] = useState(null);
+  const [matchData, setMatchData] = useState(null);
+  const [otherUser, setOtherUser] = useState(null);
 
   const fetchEventInfo = async () => {
     const { data: matchData, error: matchError } = await supabase
@@ -46,7 +48,53 @@ export default function UserMatches() {
     fetchEventInfo();
   }, [params.connectionId]);
 
-  console.log(eventInfo);
+
+  const fetchMatchAndUserInfo = async () => {
+    const { data: matchData, error: matchError } = await supabase
+      .from("Event_Matches")
+      .select("*")
+      .eq("match_id", params.connectionId)
+      .single();
+  
+    if (matchError) {
+      console.error("Error fetching match data:", matchError);
+      return;
+    }
+
+    setMatchData(matchData);
+
+    const otherUserId = matchData.attendee_id === user.user_id 
+      ? matchData.interest_in_user_id 
+      : matchData.attendee_id;
+  
+    const { data: userData, error: userError } = await supabase
+      .from("Users")
+      .select("*")
+      .eq("user_id", otherUserId)
+      .single();
+  
+    if (userError) {
+      console.error("Error fetching user data:", userError);
+    } else {
+      setOtherUser(userData);
+    }
+  
+    fetchEventInfo();
+  };
+  
+  useEffect(() => {
+    if (user && params.connectionId) {
+      fetchMatchAndUserInfo();
+    }
+  }, [params.connectionId, user]);
+
+  console.log(otherUser);
+
+  function handleViewEvent() {
+    router.push(`/experiences/${eventInfo.event_id}`);
+  }
+
+
 
   return (
     <div className="flex flex-col items-center justify-center">
@@ -54,9 +102,20 @@ export default function UserMatches() {
 
       <div className="w-full p-4">
         {eventInfo && (
-          <div>
-            <h2>{eventInfo.event_name}</h2>
-            <p>{formatDate(eventInfo.event_time)}</p>
+            <div className="card bg-base-100 image-full w-full shadow-xl my-4">
+            <figure>
+              <img
+                src={eventInfo.event_image_url}
+                alt={eventInfo.event_name} />
+            </figure>
+            <div className="card-body">
+              <h2 className="card-title m">{eventInfo.event_name}</h2>
+              <p className="text-xs">{formatDate(eventInfo.event_time)}</p>
+              <p className="text-xs">{eventInfo.event_details}</p>
+              <div className="card-actions justify-center">
+                <button className="w-1/2 bg-teal-500 text-white text-sm p-4 my-2 rounded-full font-semibold flex items-center justify-center" onClick={handleViewEvent}>View Experience</button>
+              </div>
+            </div>
           </div>
         )}
         <div className="collapse collapse-arrow bg-gray-100 pb-1 mb-4">
