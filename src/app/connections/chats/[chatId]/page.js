@@ -97,7 +97,9 @@ export default function MatchChat({ params }) {
   }, [matchId]);
 
   useEffect(() => {
-    const fetchUserName = async (userId) => {
+    const fetchUserName = async () => {
+      if (!userId) return;
+
       try {
         const { data, error } = await supabase
           .from('Users')
@@ -120,7 +122,7 @@ export default function MatchChat({ params }) {
     };
 
     if (userId) {
-      fetchUserName(userId);
+      fetchUserName();
     }
   }, [userId]);
 
