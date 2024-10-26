@@ -90,6 +90,7 @@ export default function UserProfile() {
   const handlePass = () => {
     setFeedback({ message: "Passed on Hudson", type: "pass" });
     setTimeout(() => setFeedback({ message: "", type: "" }), 3000);
+    router.push(`/experiences/${params.experienceId}/attendees`);
   };
 
   const handleBackClick = () => {
@@ -256,7 +257,7 @@ export default function UserProfile() {
             aria-label="Connect with Hudson"
           >
             <Check className="w-5 h-5 mr-2" />
-            Let's Connect
+            Let's Connect!
           </motion.button>
         </div>
         <AnimatePresence>
