@@ -36,12 +36,13 @@ export default function UserProfile() {
   const [interestedUser, setInterestedUser] = useState({});
   const [eventName, setEventName] = useState('');
   const { user } = useUserContext();
-
   const handleConnect = async () => {
     if (!user) {
       console.error("User not authenticated");
       return;
     }
+
+    let matchId;
 
     const { data: existingMatch, error: matchError } = await supabase
       .from('Event_Matches')
@@ -59,12 +60,14 @@ export default function UserProfile() {
       const { data, error: updateError } = await supabase
         .from('Event_Matches')
         .update({ mutual_interest: true })
-        .eq('match_id', existingMatch.match_id);
+        .eq('match_id', existingMatch.match_id)
+        .select();
 
       if (updateError) {
         console.error("Error updating match:", updateError);
         return;
       }
+      matchId = existingMatch.match_id;
     } else {
       const [lesserUserId, greaterUserId] = [user.user_id, params.attendeeId].sort();
       const { data, error: insertError } = await supabase
@@ -75,21 +78,40 @@ export default function UserProfile() {
           event_id: params.experienceId,
           mutual_interest: false,
           date_matched: new Date()
-        });
+        })
+        .select();
 
       if (insertError) {
         console.error("Error inserting match:", insertError);
         return;
       }
+      matchId = data[0].match_id;
+    }
+
+    const { data: updatedMatch, error: fetchError } = await supabase
+      .from('Event_Matches')
+      .select('*')
+      .eq('match_id', matchId)
+      .single();
+
+    if (fetchError) {
+      console.error("Error fetching updated match:", fetchError);
+      return;
     }
 
     setFeedback({ message: `Connected with ${interestedUser.first_name}!`, type: "connect" });
-    setTimeout(() => setFeedback({ message: "", type: "" }), 3000);
+
+    if (updatedMatch.mutual_interest) {
+      setTimeout(() => router.push(`/connections/${matchId}`), 1000);
+    } else {
+      setTimeout(() => setFeedback({ message: "", type: "" }), 3000);
+    }
   };
 
   const handlePass = () => {
     setFeedback({ message: "Passed on Hudson", type: "pass" });
     setTimeout(() => setFeedback({ message: "", type: "" }), 3000);
+    router.push(`/experiences/${params.experienceId}/attendees`);
   };
 
   const handleBackClick = () => {
@@ -238,7 +260,7 @@ export default function UserProfile() {
             aria-label="Connect with Hudson"
           >
             <Check className="w-5 h-5 mr-2" />
-            Let's Connect
+            Let's Connect!
           </motion.button>
         </div>
         <AnimatePresence>
