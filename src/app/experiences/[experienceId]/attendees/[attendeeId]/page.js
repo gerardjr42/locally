@@ -187,7 +187,7 @@ export default function UserProfile() {
                   transition={{ delay: index * 0.1 }}
                 >
                   <div className="w-12 h-12 rounded-full border-2 border-gray-300 flex items-center justify-center">
-                    {/* You may need to add logic here to display the correct icon based on the interest name */}
+                    {interest.icon}
                   </div>
                   <p className="text-[10px] mt-1 text-[#15B8A6] font-bold text-center">
                     {interest.name}
@@ -203,28 +203,10 @@ export default function UserProfile() {
             className="space-y-2"
           >
             <motion.div className="text-gray-600" variants={fadeIn}>
+              <CollapsibleContent className="text-sm">  
               <p className="text-sm">
                 {interestedUser.bio}
               </p>
-              <CollapsibleContent className="text-sm">
-                <p className="pt-2">
-                  Capturing moments through the lens is my way of telling
-                  stories, and my camera is always ready to seize the magic of
-                  the moment. I&apos;m an avid film buff, always on the lookout
-                  for the next cinematic masterpiece, enjoying everything from
-                  indie films to blockbuster hits. The stage is where stories
-                  come to life, and I love attending live theater performances,
-                  whether it&apos;s a gripping drama or a lighthearted musical.
-                </p>
-                <p className="pt-2">
-                  My furry friend is more than just a pet; they&apos;re family,
-                  reminding me to enjoy the simple pleasures in life. Art is
-                  everywhere, and I find inspiration in galleries, street
-                  murals, and even in everyday objects, as I dabble in painting
-                  and sketching. I&apos;m always eager to connect with fellow
-                  enthusiasts and explorers, so feel free to reach out—I&apos;d
-                  love to hear from you!
-                </p>
               </CollapsibleContent>
             </motion.div>
             <CollapsibleTrigger asChild>

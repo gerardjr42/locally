@@ -141,7 +141,7 @@ export default function Account() {
                   }}
                 >
                   <div className="w-12 h-12 rounded-full border-2 border-gray-300 flex items-center justify-center">
-                    {/* You may need to add logic here to display the correct icon based on the interest name */}
+                    {interest.icon}
                   </div>
                   <p className="text-[10px] mt-1 text-[#15B8A6] font-bold text-center">
                     {interest.name}
@@ -158,9 +158,9 @@ export default function Account() {
             <motion.div className="text-gray-600" variants={fadeIn}>
               {!isEditing ? (
                 <>
-                  {!isExpanded && <p className="text-sm">{user.bio}...</p>}
+                  {isExpanded && <p className="text-sm">{user?.bio}</p>}
                   <CollapsibleContent className="text-sm">
-                    {isExpanded && <p className="pt-2"></p>}
+                    {!isExpanded && <p className="pt-2"></p>}
                   </CollapsibleContent>
                 </>
               ) : (

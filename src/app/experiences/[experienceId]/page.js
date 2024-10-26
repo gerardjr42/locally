@@ -292,9 +292,9 @@ export default function ExperienceDetails() {
                       <Image
                         src={user.photo_url || "/default-avatar.png"}
                         alt={`${user.first_name} ${user.last_name}`}
-                        width={80}
-                        height={80}
-                        className="object-cover"
+                        layout="fill"
+                        objectFit="cover"
+                        className="w-full h-full rounded-full"
                       />
                     </div>
                     {index < 3 && (
@@ -345,7 +345,17 @@ export default function ExperienceDetails() {
             <MapPin className="w-4 h-4 text-gray-600 mt-0.5" />
             <div>
               <p className="font-semibold text-sm text-gray-800">
-                {experience.event_street_address}
+                <a
+                  href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
+                    experience.event_street_address +
+                      ", " +
+                      experience.event_zip_code
+                  )}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  {experience.event_street_address}, {experience.event_zip_code}
+                </a>
               </p>
             </div>
             <Clock className="w-4 h-4 text-gray-600 mt-0.5" />
