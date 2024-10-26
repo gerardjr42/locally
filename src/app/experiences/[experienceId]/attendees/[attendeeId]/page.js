@@ -36,7 +36,6 @@ export default function UserProfile() {
   const [interestedUser, setInterestedUser] = useState({});
   const [eventName, setEventName] = useState('');
   const { user } = useUserContext();
-
   const handleConnect = async () => {
     if (!user) {
       console.error("User not authenticated");
@@ -89,7 +88,6 @@ export default function UserProfile() {
       matchId = data[0].match_id;
     }
 
-    // Fetch the updated match data
     const { data: updatedMatch, error: fetchError } = await supabase
       .from('Event_Matches')
       .select('*')
@@ -104,7 +102,7 @@ export default function UserProfile() {
     setFeedback({ message: `Connected with ${interestedUser.first_name}!`, type: "connect" });
 
     if (updatedMatch.mutual_interest) {
-      setTimeout(() => router.push(`/connections/${matchId}`), 1500);
+      setTimeout(() => router.push(`/connections/${matchId}`), 1000);
     } else {
       setTimeout(() => setFeedback({ message: "", type: "" }), 3000);
     }
