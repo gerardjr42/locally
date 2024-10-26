@@ -102,35 +102,30 @@ export default function UserMatches() {
         <div className="card flex items-center justify-center bg-base-100 shadow-sm mb-4 p-2">
           <div className="card-body flex-col items-center justify-center p-2">
             <h2 className="card-title text-gray-600">{`You've Matched with ${otherUser?.first_name}!`}</h2>
-            <div className="card-image w-full h-full overflow-hidden flex flex-row items-center justify-evenly px-1 py-2">
-            <Image
-              src={user?.photo_url}
-              alt={user?.first_name}
-              width={120}
-              height={120}
-              className= "ring-teal-500 ring-primary ring-offset-base-100 rounded-full ring ring-offset-2 object-cover "
-            />
-            <Image
-            src="/images/fistbump.svg"
-            alt="Fist Bump"
-            width={50}
-            height={50}
-            className="mx-2"
-            />
-            <Image
-              src={otherUser?.photo_url}
-              alt={otherUser?.first_name}
-              width={120}
-              height={120}
-              className= "ring-teal-500 ring-primary ring-offset-base-100 rounded-full ring ring-offset-2 object-cover"
-            />
-          </div>
+            <div className="card-image w-full h-full overflow-hidden flex flex-row items-center justify-evenly px-1 py-5">
+              <div className="avatar w-3/4">
+                <div className="ring-primary ring-teal-500 ring-offset-base-100 w-full rounded-full ring ring-offset-2">
+                  <img src={user?.photo_url} />
+                </div>
+              </div>
+              <Image
+                src="/images/fistbump.svg"
+                alt="Fist Bump"
+                width={50}
+                height={50}
+                className="mx-2"
+              />
+              <div className="avatar w-3/4">
+                <div className="ring-primary ring-teal-500 ring-offset-base-100 w-full rounded-full ring ring-offset-2">
+                  <img src={otherUser?.photo_url} />
+                </div>
+              </div>
+            </div>
             <p className="text-xs text-center text-gray-500">{`Time to introduce yourselves, coordinate your meetup, and confirm your connection!`}</p>
             <button className="w-1/2 bg-teal-500 text-white text-sm p-4 my-2 rounded-full font-semibold flex items-center justify-center">
               Chat
             </button>
           </div>
-          
         </div>
 
         {eventInfo && (
@@ -177,15 +172,14 @@ export default function UserMatches() {
         </div>
 
         <div className="collapse collapse-arrow bg-gray-100 pb-1 mb-4 shadow-sm">
-          <input type="checkbox"/>
+          <input type="checkbox" />
           <div className="collapse-title">
             <p className="text-sm text-gray-400 font-semibold">
               Cancel This Match
             </p>
-           
           </div>
           <div className="collapse-content flex flex-col items-center justify-evenly">
-          <p className="text-xs text-gray-400">
+            <p className="text-xs text-gray-400">
               {`Are you sure you want to cancel your match with ${otherUser?.first_name} for the ${eventInfo?.event_name}?`}
             </p>
             <button className="w-1/2 outline text-gray-400 text-sm p-4 my-2 rounded-full font-semibold flex items-center justify-center">
