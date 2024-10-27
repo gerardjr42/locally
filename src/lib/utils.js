@@ -72,81 +72,44 @@ export async function fetchUsersForExperience(supabase, experienceId) {
 }
 
 export const fetchUserInterests = async (userId) => {
+  if (!userId) {
+    console.error("fetchUserInterests: userId is null or undefined");
+    return [];
+  }
 
-if (!userId) {
+  try {
+    console.log("Fetching interests for userId:", userId);
 
-console.error('fetchUserInterests: userId is null or undefined');
+    const { data, error } = await supabase
+      .from("User_Interests")
+      .select("interest")
+      .eq("user_id", userId);
 
-return [];
+    if (error) {
+      console.error("Error fetching interests:", error);
+      throw error;
+    }
 
-}
+    console.log("Raw User_Interests data:", data);
 
-try {
+    if (!data || data.length === 0) {
+      console.warn(
+        "fetchUserInterests: No data returned from query for userId:",
+        userId
+      );
+      return [];
+    }
 
-console.log("Fetching interests for userId:", userId);
+    const processedInterests = data.map((item) => item.interest);
 
-const { data, error } = await supabase
-
-.from('User_Interests')
-
-.select('interest')
-
-.eq('user_id', userId);
-
-  
-
-if (error) {
-
-console.error("Error fetching interests:", error);
-
-throw error;
-
-}
-
-  
-
-console.log("Raw User_Interests data:", data);
-
-  
-
-if (!data || data.length === 0) {
-
-console.warn('fetchUserInterests: No data returned from query for userId:', userId);
-
-return [];
-
-}
-
-  
-
-const processedInterests = data.map(item => item.interest);
-
-  
-
-console.log("Processed interests:", processedInterests);
-
-return processedInterests;
-
-  
-
-} catch (error) {
-
-console.error('Error fetching user interests:', error);
-
-return [];
-
-}
-
-return data.map(item => ({
-
-id: item.interest_id,
-
-name: item.Interests?.name || 'Interest'
-
-}));
-
+    console.log("Processed interests:", processedInterests);
+    return processedInterests;
+  } catch (error) {
+    console.error("Error fetching user interests:", error);
+    return [];
+  }
 };
-// Matchmaking Fetch User Data and Interests
+
 export async function fetchUserDataAndInterests(supabase, userId) {
   try {
     const { data: userData, error: userError } = await supabase
@@ -178,7 +141,6 @@ export async function fetchUserDataAndInterests(supabase, userId) {
   }
 }
 
-// Convert User Data to Text for Matchmaking
 export function prepareUserDataForMatchmaking(usersData) {
   return usersData.map((user) => ({
     user_id: user.user_id,
@@ -187,13 +149,13 @@ export function prepareUserDataForMatchmaking(usersData) {
 }
 
 function createFeatureVector(user) {
-  const interestsVector = new Array(100).fill(0); // Assuming 100 possible interests
+  const interestsVector = new Array(100).fill(0);
   user.interests.forEach((interest) => {
     const interestIndex = hashString(interest) % 100;
     interestsVector[interestIndex] = 1;
   });
 
-  const ageVector = [calculateAge(user.user_dob) / 100]; // Normalize age
+  const ageVector = [calculateAge(user.user_dob) / 100];
 
   return [...interestsVector, ...ageVector];
 }
@@ -203,7 +165,7 @@ function hashString(str) {
   for (let i = 0; i < str.length; i++) {
     const char = str.charCodeAt(i);
     hash = (hash << 5) - hash + char;
-    hash = hash & hash; // Convert to 32-bit integer
+    hash = hash & hash;
   }
   return Math.abs(hash);
 }

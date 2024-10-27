@@ -24,45 +24,56 @@ export default function InterestsPage() {
     fetchData();
   }, []);
 
+  
   const fetchInterests = async () => {
     try {
       const { data, error } = await supabase
         .from("Interests")
         .select("*")
-        .order("id", { ascending: true });
+        .order("category_id", { ascending: true });
 
       if (error) throw error;
 
-      const groupedInterests = data.reduce((acc, interest) => {
-        const existingCategory = acc.find(
-          (item) => item.category === interest.category
-        );
+      const groupedInterests = await Promise.all(data.map(async (interest) => {
+        const categoryName = await fetchCategoryNameByInterestId(interest.id);
+        return {
+          ...interest,
+          categoryName
+        };
+      }));
+
+      const categorizedInterests = groupedInterests.reduce((acc, interest) => {
+        const existingCategory = acc.find(item => item.category === interest.categoryName);
+
         if (existingCategory) {
           existingCategory.items.push(interest);
         } else {
-          acc.push({ category: interest.category, items: [interest] });
+          acc.push({
+            category: interest.categoryName,
+            items: [interest],
+          });
         }
+
         return acc;
       }, []);
 
-      setInterests(groupedInterests);
+      setInterests(categorizedInterests);
       setLoading(false);
     } catch (error) {
       console.error("Error fetching interests:", error);
       setLoading(false);
     }
   };
-
+  
   const fetchUserInterests = async () => {
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
+    const { data: { user } } = await supabase.auth.getUser();
+  
     if (user) {
       const { data, error } = await supabase
         .from("User_Interests")
         .select("interest")
         .eq("user_id", user.id);
-
+  
       if (error) {
         console.error("Error fetching user interests:", error);
       } else {
@@ -71,13 +82,32 @@ export default function InterestsPage() {
       }
     }
   };
+  
+  const fetchCategoryNameByInterestId = async (interestId) => {
+    const { data, error } = await supabase
+      .from("Interests")
+      .select(`
+        Event_Categories (
+          category_name
+        )
+      `)
+      .eq("id", interestId)
+      .single();
+  
+    if (error) {
+      console.error("Error fetching category name:", error);
+      return null;
+    }
+  
+    return data?.Event_Categories?.category_name || "Unknown Category";
+  };
 
   const toggleInterest = async (interest) => {
     if (
       selectedInterests.length >= 10 &&
       !selectedInterests.some((i) => i.id === interest.id)
     ) {
-      return; // Don't add more than 10 interests
+      return;
     }
 
     const {
@@ -91,7 +121,6 @@ export default function InterestsPage() {
     const interestExists = selectedInterests.some((i) => i.id === interest.id);
 
     if (interestExists) {
-      // Remove interest
       const { error } = await supabase
         .from("User_Interests")
         .delete()
@@ -106,7 +135,6 @@ export default function InterestsPage() {
         );
       }
     } else {
-      // Add interest
       const { error } = await supabase.from("User_Interests").insert({
         user_id: user.id,
         interest: { id: interest.id, icon: interest.icon, name: interest.name },
@@ -120,11 +148,11 @@ export default function InterestsPage() {
     }
   };
 
-  const toggleCategory = (category) => {
+  const toggleCategory = (categoryName) => {
     setExpandedCategories((prev) =>
-      prev.includes(category)
-        ? prev.filter((c) => c !== category)
-        : [...prev, category]
+      prev.includes(categoryName)
+        ? prev.filter((name) => name !== categoryName)
+        : [...prev, categoryName]
     );
   };
 
@@ -159,7 +187,7 @@ export default function InterestsPage() {
           progressValue={60}
           progressText="60%"
         />
-
+.
         <Input
           type="text"
           placeholder="Search interests..."
@@ -181,51 +209,45 @@ export default function InterestsPage() {
           </p>
         )}
 
-        <div className="space-y-6">
+        <div className="space-y-2">
           {filteredInterests.map((category) => (
-            <div key={category.category} className="space-y-2">
-              <h2 className="text-xl font-semibold">{category.category}</h2>
-              <div className="flex flex-wrap gap-2">
-                {category.items
-                  .slice(
-                    0,
-                    expandedCategories.includes(category.category)
-                      ? category.items.length
-                      : 8
-                  )
-                  .map((item) => (
-                    <Button
-                      key={item.id}
-                      variant={
-                        selectedInterests.some((i) => i.id === item.id)
-                          ? "default"
-                          : "outline"
-                      }
-                      className={`rounded-full text-sm ${
-                        selectedInterests.some((i) => i.id === item.id)
-                          ? "bg-[#0D9488] hover:bg-[#0B7A6E] text-white"
-                          : "bg-white text-gray-800 border-gray-300 hover:bg-gray-100"
-                      }`}
-                      onClick={() => toggleInterest(item)}
-                      disabled={
-                        selectedInterests.length >= 10 &&
-                        !selectedInterests.some((i) => i.id === item.id)
-                      }
-                    >
-                      {item.icon} {item.name}
-                    </Button>
-                  ))}
+            <div key={category.category} className="bg-white rounded-lg shadow-md my-2">
+              <div 
+                className="flex justify-between p-4 cursor-pointer" 
+                onClick={() => toggleCategory(category.category)}
+              >
+                <h2 className="text-xl font-semibold">{category.category}</h2>
+                <span className="text-gray-400">
+                  {expandedCategories.includes(category.category) ? '-' : '+'}
+                </span>
               </div>
-              {category.items.length > 8 && !searchTerm && (
-                <Button
-                  variant="ghost"
-                  className="text-[#0D9488] hover:text-[#0B7A6E]"
-                  onClick={() => toggleCategory(category.category)}
-                >
-                  {expandedCategories.includes(category.category)
-                    ? "Show less"
-                    : "Show more"}
-                </Button>
+              {expandedCategories.includes(category.category) && (
+                <div className="p-4">
+                  <div className="flex flex-wrap gap-2">
+                    {category.items.map((item) => (
+                      <Button
+                        key={item.id}
+                        variant={
+                          selectedInterests.some((i) => i.id === item.id)
+                            ? "default"
+                            : "outline"
+                        }
+                        className={`rounded-full text-sm ${
+                          selectedInterests.some((i) => i.id === item.id)
+                            ? "bg-[#0D9488] hover:bg-[#0B7A6E] text-white"
+                            : "bg-white text-gray-800 border-gray-300 hover:bg-gray-100"
+                        }`}
+                        onClick={() => toggleInterest(item)}
+                        disabled={
+                          selectedInterests.length >= 10 &&
+                          !selectedInterests.some((i) => i.id === item.id)
+                        }
+                      >
+                        {item.icon} {item.name}
+                      </Button>
+                    ))}
+                  </div>
+                </div>
               )}
             </div>
           ))}
