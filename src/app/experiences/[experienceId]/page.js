@@ -1,23 +1,24 @@
-"use client";
+'use client';
 
-import { NavigationBar } from "@/components/navigation-bar";
+import { NavigationBar } from '@/components/navigation-bar';
 import {
   Accordion,
   AccordionItem,
   AccordionTrigger,
-} from "@/components/ui/accordion";
-import { Button } from "@/components/ui/button";
-import { fetchUsersForExperience } from "@/lib/utils";
-import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
+} from '@/components/ui/accordion';
+import { Button } from '@/components/ui/button';
+import { fetchUsersForExperience } from '@/lib/utils';
+import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
 
-import { useUser } from "@/hooks/useUser";
-import { Clock, DollarSign, MapPin, Tag, Users } from "lucide-react";
-import Image from "next/image";
-import { useParams, useRouter } from "next/navigation";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useUser } from '@/hooks/useUser';
+import { Clock, DollarSign, MapPin, Tag, Users } from 'lucide-react';
+import Image from 'next/image';
+import { useParams, useRouter } from 'next/navigation';
+import { useEffect, useMemo, useRef, useState } from 'react';
 
 export default function ExperienceDetails() {
   const [experience, setExperience] = useState(null);
+  const [allAttendees, setAllAttendees] = useState([]);
   const [interestedUsers, setInterestedUsers] = useState([]);
   const [interested, setInterested] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -41,15 +42,15 @@ export default function ExperienceDetails() {
   const fetchTopMatches = async (userId, eventId) => {
     try {
       console.log(
-        "Fetching top matches for userId:",
+        'Fetching top matches for userId:',
         userId,
-        "eventId:",
+        'eventId:',
         eventId
       );
-      const response = await fetch("/api/matchmaking", {
-        method: "POST",
+      const response = await fetch('/api/matchmaking', {
+        method: 'POST',
         headers: {
-          "Content-Type": "application/json",
+          'Content-Type': 'application/json',
         },
         body: JSON.stringify({ userId, eventId }),
       });
@@ -62,20 +63,20 @@ export default function ExperienceDetails() {
       }
 
       const data = await response.json();
-      console.log("Top Matches:", data.matches);
+      console.log('Top Matches:', data.matches);
       setTopMatches(data.matches);
 
       // Fetch interested users' data
       const interestedUsersData = await Promise.all(
         data.matches.map(async (userId) => {
           const { data: userData, error } = await supabase
-            .from("Users")
-            .select("user_id, first_name, last_name, user_dob, photo_url")
-            .eq("user_id", userId)
+            .from('Users')
+            .select('user_id, first_name, last_name, user_dob, photo_url')
+            .eq('user_id', userId)
             .single();
 
           if (error) {
-            console.error("Error fetching user data:", error);
+            console.error('Error fetching user data:', error);
             return null;
           }
           return userData;
@@ -84,7 +85,7 @@ export default function ExperienceDetails() {
 
       setInterestedUsers(interestedUsersData.filter(Boolean));
     } catch (error) {
-      console.error("Error fetching top matches:", error);
+      console.error('Error fetching top matches:', error);
     }
   };
 
@@ -93,7 +94,7 @@ export default function ExperienceDetails() {
       if (userLoading) return;
 
       const { data: experienceData, error: experienceError } = await supabase
-        .from("Events")
+        .from('Events')
         .select(
           `
           *,
@@ -103,11 +104,11 @@ export default function ExperienceDetails() {
           is_free
         `
         )
-        .eq("event_id", params.experienceId)
+        .eq('event_id', params.experienceId)
         .single();
 
       if (experienceError) {
-        console.error("Error fetching experience:", experienceError);
+        console.error('Error fetching experience:', experienceError);
         setLoading(false);
         return;
       }
@@ -116,10 +117,10 @@ export default function ExperienceDetails() {
 
       if (user) {
         const { data, error } = await supabase
-          .from("User_Events")
+          .from('User_Events')
           .select()
-          .eq("event_id", params.experienceId)
-          .eq("user_id", user.user_id)
+          .eq('event_id', params.experienceId)
+          .eq('user_id', user.user_id)
           .single();
 
         if (data && data.expressed_interest) {
@@ -130,7 +131,7 @@ export default function ExperienceDetails() {
         try {
           await fetchTopMatches(user.user_id, params.experienceId);
         } catch (error) {
-          console.error("Error fetching top matches:", error);
+          console.error('Error fetching top matches:', error);
         }
       }
 
@@ -157,6 +158,7 @@ export default function ExperienceDetails() {
         params.experienceId
       );
       setInterested(users);
+      setAllAttendees([...users]);
     }
 
     loadInterestedUsers();
@@ -165,19 +167,19 @@ export default function ExperienceDetails() {
 
   const handleInterestClick = async () => {
     if (!user) {
-      console.error("User not authenticated");
+      console.error('User not authenticated');
       return;
     }
 
     if (isInterested) {
       const { error } = await supabase
-        .from("User_Events")
+        .from('User_Events')
         .delete()
-        .eq("event_id", params.experienceId)
-        .eq("user_id", user.user_id);
+        .eq('event_id', params.experienceId)
+        .eq('user_id', user.user_id);
 
       if (error) {
-        console.error("Error removing interest:", error);
+        console.error('Error removing interest:', error);
       } else {
         setIsInterested(false);
         setInterestedUsers((prevUsers) =>
@@ -187,17 +189,17 @@ export default function ExperienceDetails() {
       }
     } else {
       const { error } = await supabase
-        .from("User_Events")
+        .from('User_Events')
         .insert({ event_id: params.experienceId, user_id: user.user_id });
 
       if (error) {
-        console.error("Error adding interest:", error);
+        console.error('Error adding interest:', error);
       } else {
         setIsInterested(true);
         try {
           await fetchTopMatches(user.user_id, params.experienceId);
         } catch (error) {
-          console.error("Error fetching top matches:", error);
+          console.error('Error fetching top matches:', error);
         }
       }
     }
@@ -224,12 +226,12 @@ export default function ExperienceDetails() {
 
   const formatDate = (dateString) => {
     const options = {
-      weekday: "long",
-      year: "numeric",
-      month: "long",
-      day: "numeric",
+      weekday: 'long',
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
     };
-    return new Date(dateString).toLocaleDateString("en-US", options);
+    return new Date(dateString).toLocaleDateString('en-US', options);
   };
 
   return (
@@ -255,12 +257,12 @@ export default function ExperienceDetails() {
             className="w-full mb-6 text-white bg-teal-400 hover:bg-teal-500 transition-colors"
             onClick={handleInterestClick}
           >
-            {isInterested ? "Not Interested" : "I'm interested!"}
+            {isInterested ? 'Not Interested' : "I'm interested!"}
           </Button>
           <div className="mb-6">
             <div className="flex justify-between items-center mb-3">
               <h2 className="text-lg font-semibold">
-                {interestedUsers.length} Interested locals
+                {allAttendees.length} Interested Locals
               </h2>
               <Button
                 variant="link"
@@ -290,7 +292,7 @@ export default function ExperienceDetails() {
                       }
                     >
                       <Image
-                        src={user.photo_url || "/default-avatar.png"}
+                        src={user.photo_url || '/default-avatar.png'}
                         alt={`${user.first_name} ${user.last_name}`}
                         layout="fill"
                         objectFit="cover"
@@ -327,7 +329,7 @@ export default function ExperienceDetails() {
               <div className="flex items-center text-gray-600 text-sm">
                 <DollarSign className="w-4 h-4 mr-1" />
                 <p>
-                  {experience.is_free ? "Free" : `$${experience.event_price}`}
+                  {experience.is_free ? 'Free' : `$${experience.event_price}`}
                 </p>
               </div>
             </div>
@@ -348,7 +350,7 @@ export default function ExperienceDetails() {
                 <a
                   href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
                     experience.event_street_address +
-                      ", " +
+                      ', ' +
                       experience.event_zip_code
                   )}`}
                   target="_blank"
@@ -360,11 +362,11 @@ export default function ExperienceDetails() {
             </div>
             <Clock className="w-4 h-4 text-gray-600 mt-0.5" />
             <p className="text-gray-600 text-sm">
-              {new Date(experience.event_time).toLocaleTimeString("en-US", {
-                hour: "2-digit",
-                minute: "2-digit",
+              {new Date(experience.event_time).toLocaleTimeString('en-US', {
+                hour: '2-digit',
+                minute: '2-digit',
                 hour12: true,
-                timeZone: "UTC",
+                timeZone: 'UTC',
               })}
             </p>
           </div>
@@ -377,15 +379,15 @@ export default function ExperienceDetails() {
               type="single"
               collapsible
               className="w-full"
-              value={isExpanded ? "description" : ""}
-              onValueChange={(value) => setIsExpanded(value === "description")}
+              value={isExpanded ? 'description' : ''}
+              onValueChange={(value) => setIsExpanded(value === 'description')}
             >
               <AccordionItem value="description" className="border-none">
                 <div>
                   <p
                     ref={descriptionRef}
                     className={`text-gray-600 text-sm leading-relaxed mb-2 ${
-                      !isExpanded ? "line-clamp-4" : ""
+                      !isExpanded ? 'line-clamp-4' : ''
                     }`}
                   >
                     {experience.event_details}
@@ -393,7 +395,7 @@ export default function ExperienceDetails() {
                   {showReadMore && (
                     <AccordionTrigger className="p-0 hover:no-underline">
                       <span className="text-blue-500 text-sm">
-                        {isExpanded ? "Read Less" : "Read More.."}
+                        {isExpanded ? 'Read Less' : 'Read More..'}
                       </span>
                     </AccordionTrigger>
                   )}

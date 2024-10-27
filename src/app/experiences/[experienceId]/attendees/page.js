@@ -8,7 +8,6 @@ import { useParams, useRouter } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
 
 export default function AttendeesList() {
-  console.log("AttendeesList component rendered");
   const supabase = createClientComponentClient();
   const params = useParams();
   const router = useRouter();
