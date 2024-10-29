@@ -13,6 +13,7 @@ import {
   Window,
 } from "stream-chat-react";
 import "stream-chat-react/dist/css/v2/index.css";
+import { EmojiPicker } from "stream-chat-react/emojis";
 
 export default function ChatPage() {
   //Add state to hold user info -> check useContext
@@ -29,7 +30,6 @@ export default function ChatPage() {
       const client = StreamChat.getInstance(
         process.env.NEXT_PUBLIC_STREAM_API_KEY
       );
-      setClient(client);
 
       console.log("Requesting token for user_id:", user.user_id);
 
@@ -50,14 +50,13 @@ export default function ChatPage() {
       );
       console.log("connectedUser", connectedUser);
 
-      const channel = client.channel("messaging", "matching-channel", {
-        //we can make this unique with only two users
-        /**
-         * members: ['vishal', 'neil'],
-         * name: 'Awesome channel about traveling'
-         */
+      const channel = await client.channel("messaging", "matching-channel", {
         name: "Matching Channel",
+        image: "/images/logo.png",
+        members: [user.user_id], //!add other user here from match event tables
       });
+      await channel.watch();
+      setClient(client);
       setChannel(channel);
     })();
 
@@ -74,12 +73,12 @@ export default function ChatPage() {
     <>
       {client && channel && (
         <div className="h-screen w-full">
-          <Chat client={client} theme="str-chat__theme-light">
-            <Channel channel={channel}>
+          <Chat client={client}>
+            <Channel channel={channel} EmojiPicker={EmojiPicker}>
               <Window>
                 <ChannelHeader />
                 <MessageList />
-                <MessageInput focus className="" />
+                <MessageInput focus />
               </Window>
               <Thread />
             </Channel>
