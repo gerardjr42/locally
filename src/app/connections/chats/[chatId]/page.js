@@ -50,12 +50,14 @@ export default function ChatPage() {
       );
       console.log("connectedUser", connectedUser);
 
-      const channel = await client.channel("messaging", "matching-channel", {
+      const channel = client.channel("messaging", {
         name: "Matching Channel",
         image: "/images/logo.png",
-        members: [user.user_id], //!add other user here from match event tables
+        members: [
+          ...new Set([user.user_id, "172783b8-0727-40d4-a551-df1f934cab2b"]),
+        ],
       });
-      await channel.watch();
+
       setClient(client);
       setChannel(channel);
     })();
