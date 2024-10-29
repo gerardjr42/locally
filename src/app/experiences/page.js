@@ -222,7 +222,7 @@ export default function AllExperiences() {
                   {formatDate(experience.event_time)}
                 </p>
                 <p className="text-gray-500 text-sm">
-                  {experience.is_free ? "Free" : `$${experience.event_price}`}
+                  {experience.is_free ? 'Free' : `$${experience.event_price}`}
                 </p>
               </div>
               <h2 className="text-gray-700 font-bold text-md">
@@ -240,7 +240,7 @@ export default function AllExperiences() {
                           <Image
                             src={
                               experience.users[0].photo_url ||
-                              "https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.webp"
+                              'https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.webp'
                             }
                             alt={experience.users[0].first_name}
                             width={400}
