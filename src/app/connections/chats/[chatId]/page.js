@@ -1,6 +1,7 @@
 "use client";
 
 import { useUserContext } from "@/contexts/UserContext";
+import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { StreamChat } from "stream-chat";
 import {
@@ -18,48 +19,51 @@ import { EmojiPicker } from "stream-chat-react/emojis";
 export default function ChatPage() {
   //Add state to hold user info -> check useContext
   const { user } = useUserContext();
+  const params = useParams();
   const [client, setClient] = useState(null);
   const [channel, setChannel] = useState(null);
+
   console.log("client", client);
   console.log("channel", channel);
 
   useEffect(() => {
-    if (!user?.user_id) return;
+    if (!user?.user_id || !params.chatId) return;
 
     (async function run() {
-      const client = StreamChat.getInstance(
-        process.env.NEXT_PUBLIC_STREAM_API_KEY
-      );
+      try {
+        const client = StreamChat.getInstance(
+          process.env.NEXT_PUBLIC_STREAM_API_KEY
+        );
 
-      console.log("Requesting token for user_id:", user.user_id);
+        console.log("Requesting token for user_id:", user.user_id);
 
-      const { token } = await fetch("/api/token", {
-        method: "POST",
-        body: JSON.stringify({
-          id: user.user_id,
-        }),
-      }).then((res) => res.json());
+        const { token } = await fetch("/api/token", {
+          method: "POST",
+          body: JSON.stringify({
+            id: user.user_id,
+          }),
+        }).then((res) => res.json());
 
-      const connectedUser = await client.connectUser(
-        {
-          id: user.user_id,
-          name: `${user.first_name} ${user.last_name}`,
-          image: user.photo_url || "/default-avatar.png",
-        },
-        token
-      );
-      console.log("connectedUser", connectedUser);
+        const connectedUser = await client.connectUser(
+          {
+            id: user.user_id,
+            name: `${user.first_name} ${user.last_name}`,
+            image: user.photo_url || "/default-avatar.png",
+          },
+          token
+        );
+        console.log("connectedUser", connectedUser);
 
-      const channel = client.channel("messaging", {
-        name: "Matching Channel",
-        image: "/images/logo.png",
-        members: [
-          ...new Set([user.user_id, "172783b8-0727-40d4-a551-df1f934cab2b"]),
-        ],
-      });
+        // Get existing channel using chatId (match_id)
+        const channel = client.channel("messaging", params.chatId);
+        await channel.watch();
+        console.log("Channel initialized:", channel);
 
-      setClient(client);
-      setChannel(channel);
+        setClient(client);
+        setChannel(channel);
+      } catch (error) {
+        console.error("Error connecting to chat:", error);
+      }
     })();
 
     return () => {
@@ -69,7 +73,9 @@ export default function ChatPage() {
         setChannel(null);
       }
     };
-  }, [user]);
+  }, [user, params.chatId]);
+
+  if (!channel || !client) return <div>Loading...</div>;
 
   return (
     <>
