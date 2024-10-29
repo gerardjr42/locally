@@ -39,6 +39,7 @@
     "resend": "^4.0.0",
     "sass": "^1.79.4",
     "stream-chat": "^8.41.1",
+    "stream-chat-react": "^12.3.0",
     "tailwind-merge": "^2.5.2",
     "tailwindcss-animate": "^1.0.7"
   },

@@ -8,7 +8,9 @@ export default function ChatPage() {
   //Add state to hold user info -> check useContext
   const { user } = useUserContext();
   const [client, setClient] = useState(null);
+  const [channel, setChannel] = useState(null);
   console.log("client", client);
+  console.log("channel", channel);
 
   useEffect(() => {
     if (!user?.user_id) return;
@@ -37,7 +39,25 @@ export default function ChatPage() {
         token
       );
       console.log("connectedUser", connectedUser);
+
+      const channel = client.channel("messaging", "spacejelly", {
+        //we can make this unique with only two users
+        /**
+         * members: ['vishal', 'neil'],
+         * name: 'Awesome channel about traveling'
+         */
+        name: "Space Jelly",
+      });
+      setChannel(channel);
     })();
+
+    return () => {
+      if (client) {
+        client.disconnectUser();
+        setClient(null);
+        setChannel(null);
+      }
+    };
   }, [user]);
 
   return <div>This is the chat page</div>;
