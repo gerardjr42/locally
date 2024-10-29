@@ -36,6 +36,8 @@ export default function UserProfile() {
   const [interestedUser, setInterestedUser] = useState({});
   const [eventName, setEventName] = useState('');
   const { user } = useUserContext();
+  const [userCity, setUserCity] = useState('');
+
   const handleConnect = async () => {
     if (!user) {
       console.error("User not authenticated");
@@ -128,9 +130,20 @@ export default function UserProfile() {
           .eq('user_id', params.attendeeId)
           .single();
 
-        if (userData && !userError) {
-          setInterestedUser(userData);
-        }
+          if (userData && !userError) {
+            setInterestedUser(userData);
+            if (userData.user_zipcode) {
+              try {
+                const response = await fetch(`/api/geocode?zipcode=${userData.user_zipcode}`);
+                const data = await response.json();
+                setUserCity(data.city || 'City not found');
+              } catch (error) {
+                console.error('Error fetching city:', error);
+                setUserCity('Error fetching city');
+              }
+            }
+          }
+
 
         const interests = await fetchUserInterests(params.attendeeId);
         setInterests(interests);
@@ -177,7 +190,7 @@ export default function UserProfile() {
         <motion.div className="p-4 space-y-4" variants={slideUp}>
           <div>
             <h3 className="text-2xl font-bold">{buildNameString(interestedUser)}, {calculateAge(interestedUser.user_dob)}</h3>
-            <p className="text-gray-600">{interestedUser.user_zipcode}</p>
+            <p className="text-gray-600">{userCity}</p>
           </div>
 
           <div className="flex justify-between items-center">

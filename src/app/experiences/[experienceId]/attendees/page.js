@@ -38,7 +38,7 @@ export default function AttendeesList() {
   }, [params.experienceId, user, loading]);
 
   const handleBackClick = () => {
-    router.back();
+    router.push(`/experiences/${params.experienceId}`);
   };
 
   const fetchTopMatches = async (userId, eventId) => {
@@ -139,7 +139,7 @@ export default function AttendeesList() {
                       width={48}
                       height={48}
                       objectFit="cover"
-                      style={{ width: "100%", height: "auto" }}
+                      style={{ width: "100%", height: "100%" }}
                     />
                   </div>
                   <div>
