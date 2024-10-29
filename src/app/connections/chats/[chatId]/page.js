@@ -3,6 +3,16 @@
 import { useUserContext } from "@/contexts/UserContext";
 import { useEffect, useState } from "react";
 import { StreamChat } from "stream-chat";
+import {
+  Channel,
+  ChannelHeader,
+  Chat,
+  MessageInput,
+  MessageList,
+  Thread,
+  Window,
+} from "stream-chat-react";
+import "stream-chat-react/dist/css/v2/index.css";
 
 export default function ChatPage() {
   //Add state to hold user info -> check useContext
@@ -51,14 +61,36 @@ export default function ChatPage() {
       setChannel(channel);
     })();
 
-    return () => {
-      if (client) {
-        client.disconnectUser();
-        setClient(null);
-        setChannel(null);
-      }
-    };
+    // return () => {
+    //   if (client) {
+    //     client.disconnectUser();
+    //     setClient(null);
+    //     setChannel(null);
+    //   }
+    // };
   }, [user]);
 
-  return <div>This is the chat page</div>;
+  const filters = { members: { $in: [user?.user_id] }, type: "messaging" };
+  const options = { presence: true, state: true };
+  const sort = { last_message_at: -1 };
+
+  return (
+    <>
+      {client && channel && (
+        <Chat client={client}>
+          {/* We use ChannelList to list all the channels the user is part of, we have to use this logic in the chat's page not [chatId].**/}
+          {/* !Add this logic later */}
+          {/* <ChannelList sort={sort} filters={filters} options={options} /> */}
+          <Channel channel={channel}>
+            <Window>
+              <ChannelHeader />
+              <MessageList />
+              <MessageInput />
+            </Window>
+            <Thread />
+          </Channel>
+        </Chat>
+      )}
+    </>
+  );
 }
