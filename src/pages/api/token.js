@@ -2,18 +2,41 @@
 import { StreamChat } from "stream-chat";
 
 export default function handler(req, res) {
-  const { id } = JSON.parse(req.body);
+  try {
+    const { id } = JSON.parse(req.body);
 
-  // Initialize a Server Client
-  const serverClient = StreamChat.getInstance(
-    process.env.NEXT_PUBLIC_STREAM_API_KEY,
-    process.env.STREAM_API_SECRET
-  );
+    if (!id) {
+      console.error("Missing id in request body:", req.body);
+      return res.status(400).json({ error: "id is required" });
+    }
 
-  // Create User Token
-  const token = serverClient.createToken(id);
+    // Log the values being used
+    console.log("Generating token for id:", id);
+    console.log("Using API key:", process.env.NEXT_PUBLIC_STREAM_API_KEY);
+    console.log(
+      "Using API secret:",
+      process.env.STREAM_API_SECRET ? "exists" : "missing"
+    );
 
-  res.status(200).json({
-    token,
-  });
+    const serverClient = StreamChat.getInstance(
+      process.env.NEXT_PUBLIC_STREAM_API_KEY,
+      process.env.STREAM_API_SECRET
+    );
+
+    const token = serverClient.createToken(id);
+
+    if (!token) {
+      throw new Error("Token generation failed");
+    }
+
+    console.log("Token generated successfully", token);
+    res.status(200).json({ token });
+  } catch (error) {
+    console.error("Token generation error:", error);
+    res.status(500).json({
+      error: "Failed to generate token",
+      details: error.message,
+      id: req.body.id,
+    });
+  }
 }
