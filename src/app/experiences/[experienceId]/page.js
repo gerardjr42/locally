@@ -31,7 +31,8 @@ export default function ExperienceDetails() {
   const descriptionRef = useRef(null);
   const [topMatches, setTopMatches] = useState([]);
   const [top3Matches, setTop3Matches] = useState([]);
-  const { user, loading: userLoading } = useUser();
+    const { user, loading: userLoading } = useUser();
+    const isDisabled = !isInterested;
 
   const memoizedTopMatches = useMemo(() => topMatches, [topMatches]);
   const memoizedInterestedUsers = useMemo(
@@ -267,6 +268,7 @@ export default function ExperienceDetails() {
               <Button
                 variant="link"
                 className="text-sm bg-gray-200 rounded-lg"
+                disabled={isDisabled}
                 onClick={() =>
                   router.push(`/experiences/${params.experienceId}/attendees`, {
                     state: {
