@@ -174,14 +174,13 @@ export default function UserMatches() {
                 className="object-cover"
               />
             </div>
-            <div className="card-body py-4 px-6" onClick={handleViewEvent}>
+            <div className="card-body py-4 px-6">
               <div className="flex flex-row items-center justify-between w-full">
-                <h2 className="text-md m">{eventInfo?.event_name}</h2>
+                <h2 className="text-md m hover:pointer-events-auto" onClick={handleViewEvent}>{eventInfo?.event_name}</h2>
                 <p className="text-xs text-right">
                   {formatDate(eventInfo?.event_time)}
                 </p>
               </div>
-              {/* <p className="text-xs">{eventInfo?.event_details}</p> */}
               <div className="card flex items-center justify-center bg-transparent shadow-sm mb-4 p-2">
           <div className="card-body bg-transparent flex-col items-center justify-center p-2">
             <h2 className="card-title text-white text-center py-6">
