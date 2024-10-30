@@ -36,6 +36,7 @@ export default function UserProfile() {
   const [eventName, setEventName] = useState("");
   const { user } = useUserContext();
   const [userCity, setUserCity] = useState("");
+  const [userCompliments, setUserCompliments] = useState([]);
 
   const handleConnect = async () => {
     if (!user) {
@@ -172,6 +173,8 @@ export default function UserProfile() {
     fetchData();
   }, [params.attendeeId, params.experienceId, supabase]);
 
+  console.log(interestedUser.icebreaker_responses)
+
   return (
     <motion.div
       initial="hidden"
@@ -186,45 +189,75 @@ export default function UserProfile() {
         >
           <div className="avatar">
             <div className="w-24 rounded-full mx-4">
-              <img src={interestedUser?.photo_url}
-            alt={`${interestedUser?.first_name}'s Photo`} />
+              <img
+                src={interestedUser?.photo_url}
+                alt={`${interestedUser?.first_name}'s Photo`}
+              />
             </div>
           </div>
           <div className="flex flex-col items-center justify-center">
             <p className="text-md font-semibold text-gray-700">
               {interestedUser?.first_name} is looking to connect at
             </p>
-            <h2 className="text-md text-gray-700 font-semibold">{eventName}!</h2>
+            <h2 className="text-md text-gray-700 font-semibold">
+              {eventName}!
+            </h2>
           </div>
         </motion.div>
 
-        <motion.div className="p-4 space-y-4" variants={slideUp}>
-          <div>
-            <h3 className="text-2xl font-bold">
-              {buildNameString(interestedUser)},{" "}
-              {calculateAge(interestedUser.user_dob)}
-            </h3>
-            <p className="text-gray-600">{userCity}</p>
-          </div>
-
-          <div className="flex justify-between items-center">
-            <div>
-              <p className="text-sm text-gray-600">Past Connections</p>
-              <p className="text-xl font-bold">10</p>
+        <motion.div className="px-4 py-2 bg-teal-500 space-y-4 w-full flex flex-row items-center justify-evenly" variants={slideUp}>
+        <div className="card text-white h-22 mx-1">
+            <div className="card-body flex flex-col items-center p-3">
+              <p className="text-xs text-center">Past Connections</p>
+              <div className="card-actions justify-end">
+                <p className="text-md font-bold text-center">10</p>
+              </div>
             </div>
-            <motion.div
-              className="flex items-center bg-green-50 px-3 py-1 rounded-full border border-green-200"
-              whileHover={{ scale: 1.05 }}
-            >
-              <BadgeCheck className="w-5 h-5 text-green-500 mr-1" />
-              <p className="text-sm font-semibold text-green-700">
-                Verified ID
-              </p>
-            </motion.div>
           </div>
 
+          <div className="card bg-transparent text-white w-1/3 h-22 mx-1">
+            <div className="card-body flex flex-col items-center p-3">
+              <p className="text-xs text-center">Location</p>
+              <div className="card-actions justify-end">
+                <p className="text-md font-bold text-center">{userCity}</p>
+              </div>
+            </div>
+          </div>
+
+          <div className="card bg-transparent text-white w-1/3 h-22 mx-1">
+            <div className="card-body flex flex-col items-center p-3">
+              <p className="text-xs text-center">Verified</p>
+              <div className="card-actions justify-center">
+              <p className="text-md font-bold text-center" >
+                ✓ 
+              </p>
+              </div>
+            </div>
+          </div>
+        </motion.div>
+
+        <motion.div className="p-4" variants={slideUp}>
+        <h4 className="text-md text-gray-500 font-semibold mb-2">About Me</h4>
+        <p className="text-md text-center text-gray-500">{interestedUser.bio}</p>
+
+        <ul className="text-center text-gray-500 my-3">
+          {interestedUser?.icebreaker_responses.map(response => {
+            if (response.answer.length > 0) {
+              return (
+                <li>
+                  <p className="text-sm italic">"{response.question}"</p>
+                  <p className="text-lg font-semibold">{response.answer}</p>
+                </li>
+              )
+            }
+          })}
+        </ul>
+        </motion.div>
+
+        <motion.div className="p-4 space-y-4" variants={slideUp}>
+
           <div>
-            <h4 className="text-lg font-bold mb-2">Interests</h4>
+            <h4 className="text-md text-gray-500 font-bold mb-2">Interests</h4>
             <div className="flex space-x-4 overflow-x-auto pb-2">
               {interests.map((interest, index) => (
                 <motion.div
@@ -246,14 +279,14 @@ export default function UserProfile() {
             </div>
           </div>
 
-          <Collapsible
+          {/* <Collapsible
             open={isExpanded}
             onOpenChange={setIsExpanded}
             className="space-y-2"
           >
             <motion.div className="text-gray-600" variants={fadeIn}>
               <CollapsibleContent className="text-sm">
-                <p className="text-sm">{interestedUser.bio}</p>
+                
               </CollapsibleContent>
             </motion.div>
             <CollapsibleTrigger asChild>
@@ -261,7 +294,7 @@ export default function UserProfile() {
                 {isExpanded ? "Read less" : "Read more"}
               </Button>
             </CollapsibleTrigger>
-          </Collapsible>
+          </Collapsible> */}
         </motion.div>
       </main>
       <footer className="fixed bottom-0 left-0 right-0 bg-white p-4 shadow-lg">
