@@ -133,8 +133,8 @@ export default function Survey() {
           <div className="card-body">
             <h2 className="card-title">Compliments</h2>
             <p className="text-sm text-gray-100">
-              These compliments will be anonymously shared on {otherUser?.first_name}'s
-              profile!
+              These compliments will be anonymously shared on{" "}
+              {otherUser?.first_name}&apos;s profile!
             </p>
             <div className="card-actions justify-center">
               <div className="flex flex-wrap gap-2">
@@ -163,7 +163,9 @@ export default function Survey() {
             </div>
           </div>
         </div>
-        <Button className="w-1/2 bg-transparent outline text-teal-400 text-sm p-4 my-2 rounded-full font-semibold flex items-center justify-center">Submit</Button>
+        <Button className="w-1/2 bg-transparent outline text-teal-400 text-sm p-4 my-2 rounded-full font-semibold flex items-center justify-center">
+          Submit
+        </Button>
       </div>
     </div>
   );
