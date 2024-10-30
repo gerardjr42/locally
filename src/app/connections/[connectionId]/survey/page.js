@@ -5,10 +5,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useUserContext } from "@/contexts/UserContext";
 import { supabase } from "@/lib/supabase";
-import { formatDate } from "@/lib/utils";
-import Image from "next/image";
 import { useParams, useRouter } from "next/navigation";
-import { useContext, useState, useEffect } from "react";
+import { useContext, useEffect, useState } from "react";
 import { ConnectionContext } from "../layout";
 
 export default function Survey() {
@@ -51,6 +49,7 @@ export default function Survey() {
   return (
     <div className="flex flex-col items-center justify-center">
       <NavigationBar />
+
       <div className="w-full p-2 flex flex-col items-center justify-center">
         <div className="card bg-teal-500 text-white w-96 my-2">
           <div className="card-body">
@@ -164,7 +163,6 @@ export default function Survey() {
             </div>
           </div>
         </div>
-
         <Button className="w-1/2 bg-transparent outline text-teal-400 text-sm p-4 my-2 rounded-full font-semibold flex items-center justify-center">Submit</Button>
       </div>
     </div>
