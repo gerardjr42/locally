@@ -16,6 +16,7 @@ export default function UserMatches() {
   const router = useRouter();
   const { user } = useUserContext();
   const params = useParams();
+  const { eventInfo, matchData, otherUser } = useContext(ConnectionContext);
   const [areUsersConfirmed, setAreUsersConfirmed] = useState(false);
   const [didConnectionOccur, setDidConnectionOccur] = useState(false);
 
@@ -115,7 +116,6 @@ export default function UserMatches() {
 
   useEffect(() => {
     if (user && params.connectionId) {
-      fetchMatchAndUserInfo();
       checkConnectionOccurred();
     }
   }, [params.connectionId, user]);
