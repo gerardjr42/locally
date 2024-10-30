@@ -4,7 +4,7 @@ import { NavigationBar } from "@/components/navigation-bar";
 import { Button } from "@/components/ui/button";
 import { useUserContext } from "@/contexts/UserContext";
 import { supabase } from "@/lib/supabase";
-import { formatDate } from "@/lib/utils";
+import { formatDate, updateMatchConfirmation } from "@/lib/utils";
 import Image from "next/image";
 import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState, useContext } from "react";
@@ -19,7 +19,6 @@ export default function UserMatches() {
   const { eventInfo, matchData, otherUser } = useContext(ConnectionContext);
   const [areUsersConfirmed, setAreUsersConfirmed] = useState(false);
   const [didConnectionOccur, setDidConnectionOccur] = useState(false);
-
 
   function handleViewEvent() {
     router.push(`/experiences/${eventInfo?.event_id}`);
@@ -119,6 +118,20 @@ export default function UserMatches() {
       checkConnectionOccurred();
     }
   }, [params.connectionId, user]);
+
+
+  const handleConfirmationClick = async () => {
+    if (!user || !otherUser || !params.connectionId) {
+      return;
+    } else {
+      const updatedMatchData = await updateMatchConfirmation(
+        supabase,
+        params.connectionId,
+        user.user_id
+      );
+      setMatchData(updatedMatchData);
+    }
+  };
 
   return (
     <div className="flex flex-col items-center justify-center">

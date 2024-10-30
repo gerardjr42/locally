@@ -2,19 +2,18 @@
 
 import { NavigationBar } from "@/components/navigation-bar";
 import { Button } from "@/components/ui/button";
-import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
-import { useUserContext } from "@/contexts/UserContext";
-import { BadgeCheck, Check, X } from "lucide-react";
 import {
   Collapsible,
   CollapsibleContent,
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
-import { AnimatePresence, interpolate, motion } from "framer-motion";
-import Image from "next/image";
+import { useUserContext } from "@/contexts/UserContext";
+import { buildNameString, calculateAge, fetchUserInterests } from "@/lib/utils";
+import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
+import { AnimatePresence, motion } from "framer-motion";
+import { BadgeCheck, Check, X } from "lucide-react";
 import { useParams, useRouter } from "next/navigation";
-import { useState, useEffect } from "react";
-import { calculateAge, fetchUserInterests, buildNameString } from "@/lib/utils";
+import { useEffect, useState } from "react";
 
 const fadeIn = {
   hidden: { opacity: 0 },
@@ -34,9 +33,9 @@ export default function UserProfile() {
   const [isExpanded, setIsExpanded] = useState(false);
   const [interests, setInterests] = useState([]);
   const [interestedUser, setInterestedUser] = useState({});
-  const [eventName, setEventName] = useState('');
+  const [eventName, setEventName] = useState("");
   const { user } = useUserContext();
-  const [userCity, setUserCity] = useState('');
+  const [userCity, setUserCity] = useState("");
 
   const handleConnect = async () => {
     if (!user) {
@@ -47,22 +46,23 @@ export default function UserProfile() {
     let matchId;
 
     const { data: existingMatch, error: matchError } = await supabase
+
       .from('Event_Matches')
       .select('*')
       .or(`and(user1_id.eq.${user.user_id},user2_id.eq.${params.attendeeId}),and(user1_id.eq.${params.attendeeId},user2_id.eq.${user.user_id})`)
       .eq('event_id', params.experienceId)
       .single();
 
-    if (matchError && matchError.code !== 'PGRST116') {
+    if (matchError && matchError.code !== "PGRST116") {
       console.error("Error checking existing match:", matchError);
       return;
     }
 
     if (existingMatch) {
       const { data, error: updateError } = await supabase
-        .from('Event_Matches')
+        .from("Event_Matches")
         .update({ mutual_interest: true })
-        .eq('match_id', existingMatch.match_id)
+        .eq("match_id", existingMatch.match_id)
         .select();
 
       if (updateError) {
@@ -71,15 +71,18 @@ export default function UserProfile() {
       }
       matchId = existingMatch.match_id;
     } else {
-      const [lesserUserId, greaterUserId] = [user.user_id, params.attendeeId].sort();
+      const [lesserUserId, greaterUserId] = [
+        user.user_id,
+        params.attendeeId,
+      ].sort();
       const { data, error: insertError } = await supabase
-        .from('Event_Matches')
+        .from("Event_Matches")
         .insert({
           user1_id: lesserUserId,
           user2_id: greaterUserId,
           event_id: params.experienceId,
           mutual_interest: false,
-          date_matched: new Date()
+          date_matched: new Date(),
         })
         .select();
 
@@ -91,9 +94,9 @@ export default function UserProfile() {
     }
 
     const { data: updatedMatch, error: fetchError } = await supabase
-      .from('Event_Matches')
-      .select('*')
-      .eq('match_id', matchId)
+      .from("Event_Matches")
+      .select("*")
+      .eq("match_id", matchId)
       .single();
 
     if (fetchError) {
@@ -101,7 +104,10 @@ export default function UserProfile() {
       return;
     }
 
-    setFeedback({ message: `Connected with ${interestedUser.first_name}!`, type: "connect" });
+    setFeedback({
+      message: `Connected with ${interestedUser.first_name}!`,
+      type: "connect",
+    });
 
     if (updatedMatch.mutual_interest) {
       setTimeout(() => router.push(`/connections/${matchId}`), 1000);
@@ -125,33 +131,34 @@ export default function UserProfile() {
       if (params.attendeeId && params.experienceId) {
         // Fetch user info
         const { data: userData, error: userError } = await supabase
-          .from('Users')
-          .select('*')
-          .eq('user_id', params.attendeeId)
+          .from("Users")
+          .select("*")
+          .eq("user_id", params.attendeeId)
           .single();
 
-          if (userData && !userError) {
-            setInterestedUser(userData);
-            if (userData.user_zipcode) {
-              try {
-                const response = await fetch(`/api/geocode?zipcode=${userData.user_zipcode}`);
-                const data = await response.json();
-                setUserCity(data.city || 'City not found');
-              } catch (error) {
-                console.error('Error fetching city:', error);
-                setUserCity('Error fetching city');
-              }
+        if (userData && !userError) {
+          setInterestedUser(userData);
+          if (userData.user_zipcode) {
+            try {
+              const response = await fetch(
+                `/api/geocode?zipcode=${userData.user_zipcode}`
+              );
+              const data = await response.json();
+              setUserCity(data.city || "City not found");
+            } catch (error) {
+              console.error("Error fetching city:", error);
+              setUserCity("Error fetching city");
             }
           }
-
+        }
 
         const interests = await fetchUserInterests(params.attendeeId);
         setInterests(interests);
-        
+
         const { data: eventData, error: eventError } = await supabase
-          .from('Events')
-          .select('event_name')
-          .eq('event_id', params.experienceId)
+          .from("Events")
+          .select("event_name")
+          .eq("event_id", params.experienceId)
           .single();
 
         if (eventData && !eventError) {
@@ -169,10 +176,12 @@ export default function UserProfile() {
       animate="visible"
       className="bg-white min-h-screen font-sans text-gray-900"
     >
-        <NavigationBar handleBackClick={handleBackClick} />
+      <NavigationBar handleBackClick={handleBackClick} />
       <main className="pt-15 pb-24">
         <motion.div className="bg-gray-100 p-4" variants={slideUp}>
-          <p className="font-semibold">{interestedUser.first_name} also wants to attend</p>
+          <p className="font-semibold">
+            {interestedUser.first_name} also wants to attend
+          </p>
           <h2 className="text-xl font-bold">{eventName}!</h2>
         </motion.div>
 
@@ -189,7 +198,10 @@ export default function UserProfile() {
 
         <motion.div className="p-4 space-y-4" variants={slideUp}>
           <div>
-            <h3 className="text-2xl font-bold">{buildNameString(interestedUser)}, {calculateAge(interestedUser.user_dob)}</h3>
+            <h3 className="text-2xl font-bold">
+              {buildNameString(interestedUser)},{" "}
+              {calculateAge(interestedUser.user_dob)}
+            </h3>
             <p className="text-gray-600">{userCity}</p>
           </div>
 
@@ -238,10 +250,8 @@ export default function UserProfile() {
             className="space-y-2"
           >
             <motion.div className="text-gray-600" variants={fadeIn}>
-              <CollapsibleContent className="text-sm">  
-              <p className="text-sm">
-                {interestedUser.bio}
-              </p>
+              <CollapsibleContent className="text-sm">
+                <p className="text-sm">{interestedUser.bio}</p>
               </CollapsibleContent>
             </motion.div>
             <CollapsibleTrigger asChild>
@@ -254,7 +264,6 @@ export default function UserProfile() {
       </main>
       <footer className="fixed bottom-0 left-0 right-0 bg-white p-4 shadow-lg">
         <div className="flex justify-between space-x-4">
-          
           <motion.button
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
@@ -263,7 +272,7 @@ export default function UserProfile() {
             aria-label="Pass on Hudson"
           >
             <X className="w-5 h-5 mr-2" />
-            Let's Not
+            Let&apos;s Not
           </motion.button>
           <motion.button
             whileHover={{ scale: 1.05 }}
@@ -273,7 +282,7 @@ export default function UserProfile() {
             aria-label="Connect with Hudson"
           >
             <Check className="w-5 h-5 mr-2" />
-            Let's Connect!
+            Let&apos;s Connect!
           </motion.button>
         </div>
         <AnimatePresence>
