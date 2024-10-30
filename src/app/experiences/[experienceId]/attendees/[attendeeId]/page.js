@@ -108,7 +108,7 @@ export default function UserProfile() {
     }
 
     setFeedback({
-      message: `Connected with ${interestedUser.first_name}!`,
+      message: `You've selected ${interestedUser.first_name}!`,
       type: "connect",
     });
 
