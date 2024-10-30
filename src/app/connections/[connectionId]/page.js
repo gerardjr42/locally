@@ -3,11 +3,12 @@
 import { NavigationBar } from "@/components/navigation-bar";
 import { Button } from "@/components/ui/button";
 import { useUserContext } from "@/contexts/UserContext";
-import { useRouter, useParams } from "next/navigation";
-import Image from "next/image";
-import { formatDate, buildNameString } from "@/lib/utils";
 import { supabase } from "@/lib/supabase";
+import { formatDate } from "@/lib/utils";
+import Image from "next/image";
+import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+import { StreamChat } from "stream-chat";
 
 export default function UserMatches() {
   const router = useRouter();
@@ -305,6 +306,68 @@ export default function UserMatches() {
     )
   }
 
+  const handleChatClick = async () => {
+    if (!user || !otherUser || !params.connectionId) return;
+
+    let client;
+    try {
+      client = StreamChat.getInstance(process.env.NEXT_PUBLIC_STREAM_API_KEY);
+
+      // Create users via API endpoint
+      await fetch("/api/create-stream-users", {
+        method: "POST",
+        body: JSON.stringify({
+          users: [
+            {
+              id: user.user_id,
+              name: `${user.first_name} ${user.last_name}`,
+              image: user.photo_url || "/default-avatar.png",
+            },
+            {
+              id: otherUser.user_id,
+              name: `${otherUser.first_name} ${otherUser.last_name}`,
+              image: otherUser.photo_url || "/default-avatar.png",
+            },
+          ],
+        }),
+      });
+
+      // Get token for current user
+      const { token } = await fetch("/api/token", {
+        method: "POST",
+        body: JSON.stringify({ id: user.user_id }),
+      }).then((res) => res.json());
+
+      // Connect current user
+      await client.connectUser(
+        {
+          id: user.user_id,
+          name: `${user.first_name} ${user.last_name}`,
+          image: user.photo_url || "/default-avatar.png",
+        },
+        token
+      );
+
+      // Create channel
+      const channel = client.channel("messaging", params.connectionId, {
+        members: [user.user_id, otherUser.user_id],
+        name: `${eventInfo?.event_name || "Event"} Chat`,
+        image: eventInfo?.event_image_url || "/images/logo.png",
+      });
+
+      // Watch the channel
+      await channel.watch();
+
+      // Navigate to chat (without disconnecting)
+      router.push(`/connections/chats/${params.connectionId}`);
+    } catch (error) {
+      console.error("Error creating chat:", error);
+      if (client) {
+        await client.disconnectUser();
+      }
+    }
+  };
+
   return (
     <div className="flex flex-col items-center justify-center">
       <NavigationBar />
@@ -333,9 +396,13 @@ export default function UserMatches() {
               </div>
             </div>
             <p className="text-xs text-center text-gray-500">{`Time to introduce yourselves, coordinate your meetup, and confirm your connection!`}</p>
-            <button className="w-1/2 bg-teal-500 text-white text-sm p-4 my-2 rounded-full font-semibold flex items-center justify-center">
+            {/* changed button to Button component */}
+            <Button
+              onClick={handleChatClick}
+              className="w-1/2 bg-teal-500 text-white text-sm p-4 my-2 rounded-full font-semibold flex items-center justify-center"
+            >
               Chat
-            </button>
+            </Button>
           </div>
         </div>
 
