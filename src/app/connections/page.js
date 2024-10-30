@@ -33,7 +33,7 @@ export default function UserMatches() {
             .select("*")
             .eq("event_id", event.Events.event_id)
             .or(
-              `attendee_id.eq.${user.user_id},interest_in_user_id.eq.${user.user_id}`
+              `user1_id.eq.${user.user_id},user2_id.eq.${user.user_id}`
             )
             .eq("mutual_interest", true);
 
@@ -45,9 +45,9 @@ export default function UserMatches() {
           const matches = await Promise.all(
             matchesData.map(async (match) => {
               const otherUserId =
-                match.attendee_id === user.user_id
-                  ? match.interest_in_user_id
-                  : match.attendee_id;
+                match.user1_id === user.user_id
+                  ? match.user2_id
+                  : match.user1_id;
               const { data: userData, error: userError } = await supabase
                 .from("Users")
                 .select("user_id, first_name, last_name, photo_url")
