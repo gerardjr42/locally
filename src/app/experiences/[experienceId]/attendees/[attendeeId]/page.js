@@ -173,7 +173,7 @@ export default function UserProfile() {
     fetchData();
   }, [params.attendeeId, params.experienceId, supabase]);
 
-  console.log(interestedUser.icebreaker_responses)
+  console.log(interestedUser.icebreaker_responses);
 
   return (
     <motion.div
@@ -196,17 +196,20 @@ export default function UserProfile() {
             </div>
           </div>
           <div className="flex flex-col items-center justify-center">
-            <p className="text-md font-semibold text-gray-700">
+            <p className="text-md font-semibold text-gray-600">
               {interestedUser?.first_name} is looking to connect at
             </p>
-            <h2 className="text-md text-gray-700 font-semibold">
+            <h2 className="text-md text-gray-600 font-semibold">
               {eventName}!
             </h2>
           </div>
         </motion.div>
 
-        <motion.div className="px-4 py-2 bg-teal-500 space-y-4 w-full flex flex-row items-center justify-evenly" variants={slideUp}>
-        <div className="card text-white h-22 mx-1">
+        <motion.div
+          className="px-4 py-2 bg-teal-500 space-y-4 w-full flex flex-row items-center justify-evenly"
+          variants={slideUp}
+        >
+          <div className="card text-white h-22 mx-1">
             <div className="card-body flex flex-col items-center p-3">
               <p className="text-xs text-center">Past Connections</p>
               <div className="card-actions justify-end">
@@ -228,36 +231,22 @@ export default function UserProfile() {
             <div className="card-body flex flex-col items-center p-3">
               <p className="text-xs text-center">Verified</p>
               <div className="card-actions justify-center">
-              <p className="text-md font-bold text-center" >
-                ✓ 
-              </p>
+                <p className="text-md font-bold text-center">✓</p>
               </div>
             </div>
           </div>
         </motion.div>
 
-        <motion.div className="p-4" variants={slideUp}>
-        <h4 className="text-md text-gray-500 font-semibold mb-2">About Me</h4>
-        <p className="text-md text-center text-gray-500">{interestedUser.bio}</p>
-
-        <ul className="text-center text-gray-500 my-3">
-          {interestedUser?.icebreaker_responses.map(response => {
-            if (response.answer.length > 0) {
-              return (
-                <li>
-                  <p className="text-sm italic">"{response.question}"</p>
-                  <p className="text-lg font-semibold">{response.answer}</p>
-                </li>
-              )
-            }
-          })}
-        </ul>
+        <motion.div className="px-4 pt-4" variants={slideUp}>
+          <h4 className="text-sm text-gray-400 font-semibold mb-2">About Me</h4>
+          <p className="text-lg text-center text-gray-500 font-semibold">
+            {interestedUser.bio}
+          </p>
         </motion.div>
 
         <motion.div className="p-4 space-y-4" variants={slideUp}>
-
           <div>
-            <h4 className="text-md text-gray-500 font-bold mb-2">Interests</h4>
+            <h4 className="text-sm text-gray-400 font-semibold mb-2"> My Interests</h4>
             <div className="flex space-x-4 overflow-x-auto pb-2">
               {interests.map((interest, index) => (
                 <motion.div
@@ -295,6 +284,21 @@ export default function UserProfile() {
               </Button>
             </CollapsibleTrigger>
           </Collapsible> */}
+        </motion.div>
+
+        <motion.div className="px-6">
+          <ul className="text-center text-gray-500 my-3">
+            {interestedUser?.icebreaker_responses?.map((response) => {
+              if (response.answer.length > 0) {
+                return (
+                  <li className="my-3">
+                    <p className="text-xs italic">"{response.question}"</p>
+                    <p className="text-md font-semibold">{response.answer}</p>
+                  </li>
+                );
+              }
+            })}
+          </ul>
         </motion.div>
       </main>
       <footer className="fixed bottom-0 left-0 right-0 bg-white p-4 shadow-lg">
