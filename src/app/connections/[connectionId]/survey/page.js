@@ -49,82 +49,94 @@ export default function Survey() {
   return (
     <div className="flex flex-col items-center justify-center">
       <NavigationBar />
-      <div className="w-full p-2">
-        <h1>
-          How&apos;d it go with {otherUser?.first_name} at{" "}
-          {eventInfo?.event_name}?
-        </h1>
 
-        <form>
-          <p>How would you rate your {eventInfo?.event_name} experience?</p>
-          <div className="rating rating-lg">
-            <Input
-              type="radio"
-              name="experience_rating"
-              className="mask mask-star-2 bg-teal-100"
-            />
-            <Input
-              type="radio"
-              name="experience_rating"
-              className="mask mask-star-2 bg-teal-200"
-              defaultChecked
-            />
-            <Input
-              type="radio"
-              name="experience_rating"
-              className="mask mask-star-2 bg-teal-300"
-            />
-            <Input
-              type="radio"
-              name="experience_rating"
-              className="mask mask-star-2 bg-teal-400"
-            />
-            <Input
-              type="radio"
-              name="experience_rating"
-              className="mask mask-star-2 bg-teal-500"
-            />
-          </div>
-
-          <p>
-            How would you rate your connection with {otherUser?.first_name}?
-          </p>
-          <div className="rating rating-lg">
-            <Input
-              type="radio"
-              name="connection_rating"
-              className="mask mask-star-2 bg-teal-100"
-            />
-            <Input
-              type="radio"
-              name="connection_rating"
-              className="mask mask-star-2 bg-teal-200"
-              defaultChecked
-            />
-            <Input
-              type="radio"
-              name="connection_rating"
-              className="mask mask-star-2 bg-teal-300"
-            />
-            <Input
-              type="radio"
-              name="connection_rating"
-              className="mask mask-star-2 bg-teal-400"
-            />
-            <Input
-              type="radio"
-              name="connection_rating"
-              className="mask mask-star-2 bg-teal-500"
-            />
-          </div>
-
-          <div>
-            <p>Would you like to leave {otherUser?.first_name} compliments?</p>
-            <p>
-              These compliments will be shared as badges on{" "}
-              {otherUser?.first_name}&apos;s profile.
+      <div className="w-full p-2 flex flex-col items-center justify-center">
+        <div className="card bg-teal-500 text-white w-96 my-2">
+          <div className="card-body">
+            <h2 className="card-title">Rate The Experience</h2>
+            <p className="text-sm text-gray-100">
+              How was {eventInfo?.event_name}?
             </p>
-            <div className="p-4">
+            <div className="card-actions justify-center">
+              <div className="rating rating-lg">
+                <Input
+                  type="radio"
+                  name="experience_rating"
+                  className="mask mask-star-2 bg-yellow-100"
+                />
+                <Input
+                  type="radio"
+                  name="experience_rating"
+                  className="mask mask-star-2 bg-yellow-200"
+                  defaultChecked
+                />
+                <Input
+                  type="radio"
+                  name="experience_rating"
+                  className="mask mask-star-2 bg-yellow-300"
+                />
+                <Input
+                  type="radio"
+                  name="experience_rating"
+                  className="mask mask-star-2 bg-yellow-400"
+                />
+                <Input
+                  type="radio"
+                  name="experience_rating"
+                  className="mask mask-star-2 bg-yellow-500"
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div className="card bg-teal-500 text-white w-96 my-2">
+          <div className="card-body">
+            <h2 className="card-title">Rate The Connection</h2>
+            <p className="text-sm text-gray-100">
+              How was your connection with {otherUser?.first_name}?
+            </p>
+            <div className="card-actions justify-center">
+              <div className="rating rating-lg">
+                <Input
+                  type="radio"
+                  name="experience_rating"
+                  className="mask mask-star-2 bg-yellow-100"
+                />
+                <Input
+                  type="radio"
+                  name="experience_rating"
+                  className="mask mask-star-2 bg-yellow-200"
+                  defaultChecked
+                />
+                <Input
+                  type="radio"
+                  name="experience_rating"
+                  className="mask mask-star-2 bg-yellow-300"
+                />
+                <Input
+                  type="radio"
+                  name="experience_rating"
+                  className="mask mask-star-2 bg-yellow-400"
+                />
+                <Input
+                  type="radio"
+                  name="experience_rating"
+                  className="mask mask-star-2 bg-yellow-500"
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div className="card bg-teal-500 text-white w-96 my-2">
+          <div className="card-body">
+            <h2 className="card-title">Compliments</h2>
+            <p className="text-sm text-gray-100">
+              These compliments will be anonymously shared on {otherUser?.first_name}'s
+              profile!
+            </p>
+            <div className="card-actions justify-center">
               <div className="flex flex-wrap gap-2">
                 {compliments.map((compliment) => (
                   <Button
@@ -150,8 +162,8 @@ export default function Survey() {
               </div>
             </div>
           </div>
-        </form>
-        <Button>Submit</Button>
+        </div>
+        <Button className="w-1/2 bg-transparent outline text-teal-400 text-sm p-4 my-2 rounded-full font-semibold flex items-center justify-center">Submit</Button>
       </div>
     </div>
   );

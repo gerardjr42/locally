@@ -86,7 +86,7 @@ export default function ConnectionLayout({ children }) {
   };
 
   return (
-    <ConnectionContext.Provider value={{ eventInfo, matchData, otherUser }}>
+    <ConnectionContext.Provider value={{ eventInfo, matchData, otherUser, setMatchData }}>
       {children}
     </ConnectionContext.Provider>
   );
