@@ -1,17 +1,11 @@
 "use client";
 
 import { NavigationBar } from "@/components/navigation-bar";
-import { Button } from "@/components/ui/button";
-import {
-  Collapsible,
-  CollapsibleContent,
-  CollapsibleTrigger,
-} from "@/components/ui/collapsible";
 import { useUserContext } from "@/contexts/UserContext";
-import { buildNameString, calculateAge, fetchUserInterests } from "@/lib/utils";
+import { fetchUserInterests } from "@/lib/utils";
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 import { AnimatePresence, motion } from "framer-motion";
-import { BadgeCheck, Check, X } from "lucide-react";
+import { Check, X } from "lucide-react";
 import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
@@ -246,7 +240,10 @@ export default function UserProfile() {
 
         <motion.div className="p-4 space-y-4" variants={slideUp}>
           <div>
-            <h4 className="text-sm text-gray-400 font-semibold mb-2"> My Interests</h4>
+            <h4 className="text-sm text-gray-400 font-semibold mb-2">
+              {" "}
+              My Interests
+            </h4>
             <div className="flex space-x-4 overflow-x-auto pb-2">
               {interests.map((interest, index) => (
                 <motion.div
@@ -291,8 +288,10 @@ export default function UserProfile() {
             {interestedUser?.icebreaker_responses?.map((response) => {
               if (response.answer.length > 0) {
                 return (
-                  <li className="my-3">
-                    <p className="text-xs italic">"{response.question}"</p>
+                  <li className="my-3" key={response.question}>
+                    <p className="text-xs italic">
+                      &quot;{response.question}&quot;
+                    </p>
                     <p className="text-md font-semibold">{response.answer}</p>
                   </li>
                 );
