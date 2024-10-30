@@ -9,17 +9,19 @@ import Image from "next/image";
 import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState, useContext } from "react";
 import { StreamChat } from "stream-chat";
-import { ConnectionContext } from './layout';
-
+import { ConnectionContext } from "./layout";
 
 export default function UserMatches() {
   const router = useRouter();
   const { user } = useUserContext();
   const params = useParams();
-  const { eventInfo, matchData, setMatchData, otherUser } = useContext(ConnectionContext);
+  const { eventInfo, matchData, setMatchData, otherUser } =
+    useContext(ConnectionContext);
   const [areUsersConfirmed, setAreUsersConfirmed] = useState(false);
   const [didConnectionOccur, setDidConnectionOccur] = useState(false);
   const [isCurrentUserConfirmed, setIsCurrentUserConfirmed] = useState(false);
+  const [awaitingMatchConfirmation, setAwaitingMatchConfirmation] =
+    useState(false);
 
   function handleViewEvent() {
     router.push(`/experiences/${eventInfo?.event_id}`);
@@ -112,14 +114,34 @@ export default function UserMatches() {
         setDidConnectionOccur(true);
       }
     }
+
+    if (matchData) {
+      setAreUsersConfirmed(matchData.confirmed_together);
+      setIsCurrentUserConfirmed(
+        matchData[
+          `user${user.user_id === matchData.user1_id ? "1" : "2"}_confirmed`
+        ]
+      );
+      setAwaitingMatchConfirmation(
+        isCurrentUserConfirmed && !matchData.confirmed_together
+      );
+
+      if (matchData.confirmed_together) {
+        const eventTime = new Date(matchData.Events.event_time);
+        const currentTime = new Date();
+
+        if (currentTime > eventTime) {
+          setDidConnectionOccur(true);
+        }
+      }
+    }
   };
 
   useEffect(() => {
     if (user && params.connectionId) {
       checkConnectionOccurred();
     }
-  }, [params.connectionId, user]);
-
+  }, [params.connectionId, user, matchData]);
 
   const handleConfirmationClick = async () => {
     if (!user || !otherUser || !params.connectionId) {
@@ -135,7 +157,7 @@ export default function UserMatches() {
     }
   };
 
-  console.log(isCurrentUserConfirmed);
+  console.log(awaitingMatchConfirmation);
 
   return (
     <div className="flex flex-col items-center justify-center">
@@ -276,7 +298,10 @@ export default function UserMatches() {
               </Button>
             )}
             {!areUsersConfirmed && (
-              <Button className="w-1/2 bg-teal-500 text-white text-sm p-4 my-2 rounded-full font-semibold flex items-center justify-center" onClick={handleConfirmationClick}>
+              <Button
+                className="w-1/2 bg-teal-500 text-white text-sm p-4 my-2 rounded-full font-semibold flex items-center justify-center"
+                onClick={handleConfirmationClick}
+              >
                 Confirm Connection
               </Button>
             )}
