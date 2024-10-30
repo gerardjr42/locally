@@ -7,90 +7,25 @@ import { supabase } from "@/lib/supabase";
 import { formatDate, updateMatchConfirmation } from "@/lib/utils";
 import Image from "next/image";
 import { useParams, useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useContext } from "react";
 import { StreamChat } from "stream-chat";
+import { ConnectionContext } from './layout';
+
 
 export default function UserMatches() {
   const router = useRouter();
   const { user } = useUserContext();
   const params = useParams();
-  const [eventInfo, setEventInfo] = useState(null);
-  const [matchData, setMatchData] = useState(null);
-  const [otherUser, setOtherUser] = useState(null);
-
-  const fetchEventInfo = async () => {
-    const { data: matchData, error: matchError } = await supabase
-      .from("Event_Matches")
-      .select("event_id")
-      .eq("match_id", params.connectionId)
-      .single();
-
-    if (matchError) {
-      console.error("Error fetching match data:", matchError);
-      return;
-    }
-
-    if (matchData) {
-      const { data: eventData, error: eventError } = await supabase
-        .from("Events")
-        .select("*")
-        .eq("event_id", matchData.event_id)
-        .single();
-
-      if (eventError) {
-        console.error("Error fetching event data:", eventError);
-      } else {
-        setEventInfo(eventData);
-      }
-    }
-  };
-
-  useEffect(() => {
-    fetchEventInfo();
-  }, [params.connectionId]);
-
-  const fetchMatchAndUserInfo = async () => {
-    const { data: matchData, error: matchError } = await supabase
-      .from("Event_Matches")
-      .select("*")
-      .eq("match_id", params.connectionId)
-      .single();
-
-    if (matchError) {
-      console.error("Error fetching match data:", matchError);
-      return;
-    }
-
-    setMatchData(matchData);
-
-    const otherUserId =
-      matchData.user1_id === user.user_id
-        ? matchData.user2_id
-        : matchData.user1_id;
-
-    const { data: userData, error: userError } = await supabase
-      .from("Users")
-      .select("*")
-      .eq("user_id", otherUserId)
-      .single();
-
-    if (userError) {
-      console.error("Error fetching user data:", userError);
-    } else {
-      setOtherUser(userData);
-    }
-
-    fetchEventInfo();
-  };
-
-  useEffect(() => {
-    if (user && params.connectionId) {
-      fetchMatchAndUserInfo();
-    }
-  }, [params.connectionId, user]);
+  const { eventInfo, matchData, otherUser } = useContext(ConnectionContext);
+  const [areUsersConfirmed, setAreUsersConfirmed] = useState(false);
+  const [didConnectionOccur, setDidConnectionOccur] = useState(false);
 
   function handleViewEvent() {
-    router.push(`/experiences/${eventInfo.event_id}`);
+    router.push(`/experiences/${eventInfo?.event_id}`);
+  }
+
+  function handleFeedback() {
+    router.push(`/connections/${params.connectionId}/survey`);
   }
 
   const handleChatClick = async () => {
@@ -155,6 +90,36 @@ export default function UserMatches() {
     }
   };
 
+  const checkConnectionOccurred = async () => {
+    const { data: matchData, error: matchError } = await supabase
+      .from("Event_Matches")
+      .select("*, Events(event_time)")
+      .eq("match_id", params.connectionId)
+      .single();
+
+    if (matchError) {
+      console.error("Error fetching match data:", matchError);
+      return;
+    }
+
+    if (matchData && matchData.confirmed_together) {
+      const eventTime = new Date(matchData.Events.event_time);
+      const currentTime = new Date();
+      setAreUsersConfirmed(true);
+
+      if (currentTime > eventTime) {
+        setDidConnectionOccur(true);
+      }
+    }
+  };
+
+  useEffect(() => {
+    if (user && params.connectionId) {
+      checkConnectionOccurred();
+    }
+  }, [params.connectionId, user]);
+
+
   const handleConfirmationClick = async () => {
     if (!user || !otherUser || !params.connectionId) {
       return;
@@ -175,7 +140,16 @@ export default function UserMatches() {
       <div className="w-full p-2">
         <div className="card flex items-center justify-center bg-base-100 shadow-sm mb-4 p-2">
           <div className="card-body flex-col items-center justify-center p-2">
-            <h2 className="card-title text-gray-600">{`You've Matched with ${otherUser?.first_name}!`}</h2>
+            <h2 className="card-title text-gray-600">
+              {areUsersConfirmed &&
+                didConnectionOccur &&
+                `You've made a Connection with ${otherUser?.first_name}!`}
+              {areUsersConfirmed &&
+                !didConnectionOccur &&
+                `You'll be Connecting with ${otherUser?.first_name}!`}
+              {!areUsersConfirmed &&
+                `You've Matched with ${otherUser?.first_name}!`}
+            </h2>
             <div className="card-image w-full h-full overflow-hidden flex flex-row items-center justify-evenly px-1 py-5">
               <div className="avatar w-3/4">
                 <div className="ring-primary ring-teal-500 ring-offset-base-100 w-full rounded-full ring ring-offset-2">
@@ -195,14 +169,37 @@ export default function UserMatches() {
                 </div>
               </div>
             </div>
-            <p className="text-xs text-center text-gray-500">{`Time to introduce yourselves, coordinate your meetup, and confirm your connection!`}</p>
-            {/* changed button to Button component */}
-            <Button
-              onClick={handleChatClick}
-              className="w-1/2 bg-teal-500 text-white text-sm p-4 my-2 rounded-full font-semibold flex items-center justify-center"
-            >
-              Chat
-            </Button>
+            <p className="text-xs text-center text-gray-500">
+              {areUsersConfirmed &&
+                didConnectionOccur &&
+                `How was your connection with ${otherUser?.first_name} at ${eventInfo?.event_name}? We'd love to hear about it!`}
+              {areUsersConfirmed &&
+                !didConnectionOccur &&
+                `Congrats! We hope your connection goes well and you enjoy yourselves at ${eventInfo?.event_name}!`}
+              {!areUsersConfirmed &&
+                `Time to introduce yourselves, coordinate your meetup, and confirm your connection!`}
+            </p>
+            {areUsersConfirmed && didConnectionOccur && (
+              <Button
+                className="w-1/2 bg-teal-500 text-white text-sm p-4 my-2 rounded-full font-semibold flex items-center justify-center"
+                onClick={handleFeedback}
+              >
+                Provide Feedback
+              </Button>
+            )}
+            {areUsersConfirmed && !didConnectionOccur && (
+              <Button className="w-1/2 bg-teal-500 text-white text-sm p-4 my-2 rounded-full font-semibold flex items-center justify-center">
+                Add To Calendar
+              </Button>
+            )}
+            {!areUsersConfirmed && (
+              <Button
+                className="w-1/2 bg-teal-500 text-white text-sm p-4 my-2 rounded-full font-semibold flex items-center justify-center"
+                onClick={handleChatClick}
+              >
+                Chat
+              </Button>
+            )}
           </div>
         </div>
 
@@ -210,62 +207,75 @@ export default function UserMatches() {
           <div className="card bg-base-100 image-full w-full shadow-sm my-4">
             <div className="card-image relative w-full h-full overflow-hidden rounded-xl">
               <Image
-                src={eventInfo.event_image_url}
-                alt={eventInfo.event_name}
+                src={eventInfo?.event_image_url}
+                alt={eventInfo?.event_name}
                 fill={true}
                 className="object-cover"
               />
             </div>
             <div className="card-body">
-              <h2 className="card-title m">{eventInfo.event_name}</h2>
-              <p className="text-xs">{formatDate(eventInfo.event_time)}</p>
-              <p className="text-xs">{eventInfo.event_details}</p>
+              <h2 className="card-title m">{eventInfo?.event_name}</h2>
+              <p className="text-xs">{formatDate(eventInfo?.event_time)}</p>
+              <p className="text-xs">{eventInfo?.event_details}</p>
               <div className="card-actions justify-center">
-                <button
+                <Button
                   className="w-3/4 outline text-white text-sm p-4 my-2 rounded-full font-semibold flex items-center justify-center"
                   onClick={handleViewEvent}
                 >
                   View Experience
-                </button>
+                </Button>
               </div>
             </div>
           </div>
         )}
 
         <div className="collapse collapse-arrow bg-gray-100 pb-1 mb-4 shadow-sm">
-          <input type="checkbox" defaultChecked={true} />
+          {areUsersConfirmed && didConnectionOccur && (
+            <input type="checkbox" defaultChecked={false} />
+          )}
+          {areUsersConfirmed && !didConnectionOccur && (
+            <input type="checkbox" />
+          )}
+          {!areUsersConfirmed && (
+            <input type="checkbox" defaultChecked={true} />
+          )}
           <div className="collapse-title">
-            <p className="text-sm text-teal-700 font-semibold">
-              Confirm Your Connection
+            <p className="text-sm text-teal-500 font-semibold">
+              {areUsersConfirmed &&
+                didConnectionOccur &&
+                `Connection and Experience Report`}
+              {areUsersConfirmed &&
+                !didConnectionOccur &&
+                `Connection Confirmed!`}
+              {!areUsersConfirmed && `Confirm Your Connection`}
             </p>
             <p className="text-xs text-gray-500">
-              {`Will you be connecting with ${otherUser?.first_name} at the ${eventInfo?.event_name}?`}
+              {areUsersConfirmed &&
+                didConnectionOccur &&
+                `Do you want to contact the Locally Team about this connection and/or experience?`}
+              {areUsersConfirmed &&
+                !didConnectionOccur &&
+                `You and ${otherUser?.first_name} are both confirmed to connect at ${eventInfo?.event_name}!`}
+              {!areUsersConfirmed &&
+                `Will you be connecting with ${otherUser?.first_name} at ${eventInfo?.event_name}?`}
             </p>
           </div>
           <div className="collapse-content flex flex-row items-center justify-evenly">
-            <button
-              className="w-1/2 bg-teal-500 text-white text-sm p-4 my-2 rounded-full font-semibold flex items-center justify-center"
-              onClick={handleConfirmationClick}
-            >
-              Confirm
-            </button>
-          </div>
-        </div>
-
-        <div className="collapse collapse-arrow bg-gray-100 pb-1 mb-4 shadow-sm">
-          <input type="checkbox" />
-          <div className="collapse-title">
-            <p className="text-sm text-gray-400 font-semibold">
-              Cancel This Match
-            </p>
-          </div>
-          <div className="collapse-content flex flex-col items-center justify-evenly">
-            <p className="text-xs text-gray-400">
-              {`Are you sure you want to cancel your match with ${otherUser?.first_name} for the ${eventInfo?.event_name}?`}
-            </p>
-            <button className="w-1/2 outline text-gray-400 text-sm p-4 my-2 rounded-full font-semibold flex items-center justify-center">
-              Cancel
-            </button>
+            {areUsersConfirmed && didConnectionOccur && (
+              <Button className="w-1/2 bg-transparent text-gray-400 outline text-sm p-4 my-2 rounded-full font-semibold flex items-center justify-center">
+                Contact Us
+              </Button>
+            )}
+            {areUsersConfirmed && !didConnectionOccur && (
+              <Button className="w-1/2 bg-transparent text-gray-400 outline text-sm p-4 my-2 rounded-full font-semibold flex items-center justify-center">
+                Cancel Connection
+              </Button>
+            )}
+            {!areUsersConfirmed && (
+              <Button className="w-1/2 bg-teal-500 text-white text-sm p-4 my-2 rounded-full font-semibold flex items-center justify-center">
+                Confirm Connection
+              </Button>
+            )}
           </div>
         </div>
       </div>
