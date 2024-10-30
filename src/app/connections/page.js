@@ -1,12 +1,11 @@
 "use client";
 
 import { NavigationBar } from "@/components/navigation-bar";
-import { Button } from "@/components/ui/button";
 import { useUserContext } from "@/contexts/UserContext";
-import { useRouter } from "next/navigation";
-import Image from "next/image";
-import { formatDate, buildNameString } from "@/lib/utils";
 import { supabase } from "@/lib/supabase";
+import { formatDate } from "@/lib/utils";
+import Image from "next/image";
+import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
 export default function UserMatches() {
@@ -211,7 +210,7 @@ export default function UserMatches() {
         </svg>
 
         <p className="text-center w-3/4 text-gray-500 text-xs mb-2">
-          There's always more people to meet and places to go!
+          There&apos;s always more people to meet and places to go!
         </p>
         <button
           className="w-3/4 bg-teal-500 text-white text-sm p-4 my-2 rounded-full font-semibold flex items-center justify-center"

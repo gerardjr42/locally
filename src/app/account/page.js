@@ -2,27 +2,16 @@
 import { NavigationBar } from "@/components/navigation-bar";
 import { Button } from "@/components/ui/button";
 import { useUserContext } from "@/contexts/UserContext";
-import { calculateAge, fetchUserInterests, buildNameString } from "@/lib/utils";
+import { buildNameString, calculateAge, fetchUserInterests } from "@/lib/utils";
 
 import {
   Collapsible,
   CollapsibleContent,
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
-import { AnimatePresence, motion } from "framer-motion";
-import {
-  ArrowLeft,
-  BadgeCheck,
-  Camera,
-  Check,
-  Dog,
-  Film,
-  Menu,
-  Palette,
-  Theater,
-  Pencil,
-  X,
-} from "lucide-react";
+import { motion } from "framer-motion";
+import { BadgeCheck, Pencil } from "lucide-react";
+import Image from "next/image";
 import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
@@ -88,9 +77,11 @@ export default function Account() {
           className="aspect-square bg-gray-300 relative w-full h-full"
           variants={fadeIn}
         >
-          <img
+          <Image
             src={user?.photo_url}
             alt={`${user?.first_name}'s Photo`}
+            width={500}
+            height={500}
             className="absolute inset-0 w-full h-full object-cover"
             onClick={() => {
               if (isEditing) {
@@ -119,7 +110,7 @@ export default function Account() {
             >
               <BadgeCheck className="w-5 h-5 text-green-500 mr-1" />
               <p className="text-sm font-semibold text-green-700 whitespace-nowrap">
-                You've verified by ID
+                You&apos;ve verified by ID
               </p>
             </motion.div>
           </div>
