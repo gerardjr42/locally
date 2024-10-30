@@ -64,9 +64,9 @@ export default function UserMatches() {
     setMatchData(matchData);
 
     const otherUserId =
-      matchData.attendee_id === user.user_id
-        ? matchData.interest_in_user_id
-        : matchData.attendee_id;
+      matchData.user1_id === user.user_id
+        ? matchData.user2_id
+        : matchData.user1_id;
 
     const { data: userData, error: userError } = await supabase
       .from("Users")
