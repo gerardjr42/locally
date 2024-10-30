@@ -4,7 +4,7 @@ import { NavigationBar } from "@/components/navigation-bar";
 import { Button } from "@/components/ui/button";
 import { useUserContext } from "@/contexts/UserContext";
 import { supabase } from "@/lib/supabase";
-import { formatDate } from "@/lib/utils";
+import { formatDate, updateMatchConfirmation } from "@/lib/utils";
 import Image from "next/image";
 import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -89,8 +89,6 @@ export default function UserMatches() {
     }
   }, [params.connectionId, user]);
 
-  console.log(otherUser);
-
   function handleViewEvent() {
     router.push(`/experiences/${eventInfo.event_id}`);
   }
@@ -154,6 +152,19 @@ export default function UserMatches() {
       if (client) {
         await client.disconnectUser();
       }
+    }
+  };
+
+  const handleConfirmationClick = async () => {
+    if (!user || !otherUser || !params.connectionId) {
+      return;
+    } else {
+      const updatedMatchData = await updateMatchConfirmation(
+        supabase,
+        params.connectionId,
+        user.user_id
+      );
+      setMatchData(updatedMatchData);
     }
   };
 
@@ -232,7 +243,10 @@ export default function UserMatches() {
             </p>
           </div>
           <div className="collapse-content flex flex-row items-center justify-evenly">
-            <button className="w-1/2 bg-teal-500 text-white text-sm p-4 my-2 rounded-full font-semibold flex items-center justify-center">
+            <button
+              className="w-1/2 bg-teal-500 text-white text-sm p-4 my-2 rounded-full font-semibold flex items-center justify-center"
+              onClick={handleConfirmationClick}
+            >
               Confirm
             </button>
           </div>
