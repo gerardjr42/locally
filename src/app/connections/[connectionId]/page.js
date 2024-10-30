@@ -16,7 +16,7 @@ export default function UserMatches() {
   const router = useRouter();
   const { user } = useUserContext();
   const params = useParams();
-  const { eventInfo, matchData, otherUser } = useContext(ConnectionContext);
+  const { eventInfo, matchData, setMatchData, otherUser } = useContext(ConnectionContext);
   const [areUsersConfirmed, setAreUsersConfirmed] = useState(false);
   const [didConnectionOccur, setDidConnectionOccur] = useState(false);
 
@@ -272,7 +272,7 @@ export default function UserMatches() {
               </Button>
             )}
             {!areUsersConfirmed && (
-              <Button className="w-1/2 bg-teal-500 text-white text-sm p-4 my-2 rounded-full font-semibold flex items-center justify-center">
+              <Button className="w-1/2 bg-teal-500 text-white text-sm p-4 my-2 rounded-full font-semibold flex items-center justify-center" onClick={handleConfirmationClick}>
                 Confirm Connection
               </Button>
             )}
