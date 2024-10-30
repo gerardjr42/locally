@@ -19,6 +19,7 @@ export default function UserMatches() {
   const { eventInfo, matchData, setMatchData, otherUser } = useContext(ConnectionContext);
   const [areUsersConfirmed, setAreUsersConfirmed] = useState(false);
   const [didConnectionOccur, setDidConnectionOccur] = useState(false);
+  const [isCurrentUserConfirmed, setIsCurrentUserConfirmed] = useState(false);
 
   function handleViewEvent() {
     router.push(`/experiences/${eventInfo?.event_id}`);
@@ -130,8 +131,11 @@ export default function UserMatches() {
         user.user_id
       );
       setMatchData(updatedMatchData);
+      setIsCurrentUserConfirmed(true);
     }
   };
+
+  console.log(isCurrentUserConfirmed);
 
   return (
     <div className="flex flex-col items-center justify-center">
