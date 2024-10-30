@@ -7,83 +7,18 @@ import { supabase } from "@/lib/supabase";
 import { formatDate } from "@/lib/utils";
 import Image from "next/image";
 import { useParams, useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useContext } from "react";
 import { StreamChat } from "stream-chat";
+import { ConnectionContext } from './layout';
+
 
 export default function UserMatches() {
   const router = useRouter();
   const { user } = useUserContext();
   const params = useParams();
-  const [eventInfo, setEventInfo] = useState(null);
-  const [matchData, setMatchData] = useState(null);
-  const [otherUser, setOtherUser] = useState(null);
   const [areUsersConfirmed, setAreUsersConfirmed] = useState(false);
   const [didConnectionOccur, setDidConnectionOccur] = useState(false);
 
-  const fetchEventInfo = async () => {
-    const { data: matchData, error: matchError } = await supabase
-      .from("Event_Matches")
-      .select("event_id")
-      .eq("match_id", params.connectionId)
-      .single();
-
-    if (matchError) {
-      console.error("Error fetching match data:", matchError);
-      return;
-    }
-
-    if (matchData) {
-      const { data: eventData, error: eventError } = await supabase
-        .from("Events")
-        .select("*")
-        .eq("event_id", matchData.event_id)
-        .single();
-
-      if (eventError) {
-        console.error("Error fetching event data:", eventError);
-      } else {
-        setEventInfo(eventData);
-      }
-    }
-  };
-
-  useEffect(() => {
-    fetchEventInfo();
-  }, [params.connectionId]);
-
-  const fetchMatchAndUserInfo = async () => {
-    const { data: matchData, error: matchError } = await supabase
-      .from("Event_Matches")
-      .select("*")
-      .eq("match_id", params.connectionId)
-      .single();
-
-    if (matchError) {
-      console.error("Error fetching match data:", matchError);
-      return;
-    }
-
-    setMatchData(matchData);
-
-    const otherUserId =
-      matchData.attendee_id === user.user_id
-        ? matchData.interest_in_user_id
-        : matchData.attendee_id;
-
-    const { data: userData, error: userError } = await supabase
-      .from("Users")
-      .select("*")
-      .eq("user_id", otherUserId)
-      .single();
-
-    if (userError) {
-      console.error("Error fetching user data:", userError);
-    } else {
-      setOtherUser(userData);
-    }
-
-    fetchEventInfo();
-  };
 
   function handleViewEvent() {
     router.push(`/experiences/${eventInfo?.event_id}`);
