@@ -46,12 +46,11 @@ export default function UserProfile() {
     let matchId;
 
     const { data: existingMatch, error: matchError } = await supabase
-      .from("Event_Matches")
-      .select("*")
-      .or(
-        `and(attendee_id.eq.${user.user_id},interest_in_user_id.eq.${params.attendeeId}),and(attendee_id.eq.${params.attendeeId},interest_in_user_id.eq.${user.user_id})`
-      )
-      .eq("event_id", params.experienceId)
+
+      .from('Event_Matches')
+      .select('*')
+      .or(`and(user1_id.eq.${user.user_id},user2_id.eq.${params.attendeeId}),and(user1_id.eq.${params.attendeeId},user2_id.eq.${user.user_id})`)
+      .eq('event_id', params.experienceId)
       .single();
 
     if (matchError && matchError.code !== "PGRST116") {
@@ -79,8 +78,8 @@ export default function UserProfile() {
       const { data, error: insertError } = await supabase
         .from("Event_Matches")
         .insert({
-          attendee_id: lesserUserId,
-          interest_in_user_id: greaterUserId,
+          user1_id: lesserUserId,
+          user2_id: greaterUserId,
           event_id: params.experienceId,
           mutual_interest: false,
           date_matched: new Date(),

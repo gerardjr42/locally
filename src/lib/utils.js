@@ -191,3 +191,55 @@ export async function fetchTopMatches(userId, eventId) {
     return [];
   }
 }
+
+export async function updateMatchConfirmation(supabase, matchId, userId) {
+  try {
+    // Fetch the match
+    const { data: match, error: matchError } = await supabase
+      .from("Event_Matches")
+      .select("*")
+      .eq("match_id", matchId)
+      .single();
+
+    if (matchError) throw matchError;
+
+    // Determine which user is confirming
+    const isUser1 = match.user1_id === userId;
+    const updateField = isUser1 ? "user1_confirmed" : "user2_confirmed";
+
+    // Update the confirmation
+    const { data: updatedMatch, error: updateError } = await supabase
+      .from("Event_Matches")
+      .update({ [updateField]: true })
+      .eq("match_id", matchId)
+      .select()
+      .single();
+
+    if (updateError) throw updateError;
+
+    // Check if both users have confirmed
+    if (updatedMatch.user1_confirmed && updatedMatch.user2_confirmed) {
+      // Update confirmed_together
+      const { error: confirmedTogetherError } = await supabase
+        .from("Event_Matches")
+        .update({ confirmed_together: true })
+        .eq("match_id", matchId);
+
+      if (confirmedTogetherError) throw confirmedTogetherError;
+
+      // Update User_Events for both users
+      const { error: userEventsError } = await supabase
+        .from("User_Events")
+        .update({ confirmed: true })
+        .eq("event_id", updatedMatch.event_id)
+        .in("user_id", [updatedMatch.user1_id, updatedMatch.user2_id]);
+
+      if (userEventsError) throw userEventsError;
+    }
+
+    return updatedMatch;
+  } catch (error) {
+    console.error("Error updating match confirmation:", error);
+    throw error;
+  }
+}
