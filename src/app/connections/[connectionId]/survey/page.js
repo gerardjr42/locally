@@ -5,10 +5,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useUserContext } from "@/contexts/UserContext";
 import { supabase } from "@/lib/supabase";
-import { formatDate } from "@/lib/utils";
-import Image from "next/image";
 import { useParams, useRouter } from "next/navigation";
-import { useContext, useState, useEffect } from "react";
+import { useContext, useEffect, useState } from "react";
 import { ConnectionContext } from "../layout";
 
 export default function Survey() {
@@ -53,7 +51,8 @@ export default function Survey() {
       <NavigationBar />
       <div className="w-full p-2">
         <h1>
-          How'd it go with {otherUser?.first_name} at {eventInfo?.event_name}?
+          How&apos;d it go with {otherUser?.first_name} at{" "}
+          {eventInfo?.event_name}?
         </h1>
 
         <form>
@@ -123,7 +122,7 @@ export default function Survey() {
             <p>Would you like to leave {otherUser?.first_name} compliments?</p>
             <p>
               These compliments will be shared as badges on{" "}
-              {otherUser?.first_name}'s profile.
+              {otherUser?.first_name}&apos;s profile.
             </p>
             <div className="p-4">
               <div className="flex flex-wrap gap-2">
@@ -152,9 +151,7 @@ export default function Survey() {
             </div>
           </div>
         </form>
-        <Button>
-            Submit
-        </Button>
+        <Button>Submit</Button>
       </div>
     </div>
   );
