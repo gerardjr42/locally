@@ -47,10 +47,12 @@ export default function UserProfile() {
 
     const { data: existingMatch, error: matchError } = await supabase
 
-      .from('Event_Matches')
-      .select('*')
-      .or(`and(user1_id.eq.${user.user_id},user2_id.eq.${params.attendeeId}),and(user1_id.eq.${params.attendeeId},user2_id.eq.${user.user_id})`)
-      .eq('event_id', params.experienceId)
+      .from("Event_Matches")
+      .select("*")
+      .or(
+        `and(user1_id.eq.${user.user_id},user2_id.eq.${params.attendeeId}),and(user1_id.eq.${params.attendeeId},user2_id.eq.${user.user_id})`
+      )
+      .eq("event_id", params.experienceId)
       .single();
 
     if (matchError && matchError.code !== "PGRST116") {
@@ -178,22 +180,22 @@ export default function UserProfile() {
     >
       <NavigationBar handleBackClick={handleBackClick} />
       <main className="pt-15 pb-24">
-        <motion.div className="bg-gray-100 p-4" variants={slideUp}>
-          <p className="font-semibold">
-            {interestedUser.first_name} also wants to attend
-          </p>
-          <h2 className="text-xl font-bold">{eventName}!</h2>
-        </motion.div>
-
         <motion.div
-          className="aspect-square bg-gray-300 relative w-full h-full"
-          variants={fadeIn}
+          className="bg-gray-100 p-4 flex flex-row items-center"
+          variants={slideUp}
         >
-          <img
-            src={interestedUser?.photo_url}
-            alt={`${interestedUser?.first_name}'s Photo`}
-            className="absolute inset-0 w-full h-full object-cover"
-          />
+          <div className="avatar">
+            <div className="w-24 rounded-full mx-4">
+              <img src={interestedUser?.photo_url}
+            alt={`${interestedUser?.first_name}'s Photo`} />
+            </div>
+          </div>
+          <div className="flex flex-col items-center justify-center">
+            <p className="text-md font-semibold text-gray-700">
+              {interestedUser?.first_name} is looking to connect at
+            </p>
+            <h2 className="text-md text-gray-700 font-semibold">{eventName}!</h2>
+          </div>
         </motion.div>
 
         <motion.div className="p-4 space-y-4" variants={slideUp}>
