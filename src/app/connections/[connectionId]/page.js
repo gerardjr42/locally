@@ -88,6 +88,10 @@ export default function UserMatches() {
     router.push(`/experiences/${eventInfo.event_id}`);
   }
 
+  function handleFeedback() {
+    router.push(`/connections/${params.connectionId}/survey`);
+  }
+
   const checkConnectionOccurred = async () => {
     const { data: matchData, error: matchError } = await supabase
       .from("Event_Matches")
@@ -118,6 +122,89 @@ export default function UserMatches() {
       checkConnectionOccurred();
     }
   }, [params.connectionId, user]);
+
+  if (areUsersConfirmed && didConnectionOccur) {
+    return (
+      <div className="flex flex-col items-center justify-center">
+      <NavigationBar />
+
+      <div className="w-full p-2">
+        <div className="card flex items-center justify-center bg-base-100 shadow-sm mb-4 p-2">
+          <div className="card-body flex-col items-center justify-center p-2">
+            <h2 className="card-title text-gray-600">{`You'll be Connecting with ${otherUser?.first_name}!`}</h2>
+            <div className="card-image w-full h-full overflow-hidden flex flex-row items-center justify-evenly px-1 py-5">
+              <div className="avatar w-3/4">
+                <div className="ring-primary ring-teal-500 ring-offset-base-100 w-full rounded-full ring ring-offset-2">
+                  <img src={user?.photo_url} />
+                </div>
+              </div>
+              <Image
+                src="/images/fistbump.svg"
+                alt="Fist Bump"
+                width={50}
+                height={50}
+                className="mx-2"
+              />
+              <div className="avatar w-3/4">
+                <div className="ring-primary ring-teal-500 ring-offset-base-100 w-full rounded-full ring ring-offset-2">
+                  <img src={otherUser?.photo_url} />
+                </div>
+              </div>
+            </div>
+            <p className="text-xs text-center text-gray-500">{`How was your connection with ${otherUser?.first_name} at ${eventInfo.event_name}? We'd love to hear about it!`}</p>
+            <button className="w-1/2 bg-teal-500 text-white text-sm p-4 my-2 rounded-full font-semibold flex items-center justify-center">
+              Provide Feedback
+            </button>
+          </div>
+        </div>
+
+        {eventInfo && (
+          <div className="card bg-base-100 image-full w-full shadow-sm my-4">
+            <div className="card-image relative w-full h-full overflow-hidden rounded-xl">
+              <Image
+                src={eventInfo.event_image_url}
+                alt={eventInfo.event_name}
+                fill={true}
+                className="object-cover"
+              />
+            </div>
+            <div className="card-body">
+              <h2 className="card-title m">{eventInfo.event_name}</h2>
+              <p className="text-xs">{formatDate(eventInfo.event_time)}</p>
+              <p className="text-xs">{eventInfo.event_details}</p>
+              <div className="card-actions justify-center">
+                <button
+                  className="w-3/4 outline text-white text-sm p-4 my-2 rounded-full font-semibold flex items-center justify-center"
+                  onClick={handleViewEvent}
+                >
+                  View Experience
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        <div className="collapse collapse-arrow bg-gray-100 pb-1 mb-4 shadow-sm">
+          <input type="checkbox"/>
+          <div className="collapse-title">
+            <p className="text-sm text-teal-700 font-semibold">
+              Do you need help with this connection or your experience? 
+            </p>
+            <p className="text-xs text-gray-500">
+              {`We're here to assist you. Please let us know how we can help you.`}
+            </p>
+          </div>
+          <div className="collapse-content flex flex-row items-center justify-evenly">
+            <button className="w-1/2 bg-transparent text-gray-400 outline text-sm p-4 my-2 rounded-full font-semibold flex items-center justify-center">
+              Request Help
+            </button>
+          </div>
+        </div>
+
+      </div>
+    </div>
+    )
+  }
 
   if (areUsersConfirmed) {
     return (
