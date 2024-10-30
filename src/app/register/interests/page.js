@@ -207,6 +207,7 @@ export default function InterestsPage() {
             Select at least 3 interests (max 10) to help us find the best events
             for you.
           </p>
+          
         )}
 
         <div className="space-y-2">

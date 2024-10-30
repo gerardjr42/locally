@@ -17,6 +17,17 @@ export default function Survey() {
   const params = useParams();
   const { eventInfo, matchData, otherUser } = useContext(ConnectionContext);
   const [compliments, setCompliments] = useState([]);
+  const [selectedCompliments, setSelectedCompliments] = useState([]);
+
+  const toggleSelection = (compliment) => {
+    setSelectedCompliments((prevSelected) => {
+      if (prevSelected.includes(compliment)) {
+        return prevSelected.filter((item) => item !== compliment);
+      } else {
+        return [...prevSelected, compliment];
+      }
+    });
+  };
 
   useEffect(() => {
     fetchCompliments();
@@ -36,8 +47,7 @@ export default function Survey() {
     }
   };
 
-  console.log(compliments)
-
+  console.log(selectedCompliments);
   return (
     <div className="flex flex-col items-center justify-center">
       <NavigationBar />
@@ -109,8 +119,42 @@ export default function Survey() {
             />
           </div>
 
-          <div></div>
+          <div>
+            <p>Would you like to leave {otherUser?.first_name} compliments?</p>
+            <p>
+              These compliments will be shared as badges on{" "}
+              {otherUser?.first_name}'s profile.
+            </p>
+            <div className="p-4">
+              <div className="flex flex-wrap gap-2">
+                {compliments.map((compliment) => (
+                  <Button
+                    key={compliment.id}
+                    variant={
+                      selectedCompliments.some((i) => i.id === compliment.id)
+                        ? "default"
+                        : "outline"
+                    }
+                    className={`rounded-full text-sm ${
+                      selectedCompliments.some((i) => i.id === compliment.id)
+                        ? "bg-[#0D9488] hover:bg-[#0B7A6E] text-white"
+                        : "bg-white text-gray-800 border-gray-300 hover:bg-gray-100"
+                    }`}
+                    onClick={() => toggleSelection(compliment)}
+                    disabled={
+                      !selectedCompliments.some((i) => i.id === compliment.id)
+                    }
+                  >
+                    {compliment.compliment_emoji} {compliment.compliment_text}
+                  </Button>
+                ))}
+              </div>
+            </div>
+          </div>
         </form>
+        <Button>
+            Submit
+        </Button>
       </div>
     </div>
   );
