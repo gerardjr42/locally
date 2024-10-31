@@ -7,7 +7,7 @@ export default function ConfirmationPage() {
   const router = useRouter();
 
   const handleLoginRedirect = () => {
-    router.push("/experiences");
+    router.push("/login");
   };
 
   return (
