@@ -17,6 +17,25 @@ import {
   sortExperiencesByDate,
 } from "@/lib/utils";
 
+const obj = {
+  "title": "Nature's Workshop: Natural Dyes",
+  "guid": "http:\/\/www.nycgovparks.org\/events\/2024\/11\/03\/natures-workshop-natural-dyes",
+  "link": "http:\/\/www.nycgovparks.org\/events\/2024\/11\/03\/natures-workshop-natural-dyes",
+  "description": "<p>Date: November 3, 2024<\/p><p><p>Join the Urban Park Rangers in using natural materials to tie-dye in vibrant colors. Bring your own white cotton clothes or receive a free handkerchief or tote bag to dye.<\/p><\/p><p>Start time: 11:00 am<\/p><p>End time: 12:00 pm<\/p><p>Contact phone: (718) 421-2021<\/p><p>Location: Rainbow Playground<\/p>",
+  "parkids": "B265",
+  "parknames": "Rainbow Playground",
+  "startdate": "2024-11-03",
+  "enddate": "2024-11-03",
+  "starttime": "11:00 am",
+  "endtime": "12:00 pm",
+  "contact_phone": "(718) 421-2021",
+  "location": "Rainbow Playground",
+  "categories": "Arts & Crafts | Urban Park Rangers",
+  "coordinates": "40.64055758465000000, -74.01117895632000000",
+  "image": "",
+  "pubDate": "Sun, 03 Nov 2024 00:00:03 EDT"
+}
+
 export default function AllExperiences() {
   const supabase = createClientComponentClient();
   const router = useRouter();
@@ -26,10 +45,39 @@ export default function AllExperiences() {
   const [selectedCategories, setSelectedCategories] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [sortAscending, setSortAscending] = useState(true);
+  const [eventCity, setEventCity] = useState("");
 
   useEffect(() => {
     fetchExperiencesAndCategories();
   }, []);
+
+  // useEffect(() => {
+  //   if (experiences.length > 0) {
+  //     fetchCitiesAndBoroughsForExperiences(experiences);
+  //   }
+  // }, [experiences]);
+
+  // const fetchCitiesAndBoroughsForExperiences = async (events) => {
+  //   const locations = {};
+  //   await Promise.all(events.map(async (event) => {
+  //     const { event_zip_code } = event;
+  //     if (event_zip_code && !locations[event_zip_code]) { // Avoid fetching the same zip code
+  //       try {
+  //         const response = await fetch(`/api/geocode?zipcode=${event_zip_code}`);
+  //         const data = await response.json();
+  //         if (data.city || data.borough) {
+  //           locations[event_zip_code] = {
+  //             city: data.city || null,
+  //             borough: data.borough || null,
+  //           };
+  //         }
+  //       } catch (error) {
+  //         console.error(`Error fetching location for ZIP code ${event_zip_code}:`, error);
+  //       }
+  //     }
+  //   }));
+  //   setLocationData(locations); // Store city and borough names in state
+  // };
 
   async function fetchExperiencesAndCategories() {
     try {
@@ -50,23 +98,33 @@ export default function AllExperiences() {
       if (categoriesError) throw categoriesError;
       if (eventsError) throw eventsError;
 
-
       // Process events data to include categories
       const processedEvents = await Promise.all(
         eventsData.map(async (event) => {
           const users = await fetchUsersForExperience(supabase, event.event_id);
+          let city = '';
+          if (event.event_zip_code) {
+            try {
+              const response = await fetch(`/api/geocode?zipcode=${event.event_zip_code}`);
+              const data = await response.json();
+              city = `${data.borough || "Unknown"}`;
+            } catch (error) {
+              console.error("Error fetching city for event:", error);
+              city = "Error fetching city";
+            }
+          }
           return {
             ...event,
-            categories: event.Event_Category_Junction.map(
-              (junction) => junction.category_id
-            ),
+            categories: event.Event_Category_Junction.map(junction => junction.category_id),
             users: users,
+            city: city,
           };
         })
       );
 
       setCategories(categoriesData);
       setExperiences(processedEvents);
+      
 
       if (processedEvents.length === 0) {
         toast("No events found", { icon: "ℹ️" });
@@ -76,6 +134,29 @@ export default function AllExperiences() {
       toast.error(`Error fetching data: ${error.message}`);
     }
   }
+  console.log(experiences)
+
+  useEffect(() => {
+    // Call this function to test the reverse geocoding with `obj`
+    const testReverseGeocoding = async () => {
+      const coordinates = obj.coordinates;
+      const [lat, lng] = coordinates.split(',').map(coord => parseFloat(coord.trim()));
+      
+      try {
+        const response = await fetch(`/api/reverseGeocode?lat=${lat}&lng=${lng}`);
+        const data = await response.json();
+        console.log("Reverse Geocoding Result:", data); // Log the result
+        if (data.address) {
+          console.log("Address:", data.address); // Log the address if available
+        }
+      } catch (error) {
+        console.error("Error fetching address:", error);
+      }
+    };
+
+    testReverseGeocoding(); // Call the testing function
+  }, []);
+
 
 
   const toggleCategory = (categoryId) => {
@@ -229,7 +310,7 @@ export default function AllExperiences() {
                 {experience.event_name}
               </h2>
               <p className="text-gray-700 text-sm">
-                {experience.event_zip_code}
+              {experience.city}
               </p>
               <div className="w-full flex justify-end">
                 <div className="flex flex-col items-center">
