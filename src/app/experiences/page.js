@@ -45,39 +45,10 @@ export default function AllExperiences() {
   const [selectedCategories, setSelectedCategories] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [sortAscending, setSortAscending] = useState(true);
-  const [eventCity, setEventCity] = useState("");
 
   useEffect(() => {
     fetchExperiencesAndCategories();
   }, []);
-
-  // useEffect(() => {
-  //   if (experiences.length > 0) {
-  //     fetchCitiesAndBoroughsForExperiences(experiences);
-  //   }
-  // }, [experiences]);
-
-  // const fetchCitiesAndBoroughsForExperiences = async (events) => {
-  //   const locations = {};
-  //   await Promise.all(events.map(async (event) => {
-  //     const { event_zip_code } = event;
-  //     if (event_zip_code && !locations[event_zip_code]) { // Avoid fetching the same zip code
-  //       try {
-  //         const response = await fetch(`/api/geocode?zipcode=${event_zip_code}`);
-  //         const data = await response.json();
-  //         if (data.city || data.borough) {
-  //           locations[event_zip_code] = {
-  //             city: data.city || null,
-  //             borough: data.borough || null,
-  //           };
-  //         }
-  //       } catch (error) {
-  //         console.error(`Error fetching location for ZIP code ${event_zip_code}:`, error);
-  //       }
-  //     }
-  //   }));
-  //   setLocationData(locations); // Store city and borough names in state
-  // };
 
   async function fetchExperiencesAndCategories() {
     try {
