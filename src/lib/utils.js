@@ -245,3 +245,61 @@ export async function updateMatchConfirmation(supabase, matchId, userId) {
     throw error;
   }
 }
+
+export async function fetchPersonalizedEvents(supabase, userId) {
+  try {
+    // Fetch user's interests
+    const { data: userInterests, error: interestError } = await supabase
+      .from("User_Interests")
+      .select("interest")
+      .eq("user_id", userId);
+
+    if (interestError) throw interestError;
+
+    // Extract interest names
+    const interests = userInterests.map((item) =>
+      item.interest.name.toLowerCase()
+    );
+
+    // Fetch all events with their categories
+    const { data: events, error: eventError } = await supabase
+      .from("Events")
+      .select(
+        `
+        *,
+        Event_Category_Junction (
+          category_id,
+          Categories (
+            name
+          )
+        )
+      `
+      )
+      .gte("event_time", new Date().toISOString());
+
+    if (eventError) throw eventError;
+
+    // Score and sort events based on interest matches
+    const scoredEvents = events.map((event) => {
+      const eventCategories = event.Event_Category_Junction.map((junction) =>
+        junction.Categories.name.toLowerCase()
+      );
+
+      // Calculate match score (number of matching interests)
+      const matchScore = eventCategories.reduce((score, category) => {
+        return interests.includes(category) ? score + 1 : score;
+      }, 0);
+
+      return {
+        ...event,
+        matchScore,
+      };
+    });
+
+    // Sort by match score (highest first)
+    return scoredEvents.sort((a, b) => b.matchScore - a.matchScore);
+  } catch (error) {
+    console.error("Error fetching personalized events:", error);
+    return [];
+  }
+}

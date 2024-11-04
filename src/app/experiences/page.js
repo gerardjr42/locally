@@ -33,6 +33,20 @@ export default function AllExperiences() {
 
   async function fetchExperiencesAndCategories() {
     try {
+      // Get current user's interests with their category IDs
+      const { data: userInterests } = await supabase.from("User_Interests")
+        .select(`
+          interest_id,
+          Interests (
+            category_id
+          )
+        `);
+
+      const userCategoryIds =
+        userInterests
+          ?.map((interest) => interest.Interests?.category_id)
+          .filter(Boolean) || [];
+
       const [
         { data: categoriesData, error: categoriesError },
         { data: eventsData, error: eventsError },
@@ -50,23 +64,41 @@ export default function AllExperiences() {
       if (categoriesError) throw categoriesError;
       if (eventsError) throw eventsError;
 
-
-      // Process events data to include categories
+      // Process events data to include categories and match scores
       const processedEvents = await Promise.all(
         eventsData.map(async (event) => {
           const users = await fetchUsersForExperience(supabase, event.event_id);
+
+          // Calculate match score based on matching category IDs
+          const eventCategoryIds = event.Event_Category_Junction.map(
+            (junction) => junction.category_id
+          );
+
+          const matchScore =
+            userCategoryIds.length > 0
+              ? eventCategoryIds.reduce(
+                  (score, categoryId) =>
+                    userCategoryIds.includes(categoryId) ? score + 1 : score,
+                  0
+                )
+              : 0;
+
           return {
             ...event,
-            categories: event.Event_Category_Junction.map(
-              (junction) => junction.category_id
-            ),
+            categories: eventCategoryIds,
             users: users,
+            matchScore: matchScore,
           };
         })
       );
 
+      // Sort by match score but maintain original order for equal scores
+      const sortedEvents = [...processedEvents].sort(
+        (a, b) => b.matchScore - a.matchScore
+      );
+
       setCategories(categoriesData);
-      setExperiences(processedEvents);
+      setExperiences(sortedEvents);
 
       if (processedEvents.length === 0) {
         toast("No events found", { icon: "ℹ️" });
@@ -76,7 +108,6 @@ export default function AllExperiences() {
       toast.error(`Error fetching data: ${error.message}`);
     }
   }
-
 
   const toggleCategory = (categoryId) => {
     setSelectedCategories((prev) =>
@@ -119,7 +150,7 @@ export default function AllExperiences() {
     setExperiences(sortExperiencesByDate([...experiences], sortAscending));
   };
 
-  console.log(experiences)
+  console.log(experiences);
 
   return (
     <div className="flex flex-col items-center justify-center">
@@ -222,7 +253,7 @@ export default function AllExperiences() {
                   {formatDate(experience.event_time)}
                 </p>
                 <p className="text-gray-500 text-sm">
-                  {experience.is_free ? 'Free' : `$${experience.event_price}`}
+                  {experience.is_free ? "Free" : `$${experience.event_price}`}
                 </p>
               </div>
               <h2 className="text-gray-700 font-bold text-md">
@@ -240,7 +271,7 @@ export default function AllExperiences() {
                           <Image
                             src={
                               experience.users[0].photo_url ||
-                              'https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.webp'
+                              "https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.webp"
                             }
                             alt={experience.users[0].first_name}
                             width={400}
