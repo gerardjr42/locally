@@ -50,23 +50,33 @@ export default function AllExperiences() {
       if (categoriesError) throw categoriesError;
       if (eventsError) throw eventsError;
 
-
       // Process events data to include categories
       const processedEvents = await Promise.all(
         eventsData.map(async (event) => {
           const users = await fetchUsersForExperience(supabase, event.event_id);
+          let city = '';
+          if (event.event_zip_code) {
+            try {
+              const response = await fetch(`/api/geocode?zipcode=${event.event_zip_code}`);
+              const data = await response.json();
+              city = `${data.borough || "Unknown"}`;
+            } catch (error) {
+              console.error("Error fetching city for event:", error);
+              city = "Error fetching city";
+            }
+          }
           return {
             ...event,
-            categories: event.Event_Category_Junction.map(
-              (junction) => junction.category_id
-            ),
+            categories: event.Event_Category_Junction.map(junction => junction.category_id),
             users: users,
+            city: city,
           };
         })
       );
 
       setCategories(categoriesData);
       setExperiences(processedEvents);
+      
 
       if (processedEvents.length === 0) {
         toast("No events found", { icon: "ℹ️" });
@@ -76,6 +86,29 @@ export default function AllExperiences() {
       toast.error(`Error fetching data: ${error.message}`);
     }
   }
+  console.log(experiences)
+
+  useEffect(() => {
+    // Call this function to test the reverse geocoding with `obj`
+    const testReverseGeocoding = async () => {
+      const coordinates = obj.coordinates;
+      const [lat, lng] = coordinates.split(',').map(coord => parseFloat(coord.trim()));
+      
+      try {
+        const response = await fetch(`/api/reverseGeocode?lat=${lat}&lng=${lng}`);
+        const data = await response.json();
+        console.log("Reverse Geocoding Result:", data); // Log the result
+        if (data.address) {
+          console.log("Address:", data.address); // Log the address if available
+        }
+      } catch (error) {
+        console.error("Error fetching address:", error);
+      }
+    };
+
+    testReverseGeocoding(); // Call the testing function
+  }, []);
+
 
 
   const toggleCategory = (categoryId) => {
@@ -229,7 +262,7 @@ export default function AllExperiences() {
                 {experience.event_name}
               </h2>
               <p className="text-gray-700 text-sm">
-                {experience.event_zip_code}
+              {experience.city}
               </p>
               <div className="w-full flex justify-end">
                 <div className="flex flex-col items-center">
