@@ -17,25 +17,6 @@ import {
   sortExperiencesByDate,
 } from "@/lib/utils";
 
-const obj = {
-  "title": "Nature's Workshop: Natural Dyes",
-  "guid": "http:\/\/www.nycgovparks.org\/events\/2024\/11\/03\/natures-workshop-natural-dyes",
-  "link": "http:\/\/www.nycgovparks.org\/events\/2024\/11\/03\/natures-workshop-natural-dyes",
-  "description": "<p>Date: November 3, 2024<\/p><p><p>Join the Urban Park Rangers in using natural materials to tie-dye in vibrant colors. Bring your own white cotton clothes or receive a free handkerchief or tote bag to dye.<\/p><\/p><p>Start time: 11:00 am<\/p><p>End time: 12:00 pm<\/p><p>Contact phone: (718) 421-2021<\/p><p>Location: Rainbow Playground<\/p>",
-  "parkids": "B265",
-  "parknames": "Rainbow Playground",
-  "startdate": "2024-11-03",
-  "enddate": "2024-11-03",
-  "starttime": "11:00 am",
-  "endtime": "12:00 pm",
-  "contact_phone": "(718) 421-2021",
-  "location": "Rainbow Playground",
-  "categories": "Arts & Crafts | Urban Park Rangers",
-  "coordinates": "40.64055758465000000, -74.01117895632000000",
-  "image": "",
-  "pubDate": "Sun, 03 Nov 2024 00:00:03 EDT"
-}
-
 export default function AllExperiences() {
   const supabase = createClientComponentClient();
   const router = useRouter();
