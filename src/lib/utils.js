@@ -144,7 +144,9 @@ export async function fetchUserDataAndInterests(supabase, userId) {
 export function prepareUserDataForMatchmaking(usersData) {
   return usersData.map((user) => ({
     user_id: user.user_id,
-    features: createFeatureVector(user),
+    bio: user.bio || "",
+    icebreaker_responses: user.icebreaker_responses || [],
+    interests: user.interests || [],
   }));
 }
 
