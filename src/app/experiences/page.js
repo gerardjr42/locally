@@ -97,7 +97,7 @@ export default function AllExperiences() {
               city = "Error fetching city";
             }
           }
-
+          
           return {
             ...event,
             categories: eventCategoryIds,
@@ -124,6 +124,29 @@ export default function AllExperiences() {
       toast.error(`Error fetching data: ${error.message}`);
     }
   }
+  console.log(experiences)
+
+  useEffect(() => {
+    // Call this function to test the reverse geocoding with `obj`
+    const testReverseGeocoding = async () => {
+      const coordinates = obj.coordinates;
+      const [lat, lng] = coordinates.split(',').map(coord => parseFloat(coord.trim()));
+      
+      try {
+        const response = await fetch(`/api/reverseGeocode?lat=${lat}&lng=${lng}`);
+        const data = await response.json();
+        console.log("Reverse Geocoding Result:", data); // Log the result
+        if (data.address) {
+          console.log("Address:", data.address); // Log the address if available
+        }
+      } catch (error) {
+        console.error("Error fetching address:", error);
+      }
+    };
+
+    testReverseGeocoding(); // Call the testing function
+  }, []);
+
 
   const toggleCategory = (categoryId) => {
     setSelectedCategories((prev) =>
