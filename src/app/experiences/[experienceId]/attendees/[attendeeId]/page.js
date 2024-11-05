@@ -142,7 +142,7 @@ export default function UserProfile() {
               );
               const data = await response.json();
               let cityStr = data.borough ? `${data.borough}` : `${data.city}`
-              setUserCity(cityStr || "new York City");
+              setUserCity(cityStr || "New York City");
             } catch (error) {
               console.error("Error fetching city:", error);
               setUserCity("Error fetching city");
