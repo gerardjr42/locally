@@ -1,4 +1,5 @@
 import { createClient } from "@supabase/supabase-js";
+import * as use from "@tensorflow-models/universal-sentence-encoder";
 import * as tf from "@tensorflow/tfjs";
 import {
   fetchUserDataAndInterests,
@@ -58,19 +59,47 @@ export default async function handler(req, res) {
 }
 
 async function findTopMatches(userId, userData) {
-  // Filter out null or undefined user data
   const validUserData = userData.filter((user) => user && user.user_id);
-
   const userIndex = validUserData.findIndex((user) => user.user_id === userId);
+
   if (userIndex === -1) return [];
 
-  const features = tf.tensor2d(validUserData.map((user) => user.features));
-  const userFeatures = features.slice([userIndex, 0], [1, -1]);
+  // Load Universal Sentence Encoder model
+  const model = await use.load();
 
-  const similarities = tf.matMul(features, userFeatures.transpose()).squeeze();
+  // Prepare text data for each user
+  const userTexts = validUserData.map((user) => {
+    const icebreakerResponses =
+      user.icebreaker_responses
+        ?.filter((r) => r.answer)
+        .map((r) => r.answer)
+        .join(" ") || "";
+
+    const interests = user.interests.join(" ");
+    const bio = user.bio || "";
+
+    // Equal weighting for all three components
+    return `${bio} | ${icebreakerResponses} | ${interests}`;
+  });
+
+  // Encode all user texts
+  const embeddings = await model.embed(userTexts);
+
+  // Calculate cosine similarity between the current user and all other users
+  const userEmbedding = embeddings.slice([userIndex, 0], [1, -1]);
+  const similarities = tf
+    .matMul(embeddings, userEmbedding.transpose())
+    .squeeze();
+
+  // Get top matches
   const topIndices = await tf
     .topk(similarities, validUserData.length)
     .indices.array();
+
+  // Clean up tensors
+  embeddings.dispose();
+  userEmbedding.dispose();
+  similarities.dispose();
 
   return topIndices
     .filter((index) => index !== userIndex)
