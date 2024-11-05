@@ -83,11 +83,27 @@ export default function AllExperiences() {
                 )
               : 0;
 
+          // Fetch city information
+          let city = "";
+          if (event.event_zip_code) {
+            try {
+              const response = await fetch(
+                `/api/geocode?zipcode=${event.event_zip_code}`
+              );
+              const data = await response.json();
+              city = `${data.city || "Unknown"}`;
+            } catch (error) {
+              console.error("Error fetching city for event:", error);
+              city = "Error fetching city";
+            }
+          }
+
           return {
             ...event,
             categories: eventCategoryIds,
             users: users,
             matchScore: matchScore,
+            city: city,
           };
         })
       );
@@ -259,9 +275,7 @@ export default function AllExperiences() {
               <h2 className="text-gray-700 font-bold text-md">
                 {experience.event_name}
               </h2>
-              <p className="text-gray-700 text-sm">
-                {experience.event_zip_code}
-              </p>
+              <p className="text-gray-700 text-sm">{experience.city}</p>
               <div className="w-full flex justify-end">
                 <div className="flex flex-col items-center">
                   <div className="avatar-group -space-x-6 rtl:space-x-reverse mt-3">

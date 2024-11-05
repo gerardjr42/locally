@@ -141,7 +141,7 @@ export default function UserProfile() {
                 `/api/geocode?zipcode=${userData.user_zipcode}`
               );
               const data = await response.json();
-              setUserCity(data.city || "New York City, NY");
+              setUserCity(data.city || "Unknown");
             } catch (error) {
               console.error("Error fetching city:", error);
               setUserCity("Error fetching city");
