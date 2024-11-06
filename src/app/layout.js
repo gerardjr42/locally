@@ -1,7 +1,8 @@
+import { MatchmakingProvider } from "@/contexts/MatchmakingContext";
+import { UserProvider } from "@/contexts/UserContext";
 import localFont from "next/font/local";
 import Script from "next/script";
 import "./globals.css";
-import { UserProvider } from "@/contexts/UserContext";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -25,16 +26,14 @@ export default function RootLayout({ children }) {
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <UserProvider>{children}</UserProvider>
+        <MatchmakingProvider>
+          <UserProvider>{children}</UserProvider>
+        </MatchmakingProvider>
         <Script
           src="https://kit.fontawesome.com/c2a7616b54.js"
           strategy="lazyOnload"
           crossOrigin="anonymous"
         />
-        {/* <Script
-          src="https://s3.amazonaws.com/idme/developer/idme-buttons/assets/js/idme-wallet-button.js"
-          strategy="lazyOnload"
-        />{" "} */}
       </body>
     </html>
   );
