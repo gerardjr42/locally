@@ -41,7 +41,7 @@ export function MatchmakingProvider({ children }) {
       const cached = matchmakingResults[eventId];
       if (!cached) return null;
 
-      if (Date.now() - cached.timestamp > 5 * 60 * 1000) {
+      if (Date.now() - cached.timestamp > 10 * 60 * 1000) {
         setMatchmakingResults((prev) => {
           const newResults = { ...prev };
           delete newResults[eventId];
