@@ -6,22 +6,30 @@ const supabase = createClient(
 );
 
 function convertToTimestamp(startDate, startTime) {
-  const [year, month, day] = startDate.split("-");
-  let [time, period] = startTime.split(" ");
-  let [hours, minutes] = time.split(":");
-
-  if (period.toLowerCase() === "pm" && hours !== "12") {
-    hours = parseInt(hours) + 12;
-  } else if (period.toLowerCase() === "am" && hours === "12") {
-    hours = "00";
+  if (!startTime) {
+    return null; 
   }
 
-  hours = hours.padStart(2, "0");
-  minutes = minutes.padStart(2, "0");
+  try {
+    let [time, period] = startTime.split(" ");
+    let [hours, minutes] = time.split(":");
 
-  const timestamp = `${year}-${month}-${day} ${hours}:${minutes}:00`;
+    if (period.toLowerCase() === "pm" && hours !== "12") {
+      hours = parseInt(hours) + 12;
+    } else if (period.toLowerCase() === "am" && hours === "12") {
+      hours = "00";
+    }
 
-  return timestamp;
+    hours = hours.padStart(2, "0");
+    minutes = minutes.padStart(2, "0");
+
+    const timestamp = `${startDate} ${hours}:${minutes}:00`;
+
+    return timestamp;
+  } catch (error) {
+    console.error("Error converting to timestamp:", error);
+    return null; 
+  }
 }
 
 function extractAddressComponents(geocodeResponse) {
@@ -49,6 +57,11 @@ function extractAddressComponents(geocodeResponse) {
   return { streetAddress, postalCode };
 }
 
+function extractCoordinates(coordinatesString) {
+  const [latitude, longitude] = coordinatesString.split(',').map(coord => parseFloat(coord.trim()));
+  return { latitude, longitude };
+}
+
 async function getStreetAddressFromCoordinates(latitude, longitude) {
   const apiKey = process.env.GOOGLE_MAPS_API_KEY;
   const apiUrl = `https://maps.googleapis.com/maps/api/geocode/json?latlng=${latitude},${longitude}&key=${apiKey}`;
@@ -68,11 +81,10 @@ async function getStreetAddressFromCoordinates(latitude, longitude) {
 
 async function processEvents(jsonData) {
   for (const event of jsonData) {
+    const { latitude, longitude } = extractCoordinates(event.coordinates);
     const eventTime = convertToTimestamp(event.start_date, event.start_time);
-    const { streetAddress, postalCode } = await getStreetAddressFromCoordinates(
-      event.latitude,
-      event.longitude
-    );
+    const { streetAddress, postalCode } = await getStreetAddressFromCoordinates(latitude, longitude);
+
     const eventData = {
       event_name: event.title,
       event_details: event.description,
@@ -84,7 +96,7 @@ async function processEvents(jsonData) {
       event_host: "NYC Parks and Recreation",
       event_location_name: event.location,
       event_street_address: streetAddress,
-      event_zip_code: postalCode,
+      event_zip_code: Number(postalCode),
       event_capacity: null,
     };
 
@@ -130,7 +142,7 @@ async function processEvents(jsonData) {
   }
 }
 
-async function handleFileUpload(event) {
+export async function handleFileUpload(event) {
   const file = event.target.files[0];
   if (!file) return;
 
@@ -139,7 +151,3 @@ async function handleFileUpload(event) {
 
   await processEvents(jsonData);
 }
-
-document
-  .getElementById("file-input")
-  .addEventListener("change", handleFileUpload);
