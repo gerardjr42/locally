@@ -6,18 +6,41 @@ const supabase = createClient(
   );
 
 //function to prepare event start time
+function convertToTimestamp(startDate, startTime) {
+    const [year, month, day] = startDate.split('-');
+    let [time, period] = startTime.split(' ');
+    let [hours, minutes] = time.split(':');
+  
+    if (period.toLowerCase() === 'pm' && hours !== '12') {
+      hours = parseInt(hours) + 12;
+    } else if (period.toLowerCase() === 'am' && hours === '12') {
+      hours = '00';
+    }
+  
+    hours = hours.padStart(2, '0');
+    minutes = minutes.padStart(2, '0');
+  
+    const timestamp = `${year}-${month}-${day} ${hours}:${minutes}:00`;
+  
+    return timestamp;
+}
+console.log(convertToTimestamp("2023-09-15", "12:00 PM"));
+  
 //function to prepare event street address from coordinates
 //function to get zip code from street address
 
 async function processEvents(jsonData) {
+
+
     for (const event of jsonData) {
+        const eventTime = convertToTimestamp(event.start_date, event.start_time);
         const eventData = {
             event_name: event.title,
             event_details: event.description,
             event_url: event.link,
             is_free: true,
             event_price: 0,
-            event_time: event.starttime,
+            event_time: eventTime,
             event_image_url: event.image || "",
             event_host: "NYC Parks and Recreation",
             event_location_name: event.location,
