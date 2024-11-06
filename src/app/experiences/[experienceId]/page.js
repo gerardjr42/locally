@@ -10,6 +10,7 @@ import { Button } from "@/components/ui/button";
 import { fetchUsersForExperience } from "@/lib/utils";
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 
+import { DynamicLoadingScreenComponent } from "@/components/dynamic-loading-screen";
 import { useMatchmaking } from "@/contexts/MatchmakingContext";
 import { useUser } from "@/hooks/useUser";
 import { fetchTopMatches } from "@/lib/matchmaking";
@@ -35,6 +36,7 @@ export default function ExperienceDetails() {
   const [top3Matches, setTop3Matches] = useState([]);
   const { user, loading: userLoading } = useUser();
   const isDisabled = !isInterested;
+  const [isMatchmaking, setIsMatchmaking] = useState(false);
 
   const memoizedTopMatches = useMemo(() => topMatches, [topMatches]);
   const memoizedInterestedUsers = useMemo(
@@ -46,16 +48,21 @@ export default function ExperienceDetails() {
 
   const handleFetchTopMatches = useCallback(
     async (userId, eventId) => {
-      const results = await fetchTopMatches(
-        userId,
-        eventId,
-        cacheMatchmakingResults
-      );
-      if (results) {
-        setTopMatches(results.matches);
-        setInterestedUsers(results.interestedUsers);
+      setIsMatchmaking(true);
+      try {
+        const results = await fetchTopMatches(
+          userId,
+          eventId,
+          cacheMatchmakingResults
+        );
+        if (results) {
+          setTopMatches(results.matches);
+          setInterestedUsers(results.interestedUsers);
+        }
+        return results;
+      } finally {
+        setIsMatchmaking(false);
       }
-      return results;
     },
     [cacheMatchmakingResults]
   );
@@ -182,25 +189,35 @@ export default function ExperienceDetails() {
         setTopMatches([]); // Clear top matches when uninterested
       }
     } else {
+      setLoading(true);
       const { error } = await supabase
         .from("User_Events")
         .insert({ event_id: params.experienceId, user_id: user.user_id });
 
       if (error) {
         console.error("Error adding interest:", error);
+        setLoading(false);
       } else {
         setIsInterested(true);
         try {
           await handleFetchTopMatches(user.user_id, params.experienceId);
         } catch (error) {
           console.error("Error fetching top matches:", error);
+        } finally {
+          setLoading(false);
         }
       }
     }
   };
 
   if (loading) {
-    return <div>Loading...</div>;
+    return isMatchmaking ? (
+      <DynamicLoadingScreenComponent />
+    ) : (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="animate-pulse">Loading...</div>
+      </div>
+    );
   }
 
   if (!experience) {
