@@ -80,7 +80,7 @@ async function processEvents(jsonData) {
       is_free: true,
       event_price: 0,
       event_time: eventTime,
-      event_image_url: event.image || "",
+      event_image_url: event.image || "/images/pexels-photo-4451501.webp",
       event_host: "NYC Parks and Recreation",
       event_location_name: event.location,
       event_street_address: streetAddress,
