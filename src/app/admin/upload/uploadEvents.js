@@ -5,6 +5,14 @@ const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
 );
 
+function convertCategoriesStringToArray(categoriesString) {
+  if (!categoriesString) {
+    console.error("Invalid categories string");
+    return [];
+  } else {
+    return categoriesString.split(" | ");
+}
+
 function convertToTimestamp(startDate, startTime) {
   if (!startDate || !startTime) {
     console.error("Invalid date or time format");
