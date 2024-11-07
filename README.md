@@ -1,36 +1,64 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# Locally - Connect Through Local Experiences
+
+Locally is a modern social networking platform built with Next.js that helps people connect through shared interests and local activities. The platform uses AI-powered matchmaking to connect like-minded individuals at local events and experiences.
+
+## Features
+
+- **AI-Powered Matchmaking**: Uses TensorFlow.js for intelligent user matching based on interests and preferences
+- **Real-time Chat**: Integrated with Stream Chat for real-time messaging between matched users
+- **Event Discovery**: Browse and join local events and activities
+- **Interactive Profiles**: Create detailed profiles with interests, bio, and icebreaker questions
+- **Responsive Design**: Built with Tailwind CSS for a fully responsive experience
+- **Secure Authentication**: Powered by Supabase for robust user authentication and data storage
+
+## Tech Stack
+
+- **Frontend**: Next.js 14, React 18
+- **Styling**: Tailwind CSS, SASS, DaisyUI
+- **Authentication**: Supabase Auth
+- **Database**: Supabase
+- **AI/ML**: TensorFlow.js, Universal Sentence Encoder
+- **Chat**: Stream Chat
+- **UI Components**: Radix UI, Shadcn UI
+- **Animation**: Framer Motion
+- **State Management**: React Context
 
 ## Getting Started
 
-First, run the development server:
+1. Clone the repository
+2. Install dependencies:
+
+```bash
+npm install
+```
+
+3. Required APIs:
+   - Supabase (Authentication and Database)
+   - Stream Chat (Real-time messaging)
+   - TensorFlow.js (AI matchmaking)
+
+Contact repository owner for specific API setup instructions.
+
+4. Run the development server:
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+5. Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-You can start editing the page by modifying `app/page.js`. The page auto-updates as you edit the file.
+## Project Structure
 
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
+- `/src/app`: Main application pages and routing
+- `/src/components`: Reusable React components
+- `/src/lib`: Utility functions and shared logic
+- `/src/contexts`: React Context providers
+- `/src/styles`: Global styles and SCSS modules
 
-## Learn More
+## Contributing
 
-To learn more about Next.js, take a look at the following resources:
+Contributions are welcome! Please feel free to submit a Pull Request.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## License
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+This project is licensed under the MIT License - see the LICENSE file for details.
