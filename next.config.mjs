@@ -22,6 +22,10 @@ const nextConfig = {
         protocol: "https",
         hostname: "img.daisyui.com",
       },
+      {
+        protocol: "http",
+        hostname: "www.nycgovparks.org",
+      },
     ],
   },
 };

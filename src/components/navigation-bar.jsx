@@ -1,6 +1,6 @@
 "use client";
-import { supabase } from "@/lib/supabase";
 import { useUserContext } from "@/contexts/UserContext";
+import { supabase } from "@/lib/supabase";
 
 import {
   ArrowLeft,
@@ -133,7 +133,7 @@ export function NavigationBar({ handleBackClick }) {
           aria-label="close sidebar"
           className="drawer-overlay"
         ></label>
-        { user && (
+        {user && (
           <div className="bg-base-200 text-base-content min-h-full w-3/4 max-w-md flex flex-col">
             <ul className="menu p-4 flex-grow">
               <div className="flex flex-row justify-end">
@@ -161,7 +161,12 @@ export function NavigationBar({ handleBackClick }) {
                     Hello, <span className="font-bold">{user.first_name}</span>!
                   </p>
                   <a>
-                    <p className="text-gray-500" onClick={handleProfileClick}>View Profile</p>
+                    <p
+                      className="text-gray-500  cursor-pointer"
+                      onClick={handleProfileClick}
+                    >
+                      View Profile
+                    </p>
                   </a>
                 </div>
               </div>
