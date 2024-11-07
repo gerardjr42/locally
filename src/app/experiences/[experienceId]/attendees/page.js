@@ -1,11 +1,12 @@
-'use client';
+"use client";
 
-import { NavigationBar } from '@/components/navigation-bar';
-import { useUser } from '@/hooks/useUser';
-import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
-import Image from 'next/image';
-import { useParams, useRouter } from 'next/navigation';
-import { useEffect, useMemo, useState } from 'react';
+import { NavigationBar } from "@/components/navigation-bar";
+import { useMatchmaking } from "@/contexts/MatchmakingContext";
+import { useUser } from "@/hooks/useUser";
+import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
+import Image from "next/image";
+import { useParams, useRouter } from "next/navigation";
+import { useEffect, useMemo, useState } from "react";
 
 export default function AttendeesList() {
   const supabase = createClientComponentClient();
@@ -16,21 +17,18 @@ export default function AttendeesList() {
   const [experience, setExperience] = useState({});
   const [topMatches, setTopMatches] = useState([]);
   const { user, loading } = useUser();
+  const { getMatchmakingResults, cacheMatchmakingResults } = useMatchmaking();
 
   useEffect(() => {
     const fetchData = async () => {
-      console.log('Attendees page: Starting to fetch data');
       if (user && !loading) {
-        console.log('Attendees page: User data:', user);
-        console.log(
-          'Fetching top matches for userId:',
-          user.user_id,
-          'eventId:',
-          params.experienceId
-        );
-        await fetchTopMatches(user.user_id, params.experienceId);
-      } else if (!loading) {
-        console.log('Attendees page: No user found');
+        const cachedResults = getMatchmakingResults(params.experienceId);
+        if (cachedResults) {
+          setTopMatches(cachedResults.matches);
+          setInterestedUsers(cachedResults.interestedUsers);
+        } else {
+          await fetchTopMatches(user.user_id, params.experienceId);
+        }
       }
     };
 
@@ -44,15 +42,15 @@ export default function AttendeesList() {
   const fetchTopMatches = async (userId, eventId) => {
     try {
       console.log(
-        'Fetching top matches for userId:',
+        "Fetching top matches for userId:",
         userId,
-        'eventId:',
+        "eventId:",
         eventId
       );
-      const response = await fetch('/api/matchmaking', {
-        method: 'POST',
+      const response = await fetch("/api/matchmaking", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({ userId, eventId }),
       });
@@ -65,20 +63,20 @@ export default function AttendeesList() {
       }
 
       const data = await response.json();
-      console.log('Top Matches:', data.matches);
+      console.log("Top Matches:", data.matches);
       setTopMatches(data.matches);
 
       // Fetch interested users' data
       const interestedUsersData = await Promise.all(
         data.matches.map(async (userId) => {
           const { data: userData, error } = await supabase
-            .from('Users')
-            .select('user_id, first_name, last_name, user_dob, photo_url')
-            .eq('user_id', userId)
+            .from("Users")
+            .select("user_id, first_name, last_name, user_dob, photo_url")
+            .eq("user_id", userId)
             .single();
 
           if (error) {
-            console.error('Error fetching user data:', error);
+            console.error("Error fetching user data:", error);
             return null;
           }
           return userData;
@@ -87,7 +85,7 @@ export default function AttendeesList() {
       setInterestedUsers(interestedUsersData.filter(Boolean));
       setAllAttendees(interestedUsersData);
     } catch (error) {
-      console.error('Error fetching top matches:', error);
+      console.error("Error fetching top matches:", error);
     }
   };
 
