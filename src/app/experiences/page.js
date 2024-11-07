@@ -289,7 +289,7 @@ export default function AllExperiences() {
                     )}
                   </div>
                   <p className="text-center text-sm text-gray-500">
-                    Interested
+                    {experience.users.length < 1 ? "" : "Interested"}
                   </p>
                 </div>
               </div>

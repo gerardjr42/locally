@@ -11,12 +11,155 @@ function convertCategoriesStringToArray(categoriesString) {
     return [];
   } else {
     return categoriesString.split(" | ");
+  }
+}
+async function categorizeAndLinkEvent(eventId, categoriesString) {
+  const categories = convertCategoriesStringToArray(categoriesString);
+
+  const categoryMappings = {
+    Entertainment: [
+      "Theater",
+      "Games",
+      "Festivals",
+      "Concerts",
+      "Movies Under the Stars",
+    ],
+
+    "Food & Drink": ["Food"],
+
+    "Sports & Fitness": [
+      "Baseball/Softball",
+      "Basketball/Netball",
+      "Bicycling",
+      "Boxing/Wrestling",
+      "Cheerleading/Gymnastics",
+      "Football",
+      "Handball",
+      "Hockey",
+      "Strength Training/Weightlifting",
+      "Swimming/Aquatics",
+      "Tennis/Racquet Sports",
+      "Volleyball",
+      "Track & Field",
+      "Yoga & Pilates Classes",
+      "Walking",
+      "Skating/Blading",
+      "Soccer",
+      "Social Sports",
+      "Sports",
+      "Sports Camps",
+      "Martial Arts",
+      "Pickleball",
+      "Running/Jogging",
+      "Dance",
+      "Fitness",
+    ],
+
+    Outdoor: [
+      "Waterfront",
+      "Birding",
+      "Wildlife",
+      "Gardening",
+      "Nature",
+      "Outdoor Fitness",
+      "Fishing",
+      "It's My Park",
+    ],
+
+    "Health & Wellness": ["Seniors", "Shape Up NYC"],
+
+    Professional: ["Volunteer", "Talks"],
+
+    "Travel & Adventure": [
+      "Adventure Courses/Rock Climbing",
+      "Hiking",
+      "Tours",
+      "Markets",
+      "Urban Park Rangers",
+    ],
+
+    "Education & Learning": [
+      "Workshops",
+      "STEM Classes",
+      "Dance Classes",
+      "Exercise Classes",
+      "Community Input Meetings",
+      "Education",
+      "Astronomy",
+      "History",
+      "Media Education",
+    ],
+
+    "Arts & Culture": [
+      "Art",
+      "Arts & Crafts",
+      "Arts, Culture & Fun Series",
+      "Film",
+    ],
+  };
+
+  for (const category of categories) {
+    for (const [categoryName, keywords] of Object.entries(categoryMappings)) {
+      if (
+        keywords.some((keyword) =>
+          category.toLowerCase().includes(keyword.toLowerCase())
+        )
+      ) {
+        const { data: categoryData, error: categoryError } = await supabase
+          .from("Event_Categories")
+          .select("category_id")
+          .eq("category_name", categoryName)
+          .single();
+
+        if (categoryError) {
+          console.error(
+            `Error fetching category ID for ${categoryName}:`,
+            categoryError
+          );
+          continue;
+        }
+
+        const { data: existingJunction, error: checkError } = await supabase
+          .from("Event_Category_Junction")
+          .select("*")
+          .eq("event_id", eventId)
+          .eq("category_id", categoryData.category_id)
+          .single();
+
+        if (checkError && checkError.code !== "PGRST116") {
+          console.error(`Error checking existing junction:`, checkError);
+          continue;
+        }
+
+        if (!existingJunction) {
+          const { error: junctionError } = await supabase
+            .from("Event_Category_Junction")
+            .insert({ event_id: eventId, category_id: categoryData.category_id });
+
+          if (junctionError) {
+            console.error(
+              `Error inserting into Event_Category_Junction:`,
+              junctionError
+            );
+          } else {
+            console.log(`Linked event ${eventId} to category ${categoryName}`);
+          }
+        } else {
+          console.log(
+            `Event ${eventId} already linked to category ${categoryName}`
+          );
+        }
+
+        break;
+      }
+    }
+  }
 }
 
 function convertToTimestamp(startDate, startTime) {
   if (!startDate || !startTime) {
     console.error("Invalid date or time format");
-    return null; 
+    return null;
   }
 
   try {
@@ -37,12 +180,14 @@ function convertToTimestamp(startDate, startTime) {
     return timestamp;
   } catch (error) {
     console.error("Error converting to timestamp:", error);
-    return null; 
+    return null;
   }
 }
 
 function extractCoordinates(coordinatesString) {
-  const [latitude, longitude] = coordinatesString.split(',').map(coord => parseFloat(coord.trim()));
+  const [latitude, longitude] = coordinatesString
+    .split(",")
+    .map((coord) => parseFloat(coord.trim()));
   return { latitude, longitude };
 }
 
@@ -54,7 +199,7 @@ function extractAddressComponents(geocodeResponse) {
     const addressComponents = geocodeResponse.results[0];
 
     streetAddress = addressComponents["formatted_address"].split(",")[0];
-  
+
     postalCode =
       addressComponents["address_components"].find((component) =>
         component.types.includes("postal_code")
@@ -85,7 +230,10 @@ async function processEvents(jsonData) {
   for (const event of jsonData) {
     const eventTime = convertToTimestamp(event.startdate, event.starttime);
     const { latitude, longitude } = extractCoordinates(event.coordinates);
-    const { streetAddress, postalCode } = await getStreetAddressFromCoordinates(latitude, longitude);
+    const { streetAddress, postalCode } = await getStreetAddressFromCoordinates(
+      latitude,
+      longitude
+    );
 
     const eventData = {
       event_name: event.title,
@@ -94,7 +242,9 @@ async function processEvents(jsonData) {
       is_free: true,
       event_price: 0,
       event_time: eventTime,
-      event_image_url: event.image || "https://images.pexels.com/photos/4451501/pexels-photo-4451501.jpeg?auto=compress&cs=tinysrgb&w=600",
+      event_image_url:
+        event.image ||
+        "https://images.pexels.com/photos/4451501/pexels-photo-4451501.jpeg?auto=compress&cs=tinysrgb&w=600",
       event_host: "NYC Parks and Recreation",
       event_location_name: event.location,
       event_street_address: streetAddress,
@@ -142,6 +292,19 @@ async function processEvents(jsonData) {
       } else {
         console.log(`Inserted new event: ${event.title}`);
       }
+    }
+
+    console.log(`Inserted new event: ${event.title}`);
+    const { data: newEvent, error: fetchError } = await supabase
+      .from("Events")
+      .select("event_id")
+      .eq("event_url", event.link)
+      .single();
+
+    if (fetchError) {
+      console.error(`Error fetching new event ID:`, fetchError);
+    } else {
+      await categorizeAndLinkEvent(newEvent.event_id, event.categories);
     }
   }
 }

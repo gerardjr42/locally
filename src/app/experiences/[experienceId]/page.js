@@ -387,7 +387,7 @@ export default function ExperienceDetails() {
               </div>
             ) : (
               <div className="flex items-center mb-3">
-                <h2 className="text-gray-700 text-md font-semibold">
+                <h2 className="text-gray-500 text-md font-semibold">
                   No interested Locals, yet - Be the first!
                 </h2>
               </div>
@@ -450,7 +450,7 @@ export default function ExperienceDetails() {
                 return (
                   <div
                     key={index}
-                    className="bg-transparent outline text-teal-500 text-sm px-2 py-1 m-0.5 rounded-full"
+                    className="bg-transparent outline text-teal-500 text-sm px-2 py-1 mx-0.5 my-1 rounded-full"
                   >
                     {category.name}
                   </div>
