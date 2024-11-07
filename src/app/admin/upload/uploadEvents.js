@@ -33,35 +33,27 @@ function convertToTimestamp(startDate, startTime) {
   }
 }
 
+function extractCoordinates(coordinatesString) {
+  const [latitude, longitude] = coordinatesString.split(',').map(coord => parseFloat(coord.trim()));
+  return { latitude, longitude };
+}
+
 function extractAddressComponents(geocodeResponse) {
   let streetAddress = "";
   let postalCode = "";
 
   if (geocodeResponse.results && geocodeResponse.results.length > 0) {
-    const addressComponents = geocodeResponse.results[0].address_components;
+    const addressComponents = geocodeResponse.results[0];
 
-    const streetNumber =
-      addressComponents.find((component) =>
-        component.types.includes("street_number")
-      )?.long_name || "";
-    const route =
-      addressComponents.find((component) => component.types.includes("route"))
-        ?.short_name || component.types.includes("route")
-        ?.long_name || "";
-    streetAddress = `${streetNumber} ${route}`.trim();
-
+    streetAddress = addressComponents["formatted_address"].split(",")[0];
+  
     postalCode =
-      addressComponents.find((component) =>
+      addressComponents["address_components"].find((component) =>
         component.types.includes("postal_code")
-      )?.short_name || "";
+      )?.long_name || "";
   }
 
   return { streetAddress, postalCode };
-}
-
-function extractCoordinates(coordinatesString) {
-  const [latitude, longitude] = coordinatesString.split(',').map(coord => parseFloat(coord.trim()));
-  return { latitude, longitude };
 }
 
 async function getStreetAddressFromCoordinates(latitude, longitude) {
@@ -83,8 +75,8 @@ async function getStreetAddressFromCoordinates(latitude, longitude) {
 
 async function processEvents(jsonData) {
   for (const event of jsonData) {
-    const { latitude, longitude } = extractCoordinates(event.coordinates);
     const eventTime = convertToTimestamp(event.startdate, event.starttime);
+    const { latitude, longitude } = extractCoordinates(event.coordinates);
     const { streetAddress, postalCode } = await getStreetAddressFromCoordinates(latitude, longitude);
 
     const eventData = {
