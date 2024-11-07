@@ -1,11 +1,10 @@
 "use client";
-import React from "react";
-import { useUserContext } from "@/contexts/UserContext";
 import { NavigationBar } from "@/components/navigation-bar";
-import { useRouter } from "next/navigation";
-import Image from "next/image";
-import { useState, useEffect } from "react";
+import { useUserContext } from "@/contexts/UserContext";
 import { supabase } from "@/lib/supabase"; // Adjust the path as needed
+import Image from "next/image";
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 
 export default function AccountPhoto() {
   const { user, setUser, deleteUserPhoto } = useUserContext();
@@ -21,9 +20,9 @@ export default function AccountPhoto() {
     }
   }, [user]);
 
-  const handleBackClick = () => {
-    router.push("/account");
-  };
+  // const handleBackClick = () => {
+  //   router.push("/account");
+  // };
 
   const handleFileChange = (e) => {
     const selectedFile = e.target.files[0];
@@ -83,7 +82,9 @@ export default function AccountPhoto() {
         ...user,
         photo_url: publicUrl,
       });
-      console.log("Profile photo uploaded and user record updated successfully");
+      console.log(
+        "Profile photo uploaded and user record updated successfully"
+      );
       setAvatarUrl(publicUrl);
       alert("Photo updated successfully!");
       router.push("/account"); // Redirecting to /account instead of /register/verification
@@ -98,7 +99,7 @@ export default function AccountPhoto() {
   return (
     <div className="bg-white-100 min-h-screen">
       <header className="bg-white p-4 flex justify-between items-center shadow-sm">
-        <NavigationBar handleBackClick={handleBackClick} />
+        <NavigationBar handleBackClick={() => router.back()} />
       </header>
 
       <div className="photo bg-white p-6 rounded-lg shadow-md">
