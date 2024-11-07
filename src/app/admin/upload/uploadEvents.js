@@ -6,7 +6,8 @@ const supabase = createClient(
 );
 
 function convertToTimestamp(startDate, startTime) {
-  if (!startTime) {
+  if (!startDate || !startTime) {
+    console.error("Invalid date or time format");
     return null; 
   }
 
@@ -14,17 +15,17 @@ function convertToTimestamp(startDate, startTime) {
     let [time, period] = startTime.split(" ");
     let [hours, minutes] = time.split(":");
 
-    if (period.toLowerCase() === "pm" && hours !== "12") {
-      hours = parseInt(hours) + 12;
-    } else if (period.toLowerCase() === "am" && hours === "12") {
-      hours = "00";
+    if (period.toLowerCase() === "pm" && hours !== 12) {
+      hours = Number(hours) + 12;
+    } else if (period.toLowerCase() === "am" && hours === 12) {
+      hours = 0;
     }
 
-    hours = hours.padStart(2, "0");
-    minutes = minutes.padStart(2, "0");
+    hours = hours.toString().padStart(2, "0");
+    minutes = minutes.toString().padStart(2, "0");
 
-    const timestamp = `${startDate} ${hours}:${minutes}:00`;
-
+    const timestamp = `${startDate} ${hours}:${minutes}:00+00`;
+    console.log("Timestamp:", timestamp);
     return timestamp;
   } catch (error) {
     console.error("Error converting to timestamp:", error);
@@ -45,7 +46,8 @@ function extractAddressComponents(geocodeResponse) {
       )?.long_name || "";
     const route =
       addressComponents.find((component) => component.types.includes("route"))
-        ?.short_name || "";
+        ?.short_name || component.types.includes("route")
+        ?.long_name || "";
     streetAddress = `${streetNumber} ${route}`.trim();
 
     postalCode =
@@ -82,7 +84,7 @@ async function getStreetAddressFromCoordinates(latitude, longitude) {
 async function processEvents(jsonData) {
   for (const event of jsonData) {
     const { latitude, longitude } = extractCoordinates(event.coordinates);
-    const eventTime = convertToTimestamp(event.start_date, event.start_time);
+    const eventTime = convertToTimestamp(event.startdate, event.starttime);
     const { streetAddress, postalCode } = await getStreetAddressFromCoordinates(latitude, longitude);
 
     const eventData = {
@@ -92,7 +94,7 @@ async function processEvents(jsonData) {
       is_free: true,
       event_price: 0,
       event_time: eventTime,
-      event_image_url: event.image || "/images/pexels-photo-4451501.webp",
+      event_image_url: event.image || "https://images.pexels.com/photos/4451501/pexels-photo-4451501.jpeg?auto=compress&cs=tinysrgb&w=600",
       event_host: "NYC Parks and Recreation",
       event_location_name: event.location,
       event_street_address: streetAddress,
