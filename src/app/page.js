@@ -8,29 +8,29 @@ import { useEffect, useState } from "react";
 
 const onboardingContent = [
   {
-    title: "/images/LocallyTitle.png",
+    title: "/images/locally.png",
     subtitle:
-      "Connect with others through shared interests at local activities.",
+      "Real People. Real Experiences. Real Connections.",
     image: "/images/friends4.jpg",
   },
   {
-    title: "Discover Events",
-    subtitle: "Find exciting activities happening in your area.",
+    title: "Browse Experiences",
+    subtitle: "Discover events and activites that match your interests in the NYC area.",
     image: "/images/friends-5-mobile.jpg",
   },
   {
-    title: "Meet New People",
-    subtitle: "Connect with like-minded individuals at outings you love.",
+    title: "Match with Locals",
+    subtitle: "Express your interest in an Experience to join a pool of Locals looking to make connections.",
     image: "/images/friends-6-mobile.jpg",
   },
   {
-    title: "Create Memories",
-    subtitle: "Share experiences and make lasting connections.",
+    title: "Chat & Coordinate",
+    subtitle: "If the interest to connect is mutual, chat with your match and coordinate your plans to meet up.",
     image: "/images/friends-7-mobile.jpg",
   },
   {
-    title: "Get Started",
-    subtitle: "Your journey to local connections begins now.",
+    title: "Make Connections",
+    subtitle: "Connections are made when you meet up in person. Enjoy your Experience, and make new friends!",
     image: "/images/friends-2-mobile.jpg",
   },
 ];
@@ -76,7 +76,7 @@ export default function Home() {
         ))}
         <div className="relative z-10 text-center px-6 max-w-2xl mx-auto">
           {currentIndex === 0 ? (
-            <div className="w-64 h-24 mx-auto mb-8 relative animate-fade-in-up">
+            <div className="w-5/6 h-24 mx-auto mb-8 relative animate-fade-in-up">
               <Image
                 src={onboardingContent[0].title}
                 alt="Locally Logo"
@@ -85,11 +85,11 @@ export default function Home() {
               />
             </div>
           ) : (
-            <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold mb-4 animate-fade-in-up">
+            <h1 className="text-2xl sm:text-5xl md:text-6xl font-bold mb-4 animate-fade-in-up">
               {onboardingContent[currentIndex].title}
             </h1>
           )}
-          <p className="text-xl sm:text-2xl mb-8 animate-fade-in-up delay-200">
+          <p className="text-md sm:text-2xl mb-8 animate-fade-in-up delay-200">
             {onboardingContent[currentIndex].subtitle}
           </p>
         </div>
