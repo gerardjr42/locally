@@ -1,6 +1,7 @@
 "use client";
 
 import { NavigationBar } from "@/components/navigation-bar";
+import DOMPurify from 'dompurify';
 import {
   Accordion,
   AccordionItem,
@@ -11,7 +12,6 @@ import { fetchUsersForExperience, formatDate } from "@/lib/utils";
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 import { useUser } from "@/hooks/useUser";
 import {
-  Clock,
   MapPin,
   Tag,
   Users,
@@ -27,10 +27,12 @@ import {
   Plane,
   Ticket,
   Utensils,
+  SquareArrowOutUpRight,
 } from "lucide-react";
 import Image from "next/image";
 import { useParams, useRouter } from "next/navigation";
 import { useEffect, useMemo, useRef, useState } from "react";
+import { exp } from "@tensorflow/tfjs";
 
 export default function ExperienceDetails() {
   const [experience, setExperience] = useState(null);
@@ -50,29 +52,36 @@ export default function ExperienceDetails() {
   const [top3Matches, setTop3Matches] = useState([]);
   const { user, loading: userLoading } = useUser();
   const isDisabled = !isInterested;
+  const sanitizedDescription = DOMPurify.sanitize(experience?.event_details);
+  const sanitizedTitle = DOMPurify.sanitize(experience?.event_name);
 
   const categories = [
-    { id: 1, name: "Entertainment", icon: <Ticket className="w-6 h-6" /> },
-    { id: 2, name: "Food & Drink", icon: <Utensils className="w-6 h-6" /> },
-    { id: 3, name: "Sports & Fitness", icon: <Dumbbell className="w-6 h-6" /> },
-    { id: 4, name: "Outdoor", icon: <Mountain className="w-6 h-6" /> },
-    { id: 5, name: "Health & Wellness", icon: <Heart className="w-6 h-6" /> },
+    { id: 1, name: "Entertainment", icon: <Ticket className="w-5 h-5" /> },
+    { id: 2, name: "Food & Drink", icon: <Utensils className="w-5 h-5" /> },
+    { id: 3, name: "Sports & Fitness", icon: <Dumbbell className="w-5 h-5" /> },
+    { id: 4, name: "Outdoor", icon: <Mountain className="w-5 h-5" /> },
+    { id: 5, name: "Health & Wellness", icon: <Heart className="w-5 h-5" /> },
     {
       id: 6,
       name: "Faith & Spirituality",
-      icon: <Church className="w-6 h-6" />,
+      icon: <Church className="w-5 h-5" />,
     },
-    { id: 7, name: "Professional", icon: <Briefcase className="w-6 h-6" /> },
-    { id: 8, name: "Music", icon: <Music className="w-6 h-6" /> },
-    { id: 9, name: "Travel & Adventure", icon: <Plane className="w-6 h-6" /> },
+    { id: 7, name: "Professional", icon: <Briefcase className="w-5 h-5" /> },
+    { id: 8, name: "Music", icon: <Music className="w-5 h-5" /> },
+    { id: 9, name: "Travel & Adventure", icon: <Plane className="w-5 h-5" /> },
     {
       id: 10,
       name: "Education & Learning",
-      icon: <GraduationCap className="w-6 h-6" />,
+      icon: <GraduationCap className="w-5 h-5" />,
     },
-    { id: 11, name: "Arts & Culture", icon: <Palette className="w-6 h-6" /> },
-    { id: 12, name: "Free", icon: <DollarSign className="w-6 h-6" /> },
+    { id: 11, name: "Arts & Culture", icon: <Palette className="w-5 h-5" /> },
+    { id: 12, name: "Free", icon: <DollarSign className="w-5 h-5" /> },
   ];
+
+  const getCategoryIcon = (categoryId) => {
+    const category = categories.find((cat) => cat.id === categoryId);
+    return category ? category.icon : null;
+  };
 
   const memoizedTopMatches = useMemo(() => topMatches, [topMatches]);
   const memoizedInterestedUsers = useMemo(
@@ -82,18 +91,18 @@ export default function ExperienceDetails() {
 
   const fetchExperienceCategories = async (experienceId) => {
     const { data, error } = await supabase
-      .from('Event_Category_Junction')
-      .select('category_id')
-      .eq('event_id', experienceId);
-  
+      .from("Event_Category_Junction")
+      .select("category_id")
+      .eq("event_id", experienceId);
+
     if (error) {
-      console.error('Error fetching experience categories:', error);
+      console.error("Error fetching experience categories:", error);
     } else {
-      const categoryIds = data.map(item => item.category_id);
+      const categoryIds = data.map((item) => item.category_id);
       setExperienceCategories(categoryIds);
     }
   };
-  
+
   const fetchTopMatches = async (userId, eventId) => {
     try {
       console.log(
@@ -150,13 +159,15 @@ export default function ExperienceDetails() {
 
       const { data: experienceData, error: experienceError } = await supabase
         .from("Events")
-        .select(`
+        .select(
+          `
           *,
           Event_Category_Junction (
             category_id
           ),
           is_free
-        `)
+        `
+        )
         .eq("event_id", params.experienceId)
         .single();
 
@@ -282,7 +293,6 @@ export default function ExperienceDetails() {
     return htmlString.replace(/<\/?[^>]+(>|$)/g, "");
   }
 
-  console.log(experienceCategories);
   return (
     <div>
       <NavigationBar handleBackClick={handleBackClick} />
@@ -294,10 +304,22 @@ export default function ExperienceDetails() {
             layout="fill"
             objectFit="cover"
           />
-          <div className=" flex flex-col absolute bottom-0 left-0 right-0 p-4">
-            <h1 className="text-3xl font-bold mb-2 text-white ">
-              {experience.event_name}
-            </h1>
+          <div className=" flex flex-col absolute bottom-0 left-0 right-0 p-4 bg-gray-800 bg-opacity-40">
+            <div className="flex flex-row item">
+            
+              <a
+                href={experience.event_url}
+                className="text-3xl font-bold mb-2 text-white"
+                dangerouslySetInnerHTML={{
+                  __html: sanitizedTitle,
+                }}
+              >
+              </a>
+              <a
+                href={experience.event_url}>
+              <SquareArrowOutUpRight className="w-4 h-4 text-white m-0.5 ml-1" />
+              </a>
+            </div>
             <div className="flex flex-row">
               <MapPin className="w-4 h-4 text-white mt-0.5 mr-1" />
               <p className="font-semibold text-sm text-white">
@@ -316,20 +338,10 @@ export default function ExperienceDetails() {
             </div>
           </div>
         </div>
-        <div className="px-4 py-2">
-          <div className="flex flex-row justify-center">
-            <Button
-              className="w-3/4 bg-teal-500 text-white text-sm p-4 my-2 rounded-full font-semibold flex items-center justify-center"
-              onClick={handleInterestClick}
-            >
-              {isInterested ? "Not Interested" : "I'm Interested!"}
-            </Button>
-          </div>
-          <div className="flex flex-row justify-between">
-            <p className="text-gray-600 mb-4 text-sm">
-              {formatDate(experience.event_time)}
-            </p>
-            <p className="text-gray-600 text-sm">
+        <div className="px-4 py-2 mb-4">
+          <div className="flex flex-row justify-between text-gray-600 font-semibold text-sm">
+            <p className="mb-4">{formatDate(experience.event_time)}</p>
+            <p>
               {new Date(experience.event_time).toLocaleTimeString("en-US", {
                 hour: "2-digit",
                 minute: "2-digit",
@@ -339,27 +351,48 @@ export default function ExperienceDetails() {
             </p>
           </div>
 
-          <div className="mb-6">
-            <div className="flex justify-between items-center mb-3">
-              <h2 className="text-lg font-semibold">
-                {allAttendees.length} Interested Locals
-              </h2>
-              <Button
-                variant="link"
-                className="text-sm bg-gray-200 rounded-lg"
-                disabled={isDisabled}
-                onClick={() =>
-                  router.push(`/experiences/${params.experienceId}/attendees`, {
-                    state: {
-                      topMatches: memoizedTopMatches,
-                      interestedUsers: memoizedInterestedUsers,
-                    },
-                  })
-                }
-              >
-                View all
-              </Button>
-            </div>
+          <div className="flex flex-row justify-center">
+            <Button
+              className="w-3/4 bg-teal-500 text-white text-sm p-6 my-2 rounded-full font-semibold flex items-center justify-center"
+              onClick={handleInterestClick}
+            >
+              {isInterested ? "Not Interested" : "I'm Interested!"}
+            </Button>
+          </div>
+
+          <div className="my-6">
+            {allAttendees.length > 0 ? (
+              <div className="flex justify-between items-center mb-3">
+                <h2 className="text-gray-700 text-md font-semibold">
+                  {allAttendees.length} Interested Locals
+                </h2>
+                <Button
+                  variant="link"
+                  className="text-sm bg-gray-200 rounded-lg"
+                  disabled={isDisabled}
+                  onClick={() =>
+                    router.push(
+                      `/experiences/${params.experienceId}/attendees`,
+                      {
+                        state: {
+                          topMatches: memoizedTopMatches,
+                          interestedUsers: memoizedInterestedUsers,
+                        },
+                      }
+                    )
+                  }
+                >
+                  View All
+                </Button>
+              </div>
+            ) : (
+              <div className="flex items-center mb-3">
+                <h2 className="text-gray-700 text-md font-semibold">
+                  No interested Locals, yet - Be the first!
+                </h2>
+              </div>
+            )}
+
             <div className="flex space-x-3 overflow-x-auto pb-2">
               {interestedUsers.map((user, index) => (
                 <div key={user.user_id} className="flex-shrink-0 w-20">
@@ -393,71 +426,79 @@ export default function ExperienceDetails() {
               ))}
             </div>
           </div>
-          <div className="grid grid-cols-3 gap-3 mb-6">
-            <div>
-              <h3 className="text-sm font-semibold mb-1 text-gray-700">
-                Category
-              </h3>
-              <div className="flex items-center text-gray-600 text-sm">
-                <Tag className="w-4 h-4 mr-1" />
-                <p>{experience.Event_Category_Junction[0]?.category_id}</p>
-              </div>
+
+          <div className="mb-4">
+            <h3 className="text-md font-semibold mb-2 text-gray-700">
+              Experience Details
+            </h3>
+            {experience.event_details[0] !== "<" ? (
+              <p className="text-gray-500 text-sm">
+                {experience.event_details}
+              </p>
+            ) : (
+              <div
+                className="text-gray-500 text-sm"
+                dangerouslySetInnerHTML={{
+                  __html: sanitizedDescription,
+                }}
+              />
+            )}
+            {/* <p className="text-gray-500 text-sm">{experience.event_details}</p> */}
+            <div className="flex flex-row flex-wrap justify-evenly items-center py-4">
+              {experienceCategories.map((categoryNum, index) => {
+                let category = categories.find((c) => c.id === categoryNum);
+                return (
+                  <div
+                    key={index}
+                    className="bg-transparent outline text-teal-500 text-sm px-2 py-1 m-0.5 rounded-full"
+                  >
+                    {category.name}
+                  </div>
+                );
+              })}
             </div>
-            <div>
-              <h3 className="text-sm font-semibold mb-1 text-gray-700">
-                Entry Fee
-              </h3>
-              <div className="flex items-center text-gray-600 text-sm">
-                <DollarSign className="w-4 h-4 mr-1" />
+
+            <div className="flex flex-col text-gray-500 text-sm justify-center px-12">
+              <div className="flex flex-row items-center justify-between text-sm">
+                <div className="flex flex-row items-center text-sm">
+                  <DollarSign className="w-4 h-4 mr-2" />
+                  <h3>Entry Fee</h3>
+                </div>
                 <p>
                   {experience.is_free ? "Free" : `$${experience.event_price}`}
                 </p>
               </div>
-            </div>
-            <div>
-              <h3 className="text-sm font-semibold mb-1 text-gray-700">
-                Capacity
-              </h3>
-              <div className="flex items-center text-gray-600 text-sm">
-                <Users className="w-4 h-4 mr-1" />
-                <p>{experience.event_capacity}</p>
+              <div className="flex flex-row items-center justify-between text-sm">
+                <div className="flex flex-row items-center text-sm">
+                  <Users className="w-4 h-4 mr-2" />
+                  <h3>Capacity</h3>
+                </div>
+                <p>
+                  {experience.event_capacity
+                    ? `${experience.event_capacity}`
+                    : "Limited"}
+                </p>
+              </div>
+              <div className="flex flex-row items-center justify-between text-sm">
+                <div className="flex flex-row items-center text-sm">
+                  <Ticket className="w-4 h-4 mr-2" />
+                  <h3>Host</h3>
+                </div>
+                <p>{experience.event_host}</p>
               </div>
             </div>
           </div>
-
-          <div className="mb-4">
-            <h3 className="text-xl font-semibold mb-2 text-gray-800">
-              Description
-            </h3>
-            <Accordion
-              type="single"
-              collapsible
-              className="w-full"
-              value={isExpanded ? "description" : ""}
-              onValueChange={(value) => setIsExpanded(value === "description")}
-            >
-              <AccordionItem value="description" className="border-none">
-                <div>
-                  <div
-                    ref={descriptionRef}
-                    className={`text-gray-600 text-sm leading-relaxed mb-2 ${
-                      !isExpanded ? "line-clamp-4" : ""
-                    }`}
-                  >
-                    {stripHtmlTags(experience.event_details)}
-                  </div>
-                  {showReadMore && (
-                    <AccordionTrigger className="p-0 hover:no-underline">
-                      <span className="text-blue-500 text-sm">
-                        {isExpanded ? "Read Less" : "Read More.."}
-                      </span>
-                    </AccordionTrigger>
-                  )}
-                </div>
-              </AccordionItem>
-            </Accordion>
-          </div>
         </div>
+        {/* <footer className="fixed bottom-0 left-0 right-0 bg-white px-4 py-2 shadow-lg">
+          <div className="flex flex-row justify-center">
+            <Button
+              className="w-3/4 bg-teal-500 text-white text-sm p-6 my-2 rounded-full font-semibold flex items-center justify-center"
+              onClick={handleInterestClick}
+            >
+              {isInterested ? "Not Interested" : "I'm Interested!"}
+            </Button>
+          </div>
+        </footer> */}
       </div>
     </div>
   );
