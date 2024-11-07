@@ -1,7 +1,6 @@
 "use client";
 import { useUserContext } from "@/contexts/UserContext";
 import { supabase } from "@/lib/supabase";
-
 import { ArrowLeft, Camera, Heart, LogOut, User } from "lucide-react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
@@ -10,6 +9,13 @@ import { Button } from "./ui/button";
 export function NavigationBar({ handleBackClick }) {
   const { user, setUser } = useUserContext();
   const router = useRouter();
+
+  const handleDrawerClick = () => {
+    if (!user) {
+      router.push("/login");
+    }
+  };
+
   const handleDetailsClick = () => {
     router.push("/account/details");
   };
@@ -101,7 +107,11 @@ export function NavigationBar({ handleBackClick }) {
         </div>
 
         <div>
-          <label htmlFor="account-menu-drawer" className="drawer-button">
+          <label
+            htmlFor={user ? "account-menu-drawer" : undefined}
+            className="drawer-button"
+            onClick={!user ? handleDrawerClick : undefined}
+          >
             <svg
               xmlns="http://www.w3.org/2000/svg"
               fill="none"
