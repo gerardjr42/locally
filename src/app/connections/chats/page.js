@@ -59,9 +59,9 @@ export default function UserChats() {
     };
   }, [user]);
 
-  const handleBackClick = () => {
-    router.push(`/connections`);
-  };
+  // const handleBackClick = () => {
+  //   router.push(`/connections`);
+  // };
 
   const handleChatClick = (channelId) => {
     router.push(`/connections/chats/${channelId}`);
@@ -70,7 +70,7 @@ export default function UserChats() {
   return (
     <div className="bg-gray-100 min-h-screen">
       <header className="bg-white p-4 flex justify-between items-center shadow-sm">
-        <NavigationBar handleBackClick={handleBackClick} />
+        <NavigationBar handleBackClick={() => router.back()} />
       </header>
       <main className="p-4">
         <div className="mb-4">

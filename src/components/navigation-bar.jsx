@@ -2,15 +2,7 @@
 import { useUserContext } from "@/contexts/UserContext";
 import { supabase } from "@/lib/supabase";
 
-import {
-  ArrowLeft,
-  Camera,
-  Heart,
-  LogOut,
-  Settings,
-  Shield,
-  User,
-} from "lucide-react";
+import { ArrowLeft, Camera, Heart, LogOut, User } from "lucide-react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { Button } from "./ui/button";
@@ -69,16 +61,16 @@ export function NavigationBar({ handleBackClick }) {
     { title: "Details", icon: User, onClick: handleDetailsClick },
     { title: "Profile Photo", icon: Camera, onClick: handlePhotoClick },
     { title: "Interests", icon: Heart, onClick: handleInterestClick },
-    {
-      title: "Connection Preferences",
-      icon: Settings,
-      onClick: handlePreferencesClick,
-    },
-    {
-      title: "Identity Verification",
-      icon: Shield,
-      onClick: handleVerificationClick,
-    },
+    // {
+    //   title: "Connection Preferences",
+    //   icon: Settings,
+    //   onClick: handlePreferencesClick,
+    // },
+    // {
+    //   title: "Identity Verification",
+    //   icon: Shield,
+    //   onClick: handleVerificationClick,
+    // },
   ];
 
   return (

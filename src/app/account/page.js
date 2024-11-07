@@ -4,11 +4,7 @@ import { Button } from "@/components/ui/button";
 import { useUserContext } from "@/contexts/UserContext";
 import { buildNameString, calculateAge, fetchUserInterests } from "@/lib/utils";
 
-import {
-  Collapsible,
-  CollapsibleContent,
-  CollapsibleTrigger,
-} from "@/components/ui/collapsible";
+import { Collapsible, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { motion } from "framer-motion";
 import { BadgeCheck, Pencil } from "lucide-react";
 import Image from "next/image";
@@ -31,7 +27,7 @@ export default function Account() {
   const { user } = useUserContext();
   const [isExpanded, setIsExpanded] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
-  const [bio, setBio] = useState(``);
+  const [bio, setBio] = useState("");
   const [age, setAge] = useState(0);
   const [name, setName] = useState(``);
   const [interests, setInterests] = useState([]);
@@ -44,8 +40,8 @@ export default function Account() {
     setIsEditing(!isEditing);
   };
 
-  const handleBioChange = (user) => {
-    setBio(user.bio);
+  const handleBioChange = (event) => {
+    setBio(event.target.value);
   };
 
   useEffect(() => {
@@ -53,6 +49,7 @@ export default function Account() {
       handleAge();
       buildNameString(user);
       setName(buildNameString(user));
+      setBio(user.bio || "");
       fetchUserInterests(user.user_id).then((fetchedInterests) => {
         setInterests(fetchedInterests);
       });
@@ -71,7 +68,7 @@ export default function Account() {
       animate="visible"
       className="bg-white min-h-screen font-sans text-gray-900"
     >
-      <NavigationBar />
+      <NavigationBar handleBackClick={() => router.back()} />
       <main className="pb-24">
         <motion.div
           className="aspect-square bg-gray-300 relative w-full h-full"
@@ -149,10 +146,17 @@ export default function Account() {
             <motion.div className="text-gray-600" variants={fadeIn}>
               {!isEditing ? (
                 <>
-                  {isExpanded && <p className="text-sm">{user?.bio}</p>}
-                  <CollapsibleContent className="text-sm">
-                    {!isExpanded && <p className="pt-2"></p>}
-                  </CollapsibleContent>
+                  <p className="text-sm">
+                    {isExpanded ? user?.bio : user?.bio?.slice(0, 100)}
+                    {!isExpanded && user?.bio?.length > 100 && "..."}
+                  </p>
+                  {user?.bio?.length > 100 && (
+                    <CollapsibleTrigger asChild>
+                      <Button variant="ghost" size="sm" className="p-0">
+                        {isExpanded ? "Read less" : "Read more"}
+                      </Button>
+                    </CollapsibleTrigger>
+                  )}
                 </>
               ) : (
                 <textarea
@@ -163,11 +167,6 @@ export default function Account() {
                 />
               )}
             </motion.div>
-            <CollapsibleTrigger asChild>
-              <Button variant="ghost" size="sm" className="p-0">
-                {isExpanded ? "Read less" : "Read more"}
-              </Button>
-            </CollapsibleTrigger>
           </Collapsible>
         </motion.div>
       </main>
@@ -175,13 +174,13 @@ export default function Account() {
         <div className="flex justify-between space-x-4">
           <motion.button
             className="w-1/2 bg-teal-500 text-white py-3 rounded-full font-semibold flex items-center justify-center hover:bg-teal-600 focus:bg-teal-600 active:bg-teal-700 focus:outline-none"
-            aria-label="Edit profile"
+            aria-label="Edit Bio"
             onClick={() => {
               setIsEditing(!isEditing);
             }}
           >
             <Pencil className="mr-2" />
-            {isEditing ? "Save" : "Edit profile"}
+            {isEditing ? "Save" : "Edit Bio"}
           </motion.button>
         </div>
       </footer>

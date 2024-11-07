@@ -24,6 +24,14 @@ export default function AccountInterests() {
     fetchData();
   }, []);
 
+  const handleBackNavigation = () => {
+    if (window.history.length > 2) {
+      router.back();
+    } else {
+      router.push("/account");
+    }
+  };
+
   const fetchInterests = async () => {
     try {
       const { data, error } = await supabase
@@ -185,10 +193,7 @@ export default function AccountInterests() {
   return (
     <div className="min-h-full flex flex-col items-center justify-center p-4">
       <div className="w-full max-w-md bg-white rounded-lg p-4">
-        <PageHeader
-          onBackClick={() => router.push("/account")}
-          title="Your Interests"
-        />
+        <PageHeader onBackClick={handleBackNavigation} title="Your Interests" />
 
         <Input
           type="text"
