@@ -152,8 +152,6 @@ export default function AllExperiences() {
     setExperiences(sortExperiencesByDate([...experiences], sortAscending));
   };
 
-  console.log(experiences)
-
   return (
     <div className="flex flex-col items-center justify-center">
       <NavigationBar />

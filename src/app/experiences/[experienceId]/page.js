@@ -1,20 +1,36 @@
-'use client';
+"use client";
 
-import { NavigationBar } from '@/components/navigation-bar';
+import { NavigationBar } from "@/components/navigation-bar";
 import {
   Accordion,
   AccordionItem,
   AccordionTrigger,
-} from '@/components/ui/accordion';
-import { Button } from '@/components/ui/button';
-import { fetchUsersForExperience } from '@/lib/utils';
-import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
-
-import { useUser } from '@/hooks/useUser';
-import { Clock, DollarSign, MapPin, Tag, Users } from 'lucide-react';
-import Image from 'next/image';
-import { useParams, useRouter } from 'next/navigation';
-import { useEffect, useMemo, useRef, useState } from 'react';
+} from "@/components/ui/accordion";
+import { Button } from "@/components/ui/button";
+import { fetchUsersForExperience, formatDate } from "@/lib/utils";
+import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
+import { useUser } from "@/hooks/useUser";
+import {
+  Clock,
+  MapPin,
+  Tag,
+  Users,
+  Briefcase,
+  Church,
+  DollarSign,
+  Dumbbell,
+  GraduationCap,
+  Heart,
+  Mountain,
+  Music,
+  Palette,
+  Plane,
+  Ticket,
+  Utensils,
+} from "lucide-react";
+import Image from "next/image";
+import { useParams, useRouter } from "next/navigation";
+import { useEffect, useMemo, useRef, useState } from "react";
 
 export default function ExperienceDetails() {
   const [experience, setExperience] = useState(null);
@@ -25,14 +41,38 @@ export default function ExperienceDetails() {
   const [isInterested, setIsInterested] = useState(false);
   const [isExpanded, setIsExpanded] = useState(false);
   const [showReadMore, setShowReadMore] = useState(false);
+  const [experienceCategories, setExperienceCategories] = useState([]);
   const params = useParams();
   const supabase = createClientComponentClient();
   const router = useRouter();
   const descriptionRef = useRef(null);
   const [topMatches, setTopMatches] = useState([]);
   const [top3Matches, setTop3Matches] = useState([]);
-    const { user, loading: userLoading } = useUser();
-    const isDisabled = !isInterested;
+  const { user, loading: userLoading } = useUser();
+  const isDisabled = !isInterested;
+
+  const categories = [
+    { id: 1, name: "Entertainment", icon: <Ticket className="w-6 h-6" /> },
+    { id: 2, name: "Food & Drink", icon: <Utensils className="w-6 h-6" /> },
+    { id: 3, name: "Sports & Fitness", icon: <Dumbbell className="w-6 h-6" /> },
+    { id: 4, name: "Outdoor", icon: <Mountain className="w-6 h-6" /> },
+    { id: 5, name: "Health & Wellness", icon: <Heart className="w-6 h-6" /> },
+    {
+      id: 6,
+      name: "Faith & Spirituality",
+      icon: <Church className="w-6 h-6" />,
+    },
+    { id: 7, name: "Professional", icon: <Briefcase className="w-6 h-6" /> },
+    { id: 8, name: "Music", icon: <Music className="w-6 h-6" /> },
+    { id: 9, name: "Travel & Adventure", icon: <Plane className="w-6 h-6" /> },
+    {
+      id: 10,
+      name: "Education & Learning",
+      icon: <GraduationCap className="w-6 h-6" />,
+    },
+    { id: 11, name: "Arts & Culture", icon: <Palette className="w-6 h-6" /> },
+    { id: 12, name: "Free", icon: <DollarSign className="w-6 h-6" /> },
+  ];
 
   const memoizedTopMatches = useMemo(() => topMatches, [topMatches]);
   const memoizedInterestedUsers = useMemo(
@@ -40,18 +80,32 @@ export default function ExperienceDetails() {
     [interestedUsers]
   );
 
+  const fetchExperienceCategories = async (experienceId) => {
+    const { data, error } = await supabase
+      .from('Event_Category_Junction')
+      .select('category_id')
+      .eq('event_id', experienceId);
+  
+    if (error) {
+      console.error('Error fetching experience categories:', error);
+    } else {
+      const categoryIds = data.map(item => item.category_id);
+      setExperienceCategories(categoryIds);
+    }
+  };
+  
   const fetchTopMatches = async (userId, eventId) => {
     try {
       console.log(
-        'Fetching top matches for userId:',
+        "Fetching top matches for userId:",
         userId,
-        'eventId:',
+        "eventId:",
         eventId
       );
-      const response = await fetch('/api/matchmaking', {
-        method: 'POST',
+      const response = await fetch("/api/matchmaking", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({ userId, eventId }),
       });
@@ -64,20 +118,20 @@ export default function ExperienceDetails() {
       }
 
       const data = await response.json();
-      console.log('Top Matches:', data.matches);
+      console.log("Top Matches:", data.matches);
       setTopMatches(data.matches);
 
       // Fetch interested users' data
       const interestedUsersData = await Promise.all(
         data.matches.map(async (userId) => {
           const { data: userData, error } = await supabase
-            .from('Users')
-            .select('user_id, first_name, last_name, user_dob, photo_url')
-            .eq('user_id', userId)
+            .from("Users")
+            .select("user_id, first_name, last_name, user_dob, photo_url")
+            .eq("user_id", userId)
             .single();
 
           if (error) {
-            console.error('Error fetching user data:', error);
+            console.error("Error fetching user data:", error);
             return null;
           }
           return userData;
@@ -86,7 +140,7 @@ export default function ExperienceDetails() {
 
       setInterestedUsers(interestedUsersData.filter(Boolean));
     } catch (error) {
-      console.error('Error fetching top matches:', error);
+      console.error("Error fetching top matches:", error);
     }
   };
 
@@ -95,33 +149,32 @@ export default function ExperienceDetails() {
       if (userLoading) return;
 
       const { data: experienceData, error: experienceError } = await supabase
-        .from('Events')
-        .select(
-          `
+        .from("Events")
+        .select(`
           *,
           Event_Category_Junction (
             category_id
           ),
           is_free
-        `
-        )
-        .eq('event_id', params.experienceId)
+        `)
+        .eq("event_id", params.experienceId)
         .single();
 
       if (experienceError) {
-        console.error('Error fetching experience:', experienceError);
+        console.error("Error fetching experience:", experienceError);
         setLoading(false);
         return;
       }
 
       setExperience(experienceData);
+      fetchExperienceCategories(params.experienceId);
 
       if (user) {
         const { data, error } = await supabase
-          .from('User_Events')
+          .from("User_Events")
           .select()
-          .eq('event_id', params.experienceId)
-          .eq('user_id', user.user_id)
+          .eq("event_id", params.experienceId)
+          .eq("user_id", user.user_id)
           .single();
 
         if (data && data.expressed_interest) {
@@ -132,7 +185,7 @@ export default function ExperienceDetails() {
         try {
           await fetchTopMatches(user.user_id, params.experienceId);
         } catch (error) {
-          console.error('Error fetching top matches:', error);
+          console.error("Error fetching top matches:", error);
         }
       }
 
@@ -168,19 +221,19 @@ export default function ExperienceDetails() {
 
   const handleInterestClick = async () => {
     if (!user) {
-      console.error('User not authenticated');
+      console.error("User not authenticated");
       return;
     }
 
     if (isInterested) {
       const { error } = await supabase
-        .from('User_Events')
+        .from("User_Events")
         .delete()
-        .eq('event_id', params.experienceId)
-        .eq('user_id', user.user_id);
+        .eq("event_id", params.experienceId)
+        .eq("user_id", user.user_id);
 
       if (error) {
-        console.error('Error removing interest:', error);
+        console.error("Error removing interest:", error);
       } else {
         setIsInterested(false);
         setInterestedUsers((prevUsers) =>
@@ -190,17 +243,17 @@ export default function ExperienceDetails() {
       }
     } else {
       const { error } = await supabase
-        .from('User_Events')
+        .from("User_Events")
         .insert({ event_id: params.experienceId, user_id: user.user_id });
 
       if (error) {
-        console.error('Error adding interest:', error);
+        console.error("Error adding interest:", error);
       } else {
         setIsInterested(true);
         try {
           await fetchTopMatches(user.user_id, params.experienceId);
         } catch (error) {
-          console.error('Error fetching top matches:', error);
+          console.error("Error fetching top matches:", error);
         }
       }
     }
@@ -225,16 +278,11 @@ export default function ExperienceDetails() {
     router.push(`/experiences`);
   };
 
-  const formatDate = (dateString) => {
-    const options = {
-      weekday: 'long',
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric',
-    };
-    return new Date(dateString).toLocaleDateString('en-US', options);
-  };
+  function stripHtmlTags(htmlString) {
+    return htmlString.replace(/<\/?[^>]+(>|$)/g, "");
+  }
 
+  console.log(experienceCategories);
   return (
     <div>
       <NavigationBar handleBackClick={handleBackClick} />
@@ -246,20 +294,51 @@ export default function ExperienceDetails() {
             layout="fill"
             objectFit="cover"
           />
+          <div className=" flex flex-col absolute bottom-0 left-0 right-0 p-4">
+            <h1 className="text-3xl font-bold mb-2 text-white ">
+              {experience.event_name}
+            </h1>
+            <div className="flex flex-row">
+              <MapPin className="w-4 h-4 text-white mt-0.5 mr-1" />
+              <p className="font-semibold text-sm text-white">
+                <a
+                  href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
+                    experience.event_location_name
+                  )}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  {experience.event_location_name
+                    ? experience.event_location_name
+                    : experience.event_street_address}
+                </a>
+              </p>
+            </div>
+          </div>
         </div>
-        <div className="px-4 py-4">
-          <h1 className="text-3xl font-bold mb-2 text-gray-900">
-            {experience.event_name}
-          </h1>
-          <p className="text-gray-600 mb-4 text-sm">
-            {formatDate(experience.event_time)}
-          </p>
-          <Button
-            className="w-full mb-6 text-white bg-teal-400 hover:bg-teal-500 transition-colors"
-            onClick={handleInterestClick}
-          >
-            {isInterested ? 'Not Interested' : "I'm interested!"}
-          </Button>
+        <div className="px-4 py-2">
+          <div className="flex flex-row justify-center">
+            <Button
+              className="w-3/4 bg-teal-500 text-white text-sm p-4 my-2 rounded-full font-semibold flex items-center justify-center"
+              onClick={handleInterestClick}
+            >
+              {isInterested ? "Not Interested" : "I'm Interested!"}
+            </Button>
+          </div>
+          <div className="flex flex-row justify-between">
+            <p className="text-gray-600 mb-4 text-sm">
+              {formatDate(experience.event_time)}
+            </p>
+            <p className="text-gray-600 text-sm">
+              {new Date(experience.event_time).toLocaleTimeString("en-US", {
+                hour: "2-digit",
+                minute: "2-digit",
+                hour12: true,
+                timeZone: "UTC",
+              })}
+            </p>
+          </div>
+
           <div className="mb-6">
             <div className="flex justify-between items-center mb-3">
               <h2 className="text-lg font-semibold">
@@ -294,7 +373,7 @@ export default function ExperienceDetails() {
                       }
                     >
                       <Image
-                        src={user.photo_url || '/default-avatar.png'}
+                        src={user.photo_url || "/default-avatar.png"}
                         alt={`${user.first_name} ${user.last_name}`}
                         layout="fill"
                         objectFit="cover"
@@ -302,7 +381,7 @@ export default function ExperienceDetails() {
                       />
                     </div>
                     {index < 3 && (
-                      <span className="absolute top-0 right-0 bg-green-500 text-white text-xs px-1 py-0.5 rounded-full text-[10px]">
+                      <span className="absolute top-0 right-0 bg-teal-500 text-white text-xs px-1 py-0.5 rounded-full text-[10px]">
                         Top Match
                       </span>
                     )}
@@ -331,7 +410,7 @@ export default function ExperienceDetails() {
               <div className="flex items-center text-gray-600 text-sm">
                 <DollarSign className="w-4 h-4 mr-1" />
                 <p>
-                  {experience.is_free ? 'Free' : `$${experience.event_price}`}
+                  {experience.is_free ? "Free" : `$${experience.event_price}`}
                 </p>
               </div>
             </div>
@@ -345,33 +424,6 @@ export default function ExperienceDetails() {
               </div>
             </div>
           </div>
-          <div className="grid grid-cols-[auto,1fr] gap-x-2 gap-y-1 items-start mb-6">
-            <MapPin className="w-4 h-4 text-gray-600 mt-0.5" />
-            <div>
-              <p className="font-semibold text-sm text-gray-800">
-                <a
-                  href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
-                    experience.event_street_address +
-                      ', ' +
-                      experience.event_zip_code
-                  )}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  {experience.event_street_address}, {experience.event_zip_code}
-                </a>
-              </p>
-            </div>
-            <Clock className="w-4 h-4 text-gray-600 mt-0.5" />
-            <p className="text-gray-600 text-sm">
-              {new Date(experience.event_time).toLocaleTimeString('en-US', {
-                hour: '2-digit',
-                minute: '2-digit',
-                hour12: true,
-                timeZone: 'UTC',
-              })}
-            </p>
-          </div>
 
           <div className="mb-4">
             <h3 className="text-xl font-semibold mb-2 text-gray-800">
@@ -381,23 +433,23 @@ export default function ExperienceDetails() {
               type="single"
               collapsible
               className="w-full"
-              value={isExpanded ? 'description' : ''}
-              onValueChange={(value) => setIsExpanded(value === 'description')}
+              value={isExpanded ? "description" : ""}
+              onValueChange={(value) => setIsExpanded(value === "description")}
             >
               <AccordionItem value="description" className="border-none">
                 <div>
-                  <p
+                  <div
                     ref={descriptionRef}
                     className={`text-gray-600 text-sm leading-relaxed mb-2 ${
-                      !isExpanded ? 'line-clamp-4' : ''
+                      !isExpanded ? "line-clamp-4" : ""
                     }`}
                   >
-                    {experience.event_details}
-                  </p>
+                    {stripHtmlTags(experience.event_details)}
+                  </div>
                   {showReadMore && (
                     <AccordionTrigger className="p-0 hover:no-underline">
                       <span className="text-blue-500 text-sm">
-                        {isExpanded ? 'Read Less' : 'Read More..'}
+                        {isExpanded ? "Read Less" : "Read More.."}
                       </span>
                     </AccordionTrigger>
                   )}

@@ -91,6 +91,8 @@ async function processEvents(jsonData) {
       event_location_name: event.location,
       event_street_address: streetAddress,
       event_zip_code: Number(postalCode),
+      coordinates_latitude: latitude,
+      coordinates_longitude: longitude,
       event_capacity: null,
     };
 
