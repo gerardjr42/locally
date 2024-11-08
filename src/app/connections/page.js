@@ -31,9 +31,7 @@ export default function UserMatches() {
             .from("Event_Matches")
             .select("*")
             .eq("event_id", event.Events.event_id)
-            .or(
-              `user1_id.eq.${user.user_id},user2_id.eq.${user.user_id}`
-            )
+            .or(`user1_id.eq.${user.user_id},user2_id.eq.${user.user_id}`)
             .eq("mutual_interest", true);
 
           if (matchesError) {
@@ -88,7 +86,7 @@ export default function UserMatches() {
 
   return (
     <div className="flex flex-col items-center justify-center">
-      <NavigationBar />
+      <NavigationBar handleBackClick={() => router.back()} />
 
       <div className="w-full flex flex-row px-4 mx-1 mt-3.5 justify-between lg:px-8">
         <h1 className="text-left text-lg font-extrabold lg:text-2xl">

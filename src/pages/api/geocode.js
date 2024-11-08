@@ -3,7 +3,7 @@ export default async function handler(req, res) {
   const apiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
 
   if (!zipcode || !apiKey) {
-    return res.status(400).json({ error: 'Missing zipcode or API key' });
+    return res.status(400).json({ error: "Missing zipcode or API key" });
   }
 
   try {
@@ -12,38 +12,30 @@ export default async function handler(req, res) {
     );
     const data = await response.json();
 
-    // Log the response from Google API
-    console.log('Response from Google Geocoding API:', data);
-
-    if (data.status === 'OK') {
+    if (data.status === "OK") {
       const result = data.results[0];
-      const cityComponent = result.address_components.find(component =>
-        component.types.includes('locality') || 
-        component.types.includes('administrative_area_level_3')
-      );
-      const stateComponent = result.address_components.find(component =>
-        component.types.includes('administrative_area_level_1')
-      );
-      const boroughComponent = result.address_components.find(component =>
-        component.types.includes('sublocality') || 
-        component.types.includes('neighborhood')
+      const boroughComponent = result.address_components.find(
+        (component) =>
+          component.types.includes("sublocality") ||
+          component.types.includes("sublocality_level_1")
       );
 
-      const city = cityComponent ? cityComponent.long_name : null;
-      const state = stateComponent ? stateComponent.long_name : null;
-      const borough = boroughComponent ? boroughComponent.long_name : null;
+      if (boroughComponent) {
+        return res.status(200).json({ city: boroughComponent.long_name });
+      }
 
-      return res.status(200).json({ city, state, borough });
+      const cityComponent = result.address_components.find((component) =>
+        component.types.includes("locality")
+      );
+
+      if (cityComponent) {
+        return res.status(200).json({ city: cityComponent.long_name });
+      }
     }
 
-    // Handle the case when there are no results
-    if (data.status === 'ZERO_RESULTS') {
-      return res.status(404).json({ error: 'No results found for this ZIP code' });
-    }
-
-    return res.status(404).json({ error: 'Location not found' });
+    return res.status(404).json({ error: "Borough/City not found" });
   } catch (error) {
-    console.error('Error fetching location:', error);
-    return res.status(500).json({ error: 'Internal server error' });
+    console.error("Error fetching city:", error);
+    return res.status(500).json({ error: "Internal server error" });
   }
 }

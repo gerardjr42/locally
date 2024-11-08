@@ -54,28 +54,34 @@ export default function Home() {
   const isLastPage = currentIndex === onboardingContent.length - 1;
 
   return (
-    <div className="flex flex-col min-h-screen bg-black text-white">
-      <div className="relative flex-grow flex items-center justify-center">
-        {onboardingContent.map((content, index) => (
-          <div
-            key={index}
-            className={`absolute inset-0 transition-opacity duration-1000 ${
-              index === currentIndex ? "opacity-100" : "opacity-0"
-            }`}
-          >
-            <Image
-              src={content.image}
-              alt={`Onboarding image ${index + 1}`}
-              layout="fill"
-              objectFit="cover"
-              quality={100}
-              priority={index === 0}
-            />
-            <div className="absolute inset-0 bg-black bg-opacity-60" />
-          </div>
-        ))}
-        <div className="relative z-10 text-center px-6 max-w-2xl mx-auto">
-          {currentIndex === 0 ? (
+
+    <div className="relative h-screen bg-black text-white overflow-hidden">
+      {/* Background Images */}
+      {onboardingContent.map((content, index) => (
+        <div
+          key={index}
+          className={`absolute inset-0 transition-opacity duration-1000 ${
+            index === currentIndex ? "opacity-100" : "opacity-0"
+          }`}
+        >
+          <Image
+            src={content.image}
+            alt={`Onboarding image ${index + 1}`}
+            layout="fill"
+            objectFit="cover"
+            quality={100}
+            priority={index === 0}
+          />
+          <div className="absolute inset-0 bg-black bg-opacity-60" />
+        </div>
+      ))}
+
+      {/* Content Overlay */}
+      <div className="relative z-10 h-full flex flex-col">
+        {/* Main Content */}
+        <div className="flex-grow flex items-center justify-center">
+          <div className="text-center px-6 max-w-2xl mx-auto">
+            {currentIndex === 0 ? (
             <div className="w-5/6 h-24 mx-auto mb-8 relative animate-fade-in-up">
               <Image
                 src={onboardingContent[0].title}
@@ -85,39 +91,51 @@ export default function Home() {
               />
             </div>
           ) : (
-            <h1 className="text-2xl sm:text-5xl md:text-6xl font-bold mb-4 animate-fade-in-up">
+            <h1 className="text-2xl sm:text-4xl md:text-6xl font-bold mb-4 animate-fade-in-up">
               {onboardingContent[currentIndex].title}
             </h1>
           )}
-          <p className="text-md sm:text-2xl mb-8 animate-fade-in-up delay-200">
-            {onboardingContent[currentIndex].subtitle}
-          </p>
-        </div>
-      </div>
-      <div className="relative z-10 p-6">
-        <div className="mb-8 flex justify-center space-x-2">
-          {onboardingContent.map((_, index) => (
-            <div
-              key={index}
-              className={`w-2 h-2 rounded-full transition-all duration-300 ${
-                index === currentIndex ? "bg-white w-4" : "bg-gray-600"
-              }`}
-            />
-          ))}
+            <p className="text-md sm:text-xl mb-8 animate-fade-in-up delay-200">
+              {onboardingContent[currentIndex].subtitle}
+            </p>
+          </div>
         </div>
 
-        <motion.div
-          whileHover={{ scale: 1.05 }}
-          transition={{ type: "spring", stiffness: 400, damping: 10 }}
-        >
-          <Button
-            onClick={() => router.push("/register")}
-            className="w-full bg-white text-black hover:bg-gray-200 transition-colors duration-300"
-            size="lg"
+        {/* Bottom Navigation and Buttons */}
+        <div className="p-6">
+          <motion.div
+            whileHover={{ scale: 1.05 }}
+            transition={{ type: "spring", stiffness: 400, damping: 10 }}
+            className="flex flex-col items-center"
           >
-            Get Started
-          </Button>
-        </motion.div>
+            <Button
+              onClick={() => router.push("/register")}
+              className="w-3/4 bg-white text-black text-sm p-2 my-2 rounded-full font-semibold flex items-center justify-center align-middle"
+              size="lg"
+            >
+              Get Started
+            </Button>
+            <Button
+              onClick={() => router.push("/login")}
+              className="w-3/4 bg-teal-500 text-white text-sm p-2 my-2 rounded-full font-semibold flex items-center justify-center align-middle"
+              size="lg"
+            >
+              Log In
+            </Button>
+          </motion.div>
+
+          {/* Moved slideshow indicators here */}
+          <div className="mt-8 flex justify-center space-x-2">
+            {onboardingContent.map((_, index) => (
+              <div
+                key={index}
+                className={`w-2 h-2 rounded-full transition-all duration-300 ${
+                  index === currentIndex ? "bg-white w-4" : "bg-gray-600"
+                }`}
+              />
+            ))}
+          </div>
+        </div>
       </div>
     </div>
   );

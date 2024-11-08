@@ -1,15 +1,15 @@
-'use client';
-import { NavigationBar } from '@/components/navigation-bar';
-import { useRouter } from 'next/navigation';
-import { LockKeyhole, Ban, Trash2 } from 'lucide-react';
-import './details.scss';
+"use client";
+import { NavigationBar } from "@/components/navigation-bar";
+import { Ban, LockKeyhole, Trash2 } from "lucide-react";
+import { useRouter } from "next/navigation";
+import "./details.scss";
 
 export default function AccountDetails() {
   const router = useRouter();
 
   return (
     <div className="AccountDetails">
-      <NavigationBar />
+      <NavigationBar handleBackClick={() => router.back()} />
       <div className="container">
         <h1>Account Details</h1>
         <div>
@@ -46,7 +46,7 @@ export default function AccountDetails() {
                   id="firstName"
                   placeholder="Hudson"
                   disabled
-                />{' '}
+                />{" "}
                 <LockKeyhole />
               </div>
               <div className="form-group locked">
@@ -57,7 +57,7 @@ export default function AccountDetails() {
                   id="lastName"
                   placeholder="River"
                   disabled
-                />{' '}
+                />{" "}
                 <LockKeyhole />
               </div>
               <div className="form-group locked">
@@ -68,7 +68,7 @@ export default function AccountDetails() {
                   id="birthday"
                   placeholder="1/7/1992"
                   disabled
-                />{' '}
+                />{" "}
                 <LockKeyhole />
               </div>
               <div className="form-group">
@@ -85,14 +85,14 @@ export default function AccountDetails() {
         </div>
         <div>
           <h1>Account Status</h1>
-          <button className="danger" onClick={() => router.push('/')}>
+          <button className="danger" onClick={() => router.push("/")}>
             Suspend my account <Ban />
           </button>
-          <button className="danger" onClick={() => router.push('/')}>
+          <button className="danger" onClick={() => router.push("/")}>
             Delete my account <Trash2 />
           </button>
-              </div>
-              <button className="btn">Save changes</button>
+        </div>
+        <button className="btn">Save changes</button>
       </div>
     </div>
   );

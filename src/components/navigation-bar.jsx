@@ -1,16 +1,7 @@
 "use client";
-import { supabase } from "@/lib/supabase";
 import { useUserContext } from "@/contexts/UserContext";
-
-import {
-  ArrowLeft,
-  Camera,
-  Heart,
-  LogOut,
-  Settings,
-  Shield,
-  User,
-} from "lucide-react";
+import { supabase } from "@/lib/supabase";
+import { ArrowLeft, Camera, Heart, LogOut, User } from "lucide-react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { Button } from "./ui/button";
@@ -18,6 +9,13 @@ import { Button } from "./ui/button";
 export function NavigationBar({ handleBackClick }) {
   const { user, setUser } = useUserContext();
   const router = useRouter();
+
+  const handleDrawerClick = () => {
+    if (!user) {
+      router.push("/login");
+    }
+  };
+
   const handleDetailsClick = () => {
     router.push("/account/details");
   };
@@ -69,16 +67,16 @@ export function NavigationBar({ handleBackClick }) {
     { title: "Details", icon: User, onClick: handleDetailsClick },
     { title: "Profile Photo", icon: Camera, onClick: handlePhotoClick },
     { title: "Interests", icon: Heart, onClick: handleInterestClick },
-    {
-      title: "Connection Preferences",
-      icon: Settings,
-      onClick: handlePreferencesClick,
-    },
-    {
-      title: "Identity Verification",
-      icon: Shield,
-      onClick: handleVerificationClick,
-    },
+    // {
+    //   title: "Connection Preferences",
+    //   icon: Settings,
+    //   onClick: handlePreferencesClick,
+    // },
+    // {
+    //   title: "Identity Verification",
+    //   icon: Shield,
+    //   onClick: handleVerificationClick,
+    // },
   ];
 
   return (
@@ -109,7 +107,11 @@ export function NavigationBar({ handleBackClick }) {
         </div>
 
         <div>
-          <label htmlFor="account-menu-drawer" className="drawer-button">
+          <label
+            htmlFor={user ? "account-menu-drawer" : undefined}
+            className="drawer-button"
+            onClick={!user ? handleDrawerClick : undefined}
+          >
             <svg
               xmlns="http://www.w3.org/2000/svg"
               fill="none"
@@ -133,7 +135,7 @@ export function NavigationBar({ handleBackClick }) {
           aria-label="close sidebar"
           className="drawer-overlay"
         ></label>
-        { user && (
+        {user && (
           <div className="bg-base-200 text-base-content min-h-full w-3/4 max-w-md flex flex-col">
             <ul className="menu p-4 flex-grow">
               <div className="flex flex-row justify-end">
@@ -161,7 +163,12 @@ export function NavigationBar({ handleBackClick }) {
                     Hello, <span className="font-bold">{user.first_name}</span>!
                   </p>
                   <a>
-                    <p className="text-gray-500" onClick={handleProfileClick}>View Profile</p>
+                    <p
+                      className="text-gray-500  cursor-pointer"
+                      onClick={handleProfileClick}
+                    >
+                      View Profile
+                    </p>
                   </a>
                 </div>
               </div>

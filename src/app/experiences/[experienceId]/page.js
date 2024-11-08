@@ -1,16 +1,19 @@
 "use client";
-
-import { NavigationBar } from "@/components/navigation-bar";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useParams, useRouter } from "next/navigation";
+import Image from "next/image";
 import DOMPurify from 'dompurify';
+import { exp } from "@tensorflow/tfjs";
+import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
+
 import {
   Accordion,
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
+import { NavigationBar } from "@/components/navigation-bar";
 import { Button } from "@/components/ui/button";
-import { fetchUsersForExperience, formatDate } from "@/lib/utils";
-import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
-import { useUser } from "@/hooks/useUser";
+import { DynamicLoadingScreenComponent } from "@/components/dynamic-loading-screen";
 import {
   MapPin,
   Tag,
@@ -29,12 +32,21 @@ import {
   Utensils,
   SquareArrowOutUpRight,
 } from "lucide-react";
-import Image from "next/image";
-import { useParams, useRouter } from "next/navigation";
-import { useEffect, useMemo, useRef, useState } from "react";
-import { exp } from "@tensorflow/tfjs";
+
+import { useMatchmaking } from "@/contexts/MatchmakingContext";
+import { useUser } from "@/hooks/useUser";
+import { fetchUsersForExperience, formatDate } from "@/lib/utils";
+import { fetchTopMatches } from "@/lib/matchmaking";
+
 
 export default function ExperienceDetails() {
+  const params = useParams();
+  const supabase = createClientComponentClient();
+  const router = useRouter();
+  const descriptionRef = useRef(null);
+  const sanitizedDescription = DOMPurify.sanitize(experience?.event_details);
+  const sanitizedTitle = DOMPurify.sanitize(experience?.event_name);
+  
   const [experience, setExperience] = useState(null);
   const [allAttendees, setAllAttendees] = useState([]);
   const [interestedUsers, setInterestedUsers] = useState([]);
@@ -44,16 +56,17 @@ export default function ExperienceDetails() {
   const [isExpanded, setIsExpanded] = useState(false);
   const [showReadMore, setShowReadMore] = useState(false);
   const [experienceCategories, setExperienceCategories] = useState([]);
-  const params = useParams();
-  const supabase = createClientComponentClient();
-  const router = useRouter();
-  const descriptionRef = useRef(null);
+  const [isMatchmaking, setIsMatchmaking] = useState(false);
   const [topMatches, setTopMatches] = useState([]);
   const [top3Matches, setTop3Matches] = useState([]);
   const { user, loading: userLoading } = useUser();
   const isDisabled = !isInterested;
-  const sanitizedDescription = DOMPurify.sanitize(experience?.event_details);
-  const sanitizedTitle = DOMPurify.sanitize(experience?.event_name);
+  
+  const memoizedTopMatches = useMemo(() => topMatches, [topMatches]);
+  const memoizedInterestedUsers = useMemo(
+    () => interestedUsers,
+    [interestedUsers]
+  );
 
   const categories = [
     { id: 1, name: "Entertainment", icon: <Ticket className="w-5 h-5" /> },
@@ -82,12 +95,6 @@ export default function ExperienceDetails() {
     const category = categories.find((cat) => cat.id === categoryId);
     return category ? category.icon : null;
   };
-
-  const memoizedTopMatches = useMemo(() => topMatches, [topMatches]);
-  const memoizedInterestedUsers = useMemo(
-    () => interestedUsers,
-    [interestedUsers]
-  );
 
   const fetchExperienceCategories = async (experienceId) => {
     const { data, error } = await supabase
@@ -119,11 +126,25 @@ export default function ExperienceDetails() {
         body: JSON.stringify({ userId, eventId }),
       });
 
-      if (!response.ok) {
-        const errorText = await response.text();
-        throw new Error(
-          `HTTP error! status: ${response.status}, message: ${errorText}`
+  const { getMatchmakingResults, cacheMatchmakingResults } = useMatchmaking();
+
+
+  const handleFetchTopMatches = useCallback(
+    async (userId, eventId) => {
+      setIsMatchmaking(true);
+      try {
+        const results = await fetchTopMatches(
+          userId,
+          eventId,
+          cacheMatchmakingResults
         );
+        if (results) {
+          setTopMatches(results.matches);
+          setInterestedUsers(results.interestedUsers);
+        }
+        return results;
+      } finally {
+        setIsMatchmaking(false);
       }
 
       const data = await response.json();
@@ -153,58 +174,88 @@ export default function ExperienceDetails() {
     }
   };
 
+    },
+    [cacheMatchmakingResults]
+  );
+
   useEffect(() => {
+    let isMounted = true;
     async function fetchExperienceAndUsers() {
       if (userLoading) return;
 
-      const { data: experienceData, error: experienceError } = await supabase
-        .from("Events")
-        .select(
+      try {
+        const { data: experienceData, error: experienceError } = await supabase
+          .from("Events")
+          .select(
+            `
+            *,
+            Event_Category_Junction (
+              category_id
+            ),
+            is_free
           `
-          *,
-          Event_Category_Junction (
-            category_id
-          ),
-          is_free
-        `
-        )
-        .eq("event_id", params.experienceId)
-        .single();
-
-      if (experienceError) {
-        console.error("Error fetching experience:", experienceError);
-        setLoading(false);
-        return;
-      }
-
-      setExperience(experienceData);
-      fetchExperienceCategories(params.experienceId);
-
-      if (user) {
-        const { data, error } = await supabase
-          .from("User_Events")
-          .select()
+          )
           .eq("event_id", params.experienceId)
-          .eq("user_id", user.user_id)
           .single();
 
-        if (data && data.expressed_interest) {
-          setIsInterested(true);
+        if (experienceError) {
+          console.error("Error fetching experience:", experienceError);
+          setLoading(false);
+          return;
+        }
+        
+        if (isMounted) {
+          setExperience(experienceData);
+
+          if (user) {
+            const { data, error } = await supabase
+              .from("User_Events")
+              .select()
+              .eq("event_id", params.experienceId)
+              .eq("user_id", user.user_id)
+              .single();
+
+            if (data && data.expressed_interest) {
+              setIsInterested(true);
+
+              // Check cache first
+              const cachedResults = getMatchmakingResults(params.experienceId);
+              if (cachedResults) {
+                setTopMatches(cachedResults.matches);
+                setInterestedUsers(cachedResults.interestedUsers);
+              } else {
+                // Fetch and cache if no cached results
+                try {
+                  await handleFetchTopMatches(
+                    user.user_id,
+                    params.experienceId
+                  );
+                } catch (error) {
+                  console.error("Error fetching top matches:", error);
+                }
+              }
+            }
+          }
+
         }
 
-        // Fetch top matches
-        try {
-          await fetchTopMatches(user.user_id, params.experienceId);
-        } catch (error) {
-          console.error("Error fetching top matches:", error);
-        }
+        setLoading(false);
+      } catch (error) {
+        console.error("Error:", error);
       }
-
-      setLoading(false);
     }
-
     fetchExperienceAndUsers();
-  }, [params.experienceId, supabase, user, userLoading]);
+    return () => {
+      isMounted = false;
+    };
+  }, [
+    params.experienceId,
+    supabase,
+    user,
+    userLoading,
+    getMatchmakingResults,
+    handleFetchTopMatches,
+  ]);
 
   useEffect(() => {
     if (descriptionRef.current) {
@@ -225,10 +276,8 @@ export default function ExperienceDetails() {
       setInterested(users);
       setAllAttendees([...users]);
     }
-
     loadInterestedUsers();
-    console.log(interested);
-  }, [params.experienceId]);
+  }, [params.experienceId, supabase]);
 
   const handleInterestClick = async () => {
     if (!user) {
@@ -253,25 +302,35 @@ export default function ExperienceDetails() {
         setTopMatches([]); // Clear top matches when uninterested
       }
     } else {
+      setLoading(true);
       const { error } = await supabase
         .from("User_Events")
         .insert({ event_id: params.experienceId, user_id: user.user_id });
 
       if (error) {
         console.error("Error adding interest:", error);
+        setLoading(false);
       } else {
         setIsInterested(true);
         try {
-          await fetchTopMatches(user.user_id, params.experienceId);
+          await handleFetchTopMatches(user.user_id, params.experienceId);
         } catch (error) {
           console.error("Error fetching top matches:", error);
+        } finally {
+          setLoading(false);
         }
       }
     }
   };
 
   if (loading) {
-    return <div>Loading...</div>;
+    return isMatchmaking ? (
+      <DynamicLoadingScreenComponent />
+    ) : (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="animate-pulse">Loading...</div>
+      </div>
+    );
   }
 
   if (!experience) {
@@ -288,10 +347,6 @@ export default function ExperienceDetails() {
   const handleBackClick = () => {
     router.push(`/experiences`);
   };
-
-  function stripHtmlTags(htmlString) {
-    return htmlString.replace(/<\/?[^>]+(>|$)/g, "");
-  }
 
   return (
     <div>
@@ -489,16 +544,6 @@ export default function ExperienceDetails() {
             </div>
           </div>
         </div>
-        {/* <footer className="fixed bottom-0 left-0 right-0 bg-white px-4 py-2 shadow-lg">
-          <div className="flex flex-row justify-center">
-            <Button
-              className="w-3/4 bg-teal-500 text-white text-sm p-6 my-2 rounded-full font-semibold flex items-center justify-center"
-              onClick={handleInterestClick}
-            >
-              {isInterested ? "Not Interested" : "I'm Interested!"}
-            </Button>
-          </div>
-        </footer> */}
       </div>
     </div>
   );
