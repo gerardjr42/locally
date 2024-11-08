@@ -189,8 +189,6 @@ export default function AllExperiences() {
     setExperiences(sortExperiencesByDate([...experiences], sortAscending));
   };
 
-  console.log(experiences);
-
   return (
     <div className="flex flex-col items-center justify-center">
       <NavigationBar />
@@ -326,7 +324,7 @@ export default function AllExperiences() {
                     )}
                   </div>
                   <p className="text-center text-sm text-gray-500">
-                    Interested
+                    {experience.users.length < 1 ? "" : "Interested"}
                   </p>
                 </div>
               </div>

@@ -61,7 +61,7 @@ export function CategoryNavbarComponent({
             <div
               className={`w-12 h-12 rounded-full flex items-center justify-center mb-1 ${
                 selectedCategories.includes(category.id)
-                  ? "bg-blue-500 text-white"
+                  ? "bg-teal-500 text-white"
                   : "bg-gray-100"
               }`}
             >

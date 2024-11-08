@@ -1,25 +1,52 @@
 "use client";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useParams, useRouter } from "next/navigation";
+import Image from "next/image";
+import DOMPurify from 'dompurify';
+import { exp } from "@tensorflow/tfjs";
+import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 
-import { NavigationBar } from "@/components/navigation-bar";
 import {
   Accordion,
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
+import { NavigationBar } from "@/components/navigation-bar";
 import { Button } from "@/components/ui/button";
-import { fetchUsersForExperience } from "@/lib/utils";
-import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
-
 import { DynamicLoadingScreenComponent } from "@/components/dynamic-loading-screen";
+import {
+  MapPin,
+  Tag,
+  Users,
+  Briefcase,
+  Church,
+  DollarSign,
+  Dumbbell,
+  GraduationCap,
+  Heart,
+  Mountain,
+  Music,
+  Palette,
+  Plane,
+  Ticket,
+  Utensils,
+  SquareArrowOutUpRight,
+} from "lucide-react";
+
 import { useMatchmaking } from "@/contexts/MatchmakingContext";
 import { useUser } from "@/hooks/useUser";
+import { fetchUsersForExperience, formatDate } from "@/lib/utils";
 import { fetchTopMatches } from "@/lib/matchmaking";
-import { Clock, DollarSign, MapPin, Tag, Users } from "lucide-react";
-import Image from "next/image";
-import { useParams, useRouter } from "next/navigation";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+
 
 export default function ExperienceDetails() {
+  const params = useParams();
+  const supabase = createClientComponentClient();
+  const router = useRouter();
+  const descriptionRef = useRef(null);
+  const sanitizedDescription = DOMPurify.sanitize(experience?.event_details);
+  const sanitizedTitle = DOMPurify.sanitize(experience?.event_name);
+  
   const [experience, setExperience] = useState(null);
   const [allAttendees, setAllAttendees] = useState([]);
   const [interestedUsers, setInterestedUsers] = useState([]);
@@ -28,23 +55,79 @@ export default function ExperienceDetails() {
   const [isInterested, setIsInterested] = useState(false);
   const [isExpanded, setIsExpanded] = useState(false);
   const [showReadMore, setShowReadMore] = useState(false);
-  const params = useParams();
-  const supabase = createClientComponentClient();
-  const router = useRouter();
-  const descriptionRef = useRef(null);
+  const [experienceCategories, setExperienceCategories] = useState([]);
+  const [isMatchmaking, setIsMatchmaking] = useState(false);
   const [topMatches, setTopMatches] = useState([]);
   const [top3Matches, setTop3Matches] = useState([]);
   const { user, loading: userLoading } = useUser();
   const isDisabled = !isInterested;
-  const [isMatchmaking, setIsMatchmaking] = useState(false);
-
+  
   const memoizedTopMatches = useMemo(() => topMatches, [topMatches]);
   const memoizedInterestedUsers = useMemo(
     () => interestedUsers,
     [interestedUsers]
   );
 
+  const categories = [
+    { id: 1, name: "Entertainment", icon: <Ticket className="w-5 h-5" /> },
+    { id: 2, name: "Food & Drink", icon: <Utensils className="w-5 h-5" /> },
+    { id: 3, name: "Sports & Fitness", icon: <Dumbbell className="w-5 h-5" /> },
+    { id: 4, name: "Outdoor", icon: <Mountain className="w-5 h-5" /> },
+    { id: 5, name: "Health & Wellness", icon: <Heart className="w-5 h-5" /> },
+    {
+      id: 6,
+      name: "Faith & Spirituality",
+      icon: <Church className="w-5 h-5" />,
+    },
+    { id: 7, name: "Professional", icon: <Briefcase className="w-5 h-5" /> },
+    { id: 8, name: "Music", icon: <Music className="w-5 h-5" /> },
+    { id: 9, name: "Travel & Adventure", icon: <Plane className="w-5 h-5" /> },
+    {
+      id: 10,
+      name: "Education & Learning",
+      icon: <GraduationCap className="w-5 h-5" />,
+    },
+    { id: 11, name: "Arts & Culture", icon: <Palette className="w-5 h-5" /> },
+    { id: 12, name: "Free", icon: <DollarSign className="w-5 h-5" /> },
+  ];
+
+  const getCategoryIcon = (categoryId) => {
+    const category = categories.find((cat) => cat.id === categoryId);
+    return category ? category.icon : null;
+  };
+
+  const fetchExperienceCategories = async (experienceId) => {
+    const { data, error } = await supabase
+      .from("Event_Category_Junction")
+      .select("category_id")
+      .eq("event_id", experienceId);
+
+    if (error) {
+      console.error("Error fetching experience categories:", error);
+    } else {
+      const categoryIds = data.map((item) => item.category_id);
+      setExperienceCategories(categoryIds);
+    }
+  };
+
+  const fetchTopMatches = async (userId, eventId) => {
+    try {
+      console.log(
+        "Fetching top matches for userId:",
+        userId,
+        "eventId:",
+        eventId
+      );
+      const response = await fetch("/api/matchmaking", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ userId, eventId }),
+      });
+
   const { getMatchmakingResults, cacheMatchmakingResults } = useMatchmaking();
+
 
   const handleFetchTopMatches = useCallback(
     async (userId, eventId) => {
@@ -63,6 +146,34 @@ export default function ExperienceDetails() {
       } finally {
         setIsMatchmaking(false);
       }
+
+      const data = await response.json();
+      console.log("Top Matches:", data.matches);
+      setTopMatches(data.matches);
+
+      // Fetch interested users' data
+      const interestedUsersData = await Promise.all(
+        data.matches.map(async (userId) => {
+          const { data: userData, error } = await supabase
+            .from("Users")
+            .select("user_id, first_name, last_name, user_dob, photo_url")
+            .eq("user_id", userId)
+            .single();
+
+          if (error) {
+            console.error("Error fetching user data:", error);
+            return null;
+          }
+          return userData;
+        })
+      );
+
+      setInterestedUsers(interestedUsersData.filter(Boolean));
+    } catch (error) {
+      console.error("Error fetching top matches:", error);
+    }
+  };
+
     },
     [cacheMatchmakingResults]
   );
@@ -71,6 +182,7 @@ export default function ExperienceDetails() {
     let isMounted = true;
     async function fetchExperienceAndUsers() {
       if (userLoading) return;
+
       try {
         const { data: experienceData, error: experienceError } = await supabase
           .from("Events")
@@ -91,7 +203,7 @@ export default function ExperienceDetails() {
           setLoading(false);
           return;
         }
-
+        
         if (isMounted) {
           setExperience(experienceData);
 
@@ -124,6 +236,7 @@ export default function ExperienceDetails() {
               }
             }
           }
+
         }
 
         setLoading(false);
@@ -235,16 +348,6 @@ export default function ExperienceDetails() {
     router.push(`/experiences`);
   };
 
-  const formatDate = (dateString) => {
-    const options = {
-      weekday: "long",
-      year: "numeric",
-      month: "long",
-      day: "numeric",
-    };
-    return new Date(dateString).toLocaleDateString("en-US", options);
-  };
-
   return (
     <div>
       <NavigationBar handleBackClick={handleBackClick} />
@@ -256,41 +359,95 @@ export default function ExperienceDetails() {
             layout="fill"
             objectFit="cover"
           />
-        </div>
-        <div className="px-4 py-4">
-          <h1 className="text-3xl font-bold mb-2 text-gray-900">
-            {experience.event_name}
-          </h1>
-          <p className="text-gray-600 mb-4 text-sm">
-            {formatDate(experience.event_time)}
-          </p>
-          <Button
-            className="w-full mb-6 text-white bg-teal-400 hover:bg-teal-500 transition-colors"
-            onClick={handleInterestClick}
-          >
-            {isInterested ? "Not Interested" : "I'm interested!"}
-          </Button>
-          <div className="mb-6">
-            <div className="flex justify-between items-center mb-3">
-              <h2 className="text-lg font-semibold">
-                {allAttendees.length} Interested Locals
-              </h2>
-              <Button
-                variant="link"
-                className="text-sm bg-gray-200 rounded-lg"
-                disabled={isDisabled}
-                onClick={() =>
-                  router.push(`/experiences/${params.experienceId}/attendees`, {
-                    state: {
-                      topMatches: memoizedTopMatches,
-                      interestedUsers: memoizedInterestedUsers,
-                    },
-                  })
-                }
+          <div className=" flex flex-col absolute bottom-0 left-0 right-0 p-4 bg-gray-800 bg-opacity-40">
+            <div className="flex flex-row item">
+            
+              <a
+                href={experience.event_url}
+                className="text-3xl font-bold mb-2 text-white"
+                dangerouslySetInnerHTML={{
+                  __html: sanitizedTitle,
+                }}
               >
-                View all
-              </Button>
+              </a>
+              <a
+                href={experience.event_url}>
+              <SquareArrowOutUpRight className="w-4 h-4 text-white m-0.5 ml-1" />
+              </a>
             </div>
+            <div className="flex flex-row">
+              <MapPin className="w-4 h-4 text-white mt-0.5 mr-1" />
+              <p className="font-semibold text-sm text-white">
+                <a
+                  href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
+                    experience.event_location_name
+                  )}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  {experience.event_location_name
+                    ? experience.event_location_name
+                    : experience.event_street_address}
+                </a>
+              </p>
+            </div>
+          </div>
+        </div>
+        <div className="px-4 py-2 mb-4">
+          <div className="flex flex-row justify-between text-gray-600 font-semibold text-sm">
+            <p className="mb-4">{formatDate(experience.event_time)}</p>
+            <p>
+              {new Date(experience.event_time).toLocaleTimeString("en-US", {
+                hour: "2-digit",
+                minute: "2-digit",
+                hour12: true,
+                timeZone: "UTC",
+              })}
+            </p>
+          </div>
+
+          <div className="flex flex-row justify-center">
+            <Button
+              className="w-3/4 bg-teal-500 text-white text-sm p-6 my-2 rounded-full font-semibold flex items-center justify-center"
+              onClick={handleInterestClick}
+            >
+              {isInterested ? "Not Interested" : "I'm Interested!"}
+            </Button>
+          </div>
+
+          <div className="my-6">
+            {allAttendees.length > 0 ? (
+              <div className="flex justify-between items-center mb-3">
+                <h2 className="text-gray-700 text-md font-semibold">
+                  {allAttendees.length} Interested Locals
+                </h2>
+                <Button
+                  variant="link"
+                  className="text-sm bg-gray-200 rounded-lg"
+                  disabled={isDisabled}
+                  onClick={() =>
+                    router.push(
+                      `/experiences/${params.experienceId}/attendees`,
+                      {
+                        state: {
+                          topMatches: memoizedTopMatches,
+                          interestedUsers: memoizedInterestedUsers,
+                        },
+                      }
+                    )
+                  }
+                >
+                  View All
+                </Button>
+              </div>
+            ) : (
+              <div className="flex items-center mb-3">
+                <h2 className="text-gray-500 text-md font-semibold">
+                  No interested Locals, yet - Be the first!
+                </h2>
+              </div>
+            )}
+
             <div className="flex space-x-3 overflow-x-auto pb-2">
               {interestedUsers.map((user, index) => (
                 <div key={user.user_id} className="flex-shrink-0 w-20">
@@ -312,7 +469,7 @@ export default function ExperienceDetails() {
                       />
                     </div>
                     {index < 3 && (
-                      <span className="absolute top-0 right-0 bg-green-500 text-white text-xs px-1 py-0.5 rounded-full text-[10px]">
+                      <span className="absolute top-0 right-0 bg-teal-500 text-white text-xs px-1 py-0.5 rounded-full text-[10px]">
                         Top Match
                       </span>
                     )}
@@ -324,96 +481,67 @@ export default function ExperienceDetails() {
               ))}
             </div>
           </div>
-          <div className="grid grid-cols-3 gap-3 mb-6">
-            <div>
-              <h3 className="text-sm font-semibold mb-1 text-gray-700">
-                Category
-              </h3>
-              <div className="flex items-center text-gray-600 text-sm">
-                <Tag className="w-4 h-4 mr-1" />
-                <p>{experience.Event_Category_Junction[0]?.category_id}</p>
-              </div>
+
+          <div className="mb-4">
+            <h3 className="text-md font-semibold mb-2 text-gray-700">
+              Experience Details
+            </h3>
+            {experience.event_details[0] !== "<" ? (
+              <p className="text-gray-500 text-sm">
+                {experience.event_details}
+              </p>
+            ) : (
+              <div
+                className="text-gray-500 text-sm"
+                dangerouslySetInnerHTML={{
+                  __html: sanitizedDescription,
+                }}
+              />
+            )}
+            {/* <p className="text-gray-500 text-sm">{experience.event_details}</p> */}
+            <div className="flex flex-row flex-wrap justify-evenly items-center py-4">
+              {experienceCategories.map((categoryNum, index) => {
+                let category = categories.find((c) => c.id === categoryNum);
+                return (
+                  <div
+                    key={index}
+                    className="bg-transparent outline text-teal-500 text-sm px-2 py-1 mx-0.5 my-1 rounded-full"
+                  >
+                    {category.name}
+                  </div>
+                );
+              })}
             </div>
-            <div>
-              <h3 className="text-sm font-semibold mb-1 text-gray-700">
-                Entry Fee
-              </h3>
-              <div className="flex items-center text-gray-600 text-sm">
-                <DollarSign className="w-4 h-4 mr-1" />
+
+            <div className="flex flex-col text-gray-500 text-sm justify-center px-12">
+              <div className="flex flex-row items-center justify-between text-sm">
+                <div className="flex flex-row items-center text-sm">
+                  <DollarSign className="w-4 h-4 mr-2" />
+                  <h3>Entry Fee</h3>
+                </div>
                 <p>
                   {experience.is_free ? "Free" : `$${experience.event_price}`}
                 </p>
               </div>
-            </div>
-            <div>
-              <h3 className="text-sm font-semibold mb-1 text-gray-700">
-                Capacity
-              </h3>
-              <div className="flex items-center text-gray-600 text-sm">
-                <Users className="w-4 h-4 mr-1" />
-                <p>{experience.event_capacity}</p>
+              <div className="flex flex-row items-center justify-between text-sm">
+                <div className="flex flex-row items-center text-sm">
+                  <Users className="w-4 h-4 mr-2" />
+                  <h3>Capacity</h3>
+                </div>
+                <p>
+                  {experience.event_capacity
+                    ? `${experience.event_capacity}`
+                    : "Limited"}
+                </p>
+              </div>
+              <div className="flex flex-row items-center justify-between text-sm">
+                <div className="flex flex-row items-center text-sm">
+                  <Ticket className="w-4 h-4 mr-2" />
+                  <h3>Host</h3>
+                </div>
+                <p>{experience.event_host}</p>
               </div>
             </div>
-          </div>
-          <div className="grid grid-cols-[auto,1fr] gap-x-2 gap-y-1 items-start mb-6">
-            <MapPin className="w-4 h-4 text-gray-600 mt-0.5" />
-            <div>
-              <p className="font-semibold text-sm text-gray-800">
-                <a
-                  href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
-                    experience.event_street_address +
-                      ", " +
-                      experience.event_zip_code
-                  )}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  {experience.event_street_address}, {experience.event_zip_code}
-                </a>
-              </p>
-            </div>
-            <Clock className="w-4 h-4 text-gray-600 mt-0.5" />
-            <p className="text-gray-600 text-sm">
-              {new Date(experience.event_time).toLocaleTimeString("en-US", {
-                hour: "2-digit",
-                minute: "2-digit",
-                hour12: true,
-                timeZone: "UTC",
-              })}
-            </p>
-          </div>
-
-          <div className="mb-4">
-            <h3 className="text-xl font-semibold mb-2 text-gray-800">
-              Description
-            </h3>
-            <Accordion
-              type="single"
-              collapsible
-              className="w-full"
-              value={isExpanded ? "description" : ""}
-              onValueChange={(value) => setIsExpanded(value === "description")}
-            >
-              <AccordionItem value="description" className="border-none">
-                <div>
-                  <p
-                    ref={descriptionRef}
-                    className={`text-gray-600 text-sm leading-relaxed mb-2 ${
-                      !isExpanded ? "line-clamp-4" : ""
-                    }`}
-                  >
-                    {experience.event_details}
-                  </p>
-                  {showReadMore && (
-                    <AccordionTrigger className="p-0 hover:no-underline">
-                      <span className="text-blue-500 text-sm">
-                        {isExpanded ? "Read Less" : "Read More.."}
-                      </span>
-                    </AccordionTrigger>
-                  )}
-                </div>
-              </AccordionItem>
-            </Accordion>
           </div>
         </div>
       </div>

@@ -177,9 +177,9 @@ export default function UserProfile() {
       className="bg-white min-h-screen font-sans text-gray-900"
     >
       <NavigationBar handleBackClick={handleBackClick} />
-      <main className="pt-15 pb-24">
+      <main className="pt-15 pb-24 text-gray-600">
         <motion.div
-          className="bg-gray-100 p-4 flex flex-row items-center"
+          className="bg-teal-500 text-white p-4 flex flex-row items-center"
           variants={slideUp}
         >
           <div className="avatar">
@@ -191,21 +191,19 @@ export default function UserProfile() {
             </div>
           </div>
           <div className="flex flex-col items-center justify-center">
-            <p className="text-md font-semibold text-gray-600">
+            <p className="text-md font-semibold ">
               {interestedUser?.first_name} is looking to connect at
             </p>
-            <h2 className="text-md text-gray-600 font-semibold">
-              {eventName}!
-            </h2>
+            <h2 className="text-md font-semibold">{eventName}!</h2>
           </div>
         </motion.div>
 
         <motion.div
-          className="px-4 py-2 bg-teal-500 space-y-4 w-full flex flex-row items-center justify-evenly"
+          className="px-4 py-2 space-y-4 w-full flex flex-row justify-between items-start"
           variants={slideUp}
         >
-          <div className="card text-white h-22 mx-1">
-            <div className="card-body flex flex-col items-center p-3">
+          <div className="card bg-transparent w-1/3 h-full mx-1 flex flex-col">
+            <div className="card-body flex flex-col p-3">
               <p className="text-xs text-center">Past Connections</p>
               <div className="card-actions justify-end">
                 <p className="text-md font-bold text-center">10</p>
@@ -213,8 +211,8 @@ export default function UserProfile() {
             </div>
           </div>
 
-          <div className="card bg-transparent text-white w-1/3 h-22 mx-1">
-            <div className="card-body flex flex-col items-center p-3">
+          <div className="card bg-transparent w-1/3 h-full mx-1 flex flex-col">
+            <div className="card-body flex flex-col p-3">
               <p className="text-xs text-center">Location</p>
               <div className="card-actions justify-end">
                 <p className="text-md font-bold text-center">{userCity}</p>
@@ -222,8 +220,8 @@ export default function UserProfile() {
             </div>
           </div>
 
-          <div className="card bg-transparent text-white w-1/3 h-22 mx-1">
-            <div className="card-body flex flex-col items-center p-3">
+          <div className="card bg-transparent w-1/3 h-full mx-1 flex flex-col">
+            <div className="card-body flex flex-col p-3">
               <p className="text-xs text-center">Verified</p>
               <div className="card-actions justify-center">
                 <p className="text-md font-bold text-center">✓</p>
@@ -232,20 +230,17 @@ export default function UserProfile() {
           </div>
         </motion.div>
 
-        <motion.div className="px-4 pt-4" variants={slideUp}>
-          <h4 className="text-sm text-gray-400 font-semibold mb-2">About Me</h4>
-          <p className="text-lg text-center text-gray-500 font-semibold">
+        <motion.div className="px-6 pt-2" variants={slideUp}>
+          <h4 className="text-sm mb-2">About Me</h4>
+          <p className="text-md text-center font-semibold">
             {interestedUser.bio}
           </p>
         </motion.div>
 
-        <motion.div className="p-4 space-y-4" variants={slideUp}>
+        <motion.div className="p-6 space-y-4" variants={slideUp}>
           <div>
-            <h4 className="text-sm text-gray-400 font-semibold mb-2">
-              {" "}
-              My Interests
-            </h4>
-            <div className="flex space-x-4 overflow-x-auto pb-2">
+            <h4 className="text-sm mb-2">My Interests</h4>
+            <div className="flex justify-evenly flex-wrap space-x-4 overflow-x-auto pb-2">
               {interests.map((interest, index) => (
                 <motion.div
                   key={interest.id}
@@ -265,35 +260,20 @@ export default function UserProfile() {
               ))}
             </div>
           </div>
-
-          {/* <Collapsible
-            open={isExpanded}
-            onOpenChange={setIsExpanded}
-            className="space-y-2"
-          >
-            <motion.div className="text-gray-600" variants={fadeIn}>
-              <CollapsibleContent className="text-sm">
-                
-              </CollapsibleContent>
-            </motion.div>
-            <CollapsibleTrigger asChild>
-              <Button variant="ghost" size="sm" className="p-0">
-                {isExpanded ? "Read less" : "Read more"}
-              </Button>
-            </CollapsibleTrigger>
-          </Collapsible> */}
         </motion.div>
 
         <motion.div className="px-6">
-          <ul className="text-center text-gray-500 my-3">
+          <ul className="text-center my-3">
             {interestedUser?.icebreaker_responses?.map((response) => {
               if (response.answer.length > 0) {
                 return (
-                  <li className="my-3" key={response.question}>
-                    <p className="text-xs italic">
-                      &quot;{response.question}&quot;
-                    </p>
-                    <p className="text-md font-semibold">{response.answer}</p>
+                  <li className="card bg-neutral text-neutral-content w-7/8 my-2">
+                    <div className="card-body text-left">
+                      <p>{response.question}</p>
+                      <div className="card-actions justify-end">
+                      <p className="text-md font-bold text-gray-100">"{response.answer}"</p>
+                      </div>
+                    </div>
                   </li>
                 );
               }
@@ -306,7 +286,7 @@ export default function UserProfile() {
           <motion.button
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
-            className="w-1/2 bg-gray-300 text-gray-700 py-3 rounded-full font-semibold flex items-center justify-center"
+            className="w-1/2 bg-gray-300 py-3 rounded-full font-semibold flex items-center justify-center"
             onClick={handlePass}
             aria-label="Pass on Hudson"
           >
