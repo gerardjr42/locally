@@ -7,13 +7,19 @@ export async function fetchTopMatches(
 ) {
   const supabase = createClientComponentClient();
   try {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 120000); // 2 minute timeout
+
     const response = await fetch("/api/matchmaking", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({ userId, eventId }),
+      signal: controller.signal,
     });
+
+    clearTimeout(timeoutId);
 
     if (!response.ok) {
       const errorText = await response.text();

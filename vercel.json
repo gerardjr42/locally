@@ -1,0 +1,7 @@
+{
+  "functions": {
+    "api/matchmaking.js": {
+      "maxDuration": 120
+    }
+  }
+}
