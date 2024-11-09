@@ -170,7 +170,7 @@ export default function UserMatches() {
                     Check out other interested users who might be your match!
                   </p>
                   <button
-                    className="w-3/4 bg-teal-500 text-white text-sm p-2 my-2 rounded-full font-semibold flex items-center justify-center"
+                    className="w-3/4 outline bg-transparent text-teal-700 text-sm p-2 my-2 rounded-full font-semibold flex items-center justify-center"
                     onClick={() =>
                       router.push(
                         `/experiences/${event.Events.event_id}/attendees`

@@ -130,7 +130,7 @@ export default function RegistrationForm() {
             checked={agreeTerms}
             onCheckedChange={setAgreeTerms}
             required
-            className={agreeTerms ? "" : "border-green-200"}
+            className={agreeTerms ? "" : "border-teal-200"}
           />
           <label
             htmlFor="terms"

@@ -44,9 +44,7 @@ export default function ExperienceDetails() {
   const supabase = createClientComponentClient();
   const router = useRouter();
   const descriptionRef = useRef(null);
-  const sanitizedDescription = DOMPurify.sanitize(experience?.event_details);
-  const sanitizedTitle = DOMPurify.sanitize(experience?.event_name);
-  
+
   const [experience, setExperience] = useState(null);
   const [allAttendees, setAllAttendees] = useState([]);
   const [interestedUsers, setInterestedUsers] = useState([]);
@@ -61,6 +59,10 @@ export default function ExperienceDetails() {
   const [top3Matches, setTop3Matches] = useState([]);
   const { user, loading: userLoading } = useUser();
   const isDisabled = !isInterested;
+
+  const sanitizedTitle = DOMPurify.sanitize(experience?.event_name);
+  const sanitizedDescription = DOMPurify.sanitize(experience?.event_details);
+  
   
   const memoizedTopMatches = useMemo(() => topMatches, [topMatches]);
   const memoizedInterestedUsers = useMemo(
@@ -110,25 +112,8 @@ export default function ExperienceDetails() {
     }
   };
 
-  const fetchTopMatches = async (userId, eventId) => {
-    try {
-      console.log(
-        "Fetching top matches for userId:",
-        userId,
-        "eventId:",
-        eventId
-      );
-      const response = await fetch("/api/matchmaking", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ userId, eventId }),
-      });
-
   const { getMatchmakingResults, cacheMatchmakingResults } = useMatchmaking();
-
-
+  
   const handleFetchTopMatches = useCallback(
     async (userId, eventId) => {
       setIsMatchmaking(true);
@@ -146,34 +131,6 @@ export default function ExperienceDetails() {
       } finally {
         setIsMatchmaking(false);
       }
-
-      const data = await response.json();
-      console.log("Top Matches:", data.matches);
-      setTopMatches(data.matches);
-
-      // Fetch interested users' data
-      const interestedUsersData = await Promise.all(
-        data.matches.map(async (userId) => {
-          const { data: userData, error } = await supabase
-            .from("Users")
-            .select("user_id, first_name, last_name, user_dob, photo_url")
-            .eq("user_id", userId)
-            .single();
-
-          if (error) {
-            console.error("Error fetching user data:", error);
-            return null;
-          }
-          return userData;
-        })
-      );
-
-      setInterestedUsers(interestedUsersData.filter(Boolean));
-    } catch (error) {
-      console.error("Error fetching top matches:", error);
-    }
-  };
-
     },
     [cacheMatchmakingResults]
   );
