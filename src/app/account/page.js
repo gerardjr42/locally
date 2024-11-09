@@ -102,11 +102,11 @@ export default function Account() {
               <p className="text-xl font-bold">19</p>
             </div>
             <motion.div
-              className="flex items-center bg-green-50 px-3 py-1 rounded-full border border-green-200 w-auto"
+              className="flex items-center bg-teal-50 px-3 py-1 rounded-full border border-teal-200 w-auto"
               whileHover={{ scale: 1.05 }}
             >
-              <BadgeCheck className="w-5 h-5 text-green-500 mr-1" />
-              <p className="text-sm font-semibold text-green-700 whitespace-nowrap">
+              <BadgeCheck className="w-5 h-5 text-teal-500 mr-1" />
+              <p className="text-sm font-semibold text-teal-700 whitespace-nowrap">
                 You&apos;ve verified by ID
               </p>
             </motion.div>

@@ -184,7 +184,7 @@ export function ExperienceDetailsComponent() {
                     className="rounded-full object-cover" />
                   {index < 2 && (
                     <span
-                      className="absolute top-0 right-0 bg-green-500 text-white text-xs px-1 py-0.5 rounded-full text-[10px]">
+                      className="absolute top-0 right-0 bg-teal-500 text-white text-xs px-1 py-0.5 rounded-full text-[10px]">
                       Top Match
                     </span>
                   )}

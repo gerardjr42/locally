@@ -102,7 +102,7 @@ export default function UserVerification() {
                 id="idme-wallet-button"
                 data-scope="military,responder,student,teacher,government"
                 variant="outline"
-                className="w-full bg-green-600 text-white"
+                className="w-full bg-teal-600 text-white"
               >
                 Verify with ID.me
               </Button>

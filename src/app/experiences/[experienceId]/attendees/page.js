@@ -147,7 +147,7 @@ export default function AttendeesList() {
                   </div>
                 </div>
                 {index < 3 && (
-                  <span className="bg-green-500 text-white px-2 py-1 rounded text-sm">
+                  <span className="bg-teal-500 text-white px-2 py-1 rounded text-sm">
                     Top Match
                   </span>
                 )}
