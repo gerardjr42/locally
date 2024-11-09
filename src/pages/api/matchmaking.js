@@ -87,42 +87,54 @@ async function findTopMatches(userId, userData, model) {
   if (userIndex === -1) return [];
 
   try {
-    // Prepare text data for each user
-    const userTexts = validUserData.map((user) => {
-      const icebreakerResponses =
-        user.icebreaker_responses
-          ?.filter((r) => r.answer)
-          .map((r) => r.answer)
-          .join(" ") || "";
+    // Process users in chunks of 10
+    const chunkSize = 10;
+    const chunks = [];
+    for (let i = 0; i < validUserData.length; i += chunkSize) {
+      chunks.push(validUserData.slice(i, i + chunkSize));
+    }
 
-      const interests = user.interests.join(" ");
-      const bio = user.bio || "";
+    let allMatches = [];
+    for (const chunk of chunks) {
+      const userTexts = chunk.map((user) => {
+        const icebreakerResponses =
+          user.icebreaker_responses
+            ?.filter((r) => r.answer)
+            .map((r) => r.answer)
+            .join(" ") || "";
 
-      return `${bio} | ${icebreakerResponses} | ${interests}`;
-    });
+        const interests = user.interests.join(" ");
+        const bio = user.bio || "";
 
-    // Encode all user texts
-    const embeddings = await model.embed(userTexts);
+        return `${bio} | ${icebreakerResponses} | ${interests}`;
+      });
 
-    // Calculate cosine similarity between the current user and all other users
-    const userEmbedding = embeddings.slice([userIndex, 0], [1, -1]);
-    const similarities = tf
-      .matMul(embeddings, userEmbedding.transpose())
-      .squeeze();
+      // Process embeddings for this chunk
+      const embeddings = await model.embed(userTexts);
+      const similarities = tf.tidy(() => {
+        const userEmbedding = embeddings.slice([userIndex, 0], [1, -1]);
+        return tf.matMul(embeddings, userEmbedding.transpose()).squeeze();
+      });
 
-    // Get top matches
-    const topIndices = await tf
-      .topk(similarities, validUserData.length)
-      .indices.array();
+      const scores = await similarities.array();
+      chunk.forEach((user, i) => {
+        if (user.user_id !== userId) {
+          allMatches.push({
+            userId: user.user_id,
+            score: scores[i],
+          });
+        }
+      });
 
-    // Clean up tensors
-    embeddings.dispose();
-    userEmbedding.dispose();
-    similarities.dispose();
+      // Clean up tensors
+      embeddings.dispose();
+      similarities.dispose();
+    }
 
-    return topIndices
-      .filter((index) => index !== userIndex)
-      .map((index) => validUserData[index].user_id);
+    // Sort by score and return user IDs
+    return allMatches
+      .sort((a, b) => b.score - a.score)
+      .map((match) => match.userId);
   } catch (error) {
     console.error("Error in findTopMatches:", error);
     throw error;
