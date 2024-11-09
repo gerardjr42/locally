@@ -1,12 +1,10 @@
 "use client";
 import { NavigationBar } from "@/components/navigation-bar";
-import { Button } from "@/components/ui/button";
 import { useUserContext } from "@/contexts/UserContext";
 import { buildNameString, calculateAge, fetchUserInterests } from "@/lib/utils";
 
-import { Collapsible, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { motion } from "framer-motion";
-import { BadgeCheck, Pencil } from "lucide-react";
+import { Pencil } from "lucide-react";
 import Image from "next/image";
 import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -192,12 +190,15 @@ export default function Account() {
               {user?.icebreaker_responses?.map((response) => {
                 if (response.answer.length > 0) {
                   return (
-                    <li className="card bg-neutral text-neutral-content w-7/8 my-2">
+                    <li
+                      key={index}
+                      className="card bg-neutral text-neutral-content w-7/8 my-2"
+                    >
                       <div className="card-body text-left">
                         <p>{response.question}</p>
                         <div className="card-actions justify-end">
                           <p className="text-md font-bold text-gray-100">
-                            "{response.answer}"
+                            &ldquo;{response.answer}&rdquo;
                           </p>
                         </div>
                       </div>
