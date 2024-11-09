@@ -49,10 +49,11 @@ export function DynamicLoadingScreenComponent() {
             transition={{ duration: 2, repeat: Infinity, ease: "linear" }}>
             <Loader2 className="w-12 h-12 text-teal-600" />
           </motion.div>
-          <h2 className="text-2xl font-bold text-teal-600 text-center">Finding Your Perfect Match</h2>
+          <h2 className="text-2xl font-bold text-teal-600 text-center">Finding Compatible Locals...</h2>
           <p className="text-center text-gray-600 text-sm md:text-base">
-            Our AI is working hard to find your ideal connection. Did you know?
+            Our AI is working hard to find your most compatible matches so you can make a successful Connection!
           </p>
+          <p className="text-center text-gray-600 text-sm md:text-base">.Did you know...?</p>
           <div className="h-24 flex items-center justify-center px-4">
             <AnimatePresence mode="wait">
               <motion.p
@@ -61,7 +62,7 @@ export function DynamicLoadingScreenComponent() {
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -20 }}
                 transition={{ duration: 0.5 }}
-                className="text-center text-base md:text-lg font-medium text-gray-800">
+                className="text-center text-base md:text-lg font-semibold text-teal-700">
                 {friendshipFacts[currentFactIndex]}
               </motion.p>
             </AnimatePresence>
