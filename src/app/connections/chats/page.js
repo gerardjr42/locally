@@ -74,7 +74,7 @@ export default function UserChats() {
       </header>
       <main className="p-4">
         <div className="mb-4">
-          <h1 className="text-3xl font-bold">Connections Chats</h1>
+          <h1 className="text-3xl font-bold">Chats</h1>
           <p className="text-gray-500">{channels.length} Active Chats</p>
         </div>
 

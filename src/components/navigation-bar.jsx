@@ -190,13 +190,7 @@ export function NavigationBar({ handleBackClick }) {
                     />
                   </svg>
                   <div className="flex flex-col justify-start py-0.5 m-0.5">
-                    <p>Chats</p>
-                    <p
-                      onClick={handleChatClick}
-                      className="text-gray-500 group-hover:text-[#3FBDAC]"
-                    >
-                      2 Unread Messages
-                    </p>
+                    <p onClick={handleChatClick}>Chats</p>
                   </div>
                 </a>
               </li>
@@ -217,13 +211,7 @@ export function NavigationBar({ handleBackClick }) {
                     />
                   </svg>
                   <div className="flex flex-col justify-start py-0.5 m-0.5">
-                    <p>Connections</p>
-                    <p
-                      onClick={handleConnectionClick}
-                      className="text-gray-500 group-hover:text-[#3FBDAC]"
-                    >
-                      1 new Connection
-                    </p>
+                    <p onClick={handleConnectionClick}>Connections</p>
                   </div>
                 </a>
               </li>
@@ -244,13 +232,7 @@ export function NavigationBar({ handleBackClick }) {
                     />
                   </svg>
                   <div className="flex flex-col justify-start py-0.5 m-0.5">
-                    <p>Experiences</p>
-                    <p
-                      onClick={handleExperienceClick}
-                      className="text-gray-500 group-hover:text-[#3FBDAC]"
-                    >
-                      2 to review
-                    </p>
+                    <p nClick={handleConnectionClick}>Experiences</p>
                   </div>
                 </a>
               </li>
