@@ -267,11 +267,16 @@ export default function UserProfile() {
             {interestedUser?.icebreaker_responses?.map((response) => {
               if (response.answer.length > 0) {
                 return (
-                  <li className="card bg-neutral text-neutral-content w-7/8 my-2">
+                  <li
+                    key={index}
+                    className="card bg-neutral text-neutral-content w-7/8 my-2"
+                  >
                     <div className="card-body text-left">
                       <p>{response.question}</p>
                       <div className="card-actions justify-end">
-                      <p className="text-md font-bold text-gray-100">"{response.answer}"</p>
+                        <p className="text-md font-bold text-gray-100">
+                          &ldquo;{response.answer}&rdquo;
+                        </p>
                       </div>
                     </div>
                   </li>
