@@ -91,7 +91,6 @@ export default function AttendeesList() {
 
   useEffect(() => {
     if (!topMatches || !interestedUsers) {
-      // If data is not available, redirect back to the experience page
       router.push(`/experiences/${params.experienceId}`);
     }
   }, [topMatches, interestedUsers]);
