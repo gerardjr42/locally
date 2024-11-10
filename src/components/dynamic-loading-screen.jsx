@@ -53,7 +53,7 @@ export function DynamicLoadingScreenComponent() {
           <p className="text-center text-gray-600 text-sm md:text-base">
             Our AI is working hard to find your most compatible matches so you can make a successful Connection!
           </p>
-          <p className="text-center text-gray-600 text-sm md:text-base">.Did you know...?</p>
+          <p className="text-center text-gray-600 text-sm md:text-base">Did you know...?</p>
           <div className="h-24 flex items-center justify-center px-4">
             <AnimatePresence mode="wait">
               <motion.p

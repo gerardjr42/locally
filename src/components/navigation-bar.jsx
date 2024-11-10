@@ -211,11 +211,11 @@ export function NavigationBar({ handleBackClick }) {
                     />
                   </svg>
                   <div className="flex flex-col justify-start py-0.5 m-0.5">
-                    <p onClick={handleConnectionClick}>Connections</p>
+                    <p onClick={handleConnectionClick}>Experiences & Connections</p>
                   </div>
                 </a>
               </li>
-              <li>
+              {/* <li>
                 <a className="flex flex-row justify-start hover:bg-base-300 hover:text-[#3FBDAC] transition-colors duration-200">
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -232,10 +232,10 @@ export function NavigationBar({ handleBackClick }) {
                     />
                   </svg>
                   <div className="flex flex-col justify-start py-0.5 m-0.5">
-                    <p nClick={handleConnectionClick}>Experiences</p>
+                    <p onClick={handleConnectionClick}>Experiences</p>
                   </div>
                 </a>
-              </li>
+              </li> */}
 
               <p className="uppercase text-m mt-4 mb-2">Account</p>
               {navItems.map((item, index) => (
