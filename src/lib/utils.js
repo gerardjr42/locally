@@ -112,6 +112,11 @@ export const fetchUserInterests = async (userId) => {
 
 export async function fetchUserDataAndInterests(supabase, userIds) {
   try {
+    if (!Array.isArray(userIds) || userIds.length === 0) {
+      console.error("Invalid userIds provided:", userIds);
+      return [];
+    }
+
     // Single query for all users with JOIN
     const { data: usersWithInterests, error } = await supabase
       .from("Users")
@@ -123,7 +128,7 @@ export async function fetchUserDataAndInterests(supabase, userIds) {
         photo_url,
         bio,
         icebreaker_responses,
-        User_Interests (
+        User_Interests!inner (
           interest
         )
       `
@@ -132,13 +137,18 @@ export async function fetchUserDataAndInterests(supabase, userIds) {
 
     if (error) throw error;
 
+    if (!usersWithInterests || usersWithInterests.length === 0) {
+      console.warn("No users found for ids:", userIds);
+      return [];
+    }
+
     return usersWithInterests.map((user) => ({
       ...user,
-      interests: user.User_Interests.map((i) => i.interest.name),
+      interests: (user.User_Interests || []).map((i) => i.interest.name),
     }));
   } catch (error) {
     console.error("Error fetching user data and interests:", error);
-    return null;
+    return [];
   }
 }
 

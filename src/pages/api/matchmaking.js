@@ -54,15 +54,22 @@ async function handleMatchmaking(req, res) {
   const { userId, eventId } = req.body;
   console.log("Received request for userId:", userId, "eventId:", eventId);
 
-  // Fetch user data and interests from Supabase
-  const usersData = await Promise.all(
-    (
-      await supabase
-        .from("User_Events")
-        .select("user_id")
-        .eq("event_id", eventId)
-    ).data.map((user) => fetchUserDataAndInterests(supabase, user.user_id))
-  );
+  // Fetch all user IDs first
+  const { data: userEventData, error: userEventError } = await supabase
+    .from("User_Events")
+    .select("user_id")
+    .eq("event_id", eventId);
+
+  if (userEventError) {
+    console.error("Error fetching user events:", userEventError);
+    return res.status(500).json({ error: "Error fetching user events" });
+  }
+
+  // Get all user IDs
+  const userIds = userEventData.map((user) => user.user_id);
+
+  // Fetch user data and interests in a single query
+  const usersData = await fetchUserDataAndInterests(supabase, userIds);
   console.log("Fetched user data:", usersData);
 
   // Filter out null values from usersData
