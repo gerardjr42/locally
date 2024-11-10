@@ -98,7 +98,7 @@ export default function Account() {
           >
             <div className="card bg-transparent w-1/3 h-full mx-1 flex flex-col">
               <div className="card-body flex flex-col p-1">
-                <p className="text-xs text-center">Past Connections</p>
+                <p className="text-xs text-center">Connections</p>
                 <div className="card-actions justify-end">
                   <p className="text-md font-bold text-center">2</p>
                 </div>
