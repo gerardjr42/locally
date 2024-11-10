@@ -6,6 +6,9 @@ export async function fetchTopMatches(
   cacheMatchmakingResults
 ) {
   const supabase = createClientComponentClient();
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), 65000); // 65 seconds timeout
+
   try {
     const response = await fetch("/api/matchmaking", {
       method: "POST",
@@ -13,10 +16,16 @@ export async function fetchTopMatches(
         "Content-Type": "application/json",
       },
       body: JSON.stringify({ userId, eventId }),
+      signal: controller.signal,
     });
+
+    clearTimeout(timeout);
 
     if (!response.ok) {
       const errorText = await response.text();
+      if (response.status === 504) {
+        throw new Error("Matchmaking timeout - please try again");
+      }
       throw new Error(
         `HTTP error! status: ${response.status}, message: ${errorText}`
       );
@@ -55,6 +64,11 @@ export async function fetchTopMatches(
     return results;
   } catch (error) {
     console.error("Error in fetchTopMatches:", error);
+    if (error.name === "AbortError") {
+      throw new Error("Request timed out - please try again");
+    }
     throw error;
+  } finally {
+    clearTimeout(timeout);
   }
 }
