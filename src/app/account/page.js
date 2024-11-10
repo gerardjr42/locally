@@ -187,7 +187,7 @@ export default function Account() {
 
           <motion.div className="px-6">
             <ul className="text-center my-3">
-              {user?.icebreaker_responses?.map((response) => {
+              {user?.icebreaker_responses?.map((response, index) => {
                 if (response.answer.length > 0) {
                   return (
                     <li
