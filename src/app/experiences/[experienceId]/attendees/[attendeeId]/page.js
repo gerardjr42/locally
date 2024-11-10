@@ -199,19 +199,19 @@ export default function UserProfile() {
         </motion.div>
 
         <motion.div
-          className="px-4 py-2 space-y-4 w-full flex flex-row justify-between items-start"
+          className="px-4 py-2 space-y-4 w-full flex flex-row justify-evenly items-center"
           variants={slideUp}
         >
-          <div className="card bg-transparent w-1/3 h-full mx-1 flex flex-col">
+          <div className="card bg-transparent mx-1 flex flex-col">
             <div className="card-body flex flex-col p-3">
-              <p className="text-xs text-center">Past Connections</p>
+              <p className="text-xs text-center">Connections</p>
               <div className="card-actions justify-end">
-                <p className="text-md font-bold text-center">10</p>
+                <p className="text-md font-bold text-center">5</p>
               </div>
             </div>
           </div>
 
-          <div className="card bg-transparent w-1/3 h-full mx-1 flex flex-col">
+          <div className="card bg-transparent mx-1 flex flex-col">
             <div className="card-body flex flex-col p-3">
               <p className="text-xs text-center">Location</p>
               <div className="card-actions justify-end">
@@ -220,7 +220,7 @@ export default function UserProfile() {
             </div>
           </div>
 
-          <div className="card bg-transparent w-1/3 h-full mx-1 flex flex-col">
+          <div className="card bg-transparent mx-1 flex flex-col">
             <div className="card-body flex flex-col p-3">
               <p className="text-xs text-center">Verified</p>
               <div className="card-actions justify-center">
