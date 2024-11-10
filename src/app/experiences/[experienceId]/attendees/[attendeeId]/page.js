@@ -264,14 +264,19 @@ export default function UserProfile() {
 
         <motion.div className="px-6">
           <ul className="text-center my-3">
-            {interestedUser?.icebreaker_responses?.map((response) => {
+            {interestedUser?.icebreaker_responses?.map((response, index) => {
               if (response.answer.length > 0) {
                 return (
-                  <li className="card bg-neutral text-neutral-content w-7/8 my-2">
+                  <li
+                    key={index}
+                    className="card bg-neutral text-neutral-content w-7/8 my-2"
+                  >
                     <div className="card-body text-left">
                       <p>{response.question}</p>
                       <div className="card-actions justify-end">
-                      <p className="text-md font-bold text-gray-100">"{response.answer}"</p>
+                        <p className="text-md font-bold text-gray-100">
+                          &ldquo;{response.answer}&rdquo;
+                        </p>
                       </div>
                     </div>
                   </li>
