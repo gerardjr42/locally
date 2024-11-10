@@ -110,31 +110,32 @@ export const fetchUserInterests = async (userId) => {
   }
 };
 
-export async function fetchUserDataAndInterests(supabase, userId) {
+export async function fetchUserDataAndInterests(supabase, userIds) {
   try {
-    const { data: userData, error: userError } = await supabase
+    // Single query for all users with JOIN
+    const { data: usersWithInterests, error } = await supabase
       .from("Users")
       .select(
-        "user_id, first_name, last_name, photo_url, bio, icebreaker_responses"
+        `
+        user_id,
+        first_name,
+        last_name,
+        photo_url,
+        bio,
+        icebreaker_responses,
+        User_Interests (
+          interest
+        )
+      `
       )
-      .eq("user_id", userId)
-      .single();
+      .in("user_id", userIds);
 
-    if (userError) throw userError;
+    if (error) throw error;
 
-    const { data: interestData, error: interestError } = await supabase
-      .from("User_Interests")
-      .select("interest")
-      .eq("user_id", userId);
-
-    if (interestError) throw interestError;
-
-    const interests = interestData.map((item) => item.interest.name);
-
-    return {
-      ...userData,
-      interests,
-    };
+    return usersWithInterests.map((user) => ({
+      ...user,
+      interests: user.User_Interests.map((i) => i.interest.name),
+    }));
   } catch (error) {
     console.error("Error fetching user data and interests:", error);
     return null;
