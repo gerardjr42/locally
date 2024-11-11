@@ -268,7 +268,7 @@ export default function UserProfile() {
               if (response.answer.length > 0) {
                 return (
                   <li
-                    key={index}
+                    key={`${response.question}-${index}`}
                     className="card bg-neutral text-neutral-content w-7/8 my-2"
                   >
                     <div className="card-body text-left">
@@ -282,6 +282,7 @@ export default function UserProfile() {
                   </li>
                 );
               }
+              return null;
             })}
           </ul>
         </motion.div>
