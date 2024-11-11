@@ -50,7 +50,7 @@ export default function RegistrationForm() {
     const { error, data } = await supabase.auth.signInWithOAuth({
       provider: "google",
       options: {
-        redirectTo: "http://localhost:3000/register/details",
+        redirectTo: "https://www.mylocally.io/register/details",
       },
     });
     if (error) {
