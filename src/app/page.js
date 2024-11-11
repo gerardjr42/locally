@@ -9,28 +9,31 @@ import { useEffect, useState } from "react";
 const onboardingContent = [
   {
     title: "/images/locally.png",
-    subtitle:
-      "Real People. Real Experiences. Real Connections.",
+    subtitle: "Real People. Real Experiences. Real Connections.",
     image: "/images/friends4.jpg",
   },
   {
     title: "Browse Experiences",
-    subtitle: "Discover events and activites that match your interests in the NYC area.",
+    subtitle:
+      "Discover events and activites that match your interests in the NYC area.",
     image: "/images/friends-5-mobile.jpg",
   },
   {
     title: "Match with Locals",
-    subtitle: "Express your interest in an Experience to join a pool of Locals looking to make connections.",
+    subtitle:
+      "Express your interest in an Experience to join a pool of Locals looking to make connections.",
     image: "/images/friends-6-mobile.jpg",
   },
   {
     title: "Chat & Coordinate",
-    subtitle: "If the interest to connect is mutual, chat with your match and coordinate your plans to meet up.",
+    subtitle:
+      "If the interest to connect is mutual, chat with your match and coordinate your plans to meet up.",
     image: "/images/friends-7-mobile.jpg",
   },
   {
     title: "Make Connections",
-    subtitle: "Connections are made when you meet up in person. Enjoy your Experience, and make new friends!",
+    subtitle:
+      "Connections are made when you meet up in person. Enjoy your Experience, and make new friends!",
     image: "/images/friends-2-mobile.jpg",
   },
 ];
@@ -54,7 +57,6 @@ export default function Home() {
   const isLastPage = currentIndex === onboardingContent.length - 1;
 
   return (
-
     <div className="relative h-screen bg-black text-white overflow-hidden">
       {/* Background Images */}
       {onboardingContent.map((content, index) => (
@@ -82,19 +84,19 @@ export default function Home() {
         <div className="flex-grow flex items-center justify-center">
           <div className="text-center px-6 max-w-2xl mx-auto">
             {currentIndex === 0 ? (
-            <div className="w-5/6 h-24 mx-auto mb-8 relative animate-fade-in-up">
-              <Image
-                src={onboardingContent[0].title}
-                alt="Locally Logo"
-                layout="fill"
-                objectFit="contain"
-              />
-            </div>
-          ) : (
-            <h1 className="text-2xl sm:text-4xl md:text-6xl font-bold mb-4 animate-fade-in-up">
-              {onboardingContent[currentIndex].title}
-            </h1>
-          )}
+              <div className="w-5/6 h-24 mx-auto mb-8 relative animate-fade-in-up">
+                <Image
+                  src={onboardingContent[0].title}
+                  alt="Locally Logo"
+                  layout="fill"
+                  objectFit="contain"
+                />
+              </div>
+            ) : (
+              <h1 className="text-2xl sm:text-4xl md:text-6xl font-bold mb-4 animate-fade-in-up">
+                {onboardingContent[currentIndex].title}
+              </h1>
+            )}
             <p className="text-md sm:text-xl mb-8 animate-fade-in-up delay-200">
               {onboardingContent[currentIndex].subtitle}
             </p>
@@ -110,14 +112,14 @@ export default function Home() {
           >
             <Button
               onClick={() => router.push("/register")}
-              className="w-3/4 bg-white text-black text-sm p-2 my-2 rounded-full font-semibold flex items-center justify-center align-middle"
+              className="w-3/4 bg-white text-black text-sm p-2 my-2 rounded-full font-semibold flex items-center justify-center align-middle hover:bg-gray-900 hover:text-white"
               size="lg"
             >
               Get Started
             </Button>
             <Button
               onClick={() => router.push("/login")}
-              className="w-3/4 bg-teal-500 text-white text-sm p-2 my-2 rounded-full font-semibold flex items-center justify-center align-middle"
+              className="w-3/4 bg-teal-500 text-white text-sm p-2 my-2 rounded-full font-semibold flex items-center justify-center align-middle hover:bg-gray-900 hover:text-white"
               size="lg"
             >
               Log In
